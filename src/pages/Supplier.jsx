@@ -23,7 +23,7 @@ const SupplierForm = () => {
   return (
     <div className="container mt-4" style={{ maxWidth: "850px" }}>
       <div className="row">
-        <div className="col-md-4">
+        <div className="col-md-3">
           <div className="list-group">
             {[
               "Supplier Profile",
@@ -38,7 +38,7 @@ const SupplierForm = () => {
                   currentStep === step ? "active" : ""
                 }`}
                 onClick={() => setCurrentStep(step)}
-                disabled={currentStep <= step}
+                // disabled={currentStep <= step}
               >
                 {name}
               </button>
@@ -46,7 +46,7 @@ const SupplierForm = () => {
           </div>
         </div>
 
-        <div className="col-md-8">
+        <div className="col-md-9">
           {currentStep === 0 && (
             <SupplierDetails onNext={handleNext} saveData={saveData} />
           )}
