@@ -2,7 +2,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
-import { isValidFileType, MAX_FILE_SIZE } from '../../utils/form';
+// import { isValidFileType, MAX_FILE_SIZE } from '../../utils/form';
+import axios from 'axios';
 
 const step1Schema = yup.object().shape({
   name: yup.string().required('Name is required'),
@@ -14,26 +15,30 @@ const step1Schema = yup.object().shape({
     .matches(/^\d{10}$/, 'Mobile number must be 10 digits'),
   idProofFront: yup
     .mixed()
-    .required('Required')
-    .test('is-valid-type', 'Not a valid image type', (value) => {
-      const file = value[0];
-      return isValidFileType(file && file.name.toLowerCase(), 'image');
-    })
-    .test('is-valid-size', 'Max allowed size is 100KB', (value) => {
-      const file = value[0];
-      return file && file.size <= MAX_FILE_SIZE;
-    }),
+    // .required('Required')
+
+    // .test('is-valid-type', 'Not a valid image type', (value) => {
+    //   const file = value[0];
+    //   return isValidFileType(file && file.name.toLowerCase(), 'image');
+    // })
+    // .test('is-valid-size', 'Max allowed size is 100KB', (value) => {
+    //   const file = value[0];
+    //   return file && file.size <= MAX_FILE_SIZE;
+    // }),
+    .optional(),
   idProofBack: yup
     .mixed()
-    .required('Required')
-    .test('is-valid-type', 'Not a valid image type', (value) => {
-      const file = value[0];
-      return isValidFileType(file && file.name.toLowerCase(), 'image');
-    })
-    .test('is-valid-size', 'Max allowed size is 100KB', (value) => {
-      const file = value[0];
-      return file && file.size <= MAX_FILE_SIZE;
-    }),
+    // .required('Required')
+
+    // .test('is-valid-type', 'Not a valid image type', (value) => {
+    //   const file = value[0];
+    //   return isValidFileType(file && file.name.toLowerCase(), 'image');
+    // })
+    // .test('is-valid-size', 'Max allowed size is 100KB', (value) => {
+    //   const file = value[0];
+    //   return file && file.size <= MAX_FILE_SIZE;
+    // })
+    .optional(),
   addressLine1: yup.string().required('Address Line 1 is required'),
   addressLine2: yup.string(),
   pincode: yup
@@ -54,14 +59,22 @@ const SupplierDetails = ({ onNext, saveData }) => {
     mode: 'onTouched',
   });
 
-  const onSubmit = (data) => {
-    saveData(data); // Save step data before moving on
-    onNext();
+  const onSubmit = async (data) => {
+    try {
+      const res = await axios.post(
+        `/api/productsearchsupplier/api/supplier/profile/addSupplierInfo`,
+        data
+      );
+      console.log(res);
+      saveData(data); // Save step data before moving on
+      onNext();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* Supplier Name */}
       <div className='mb-2'>
         <label>Supplier Name</label>
         <input
@@ -73,7 +86,6 @@ const SupplierDetails = ({ onNext, saveData }) => {
       </div>
 
       <div className='row'>
-        {/* Gender Dropdown */}
         <div className='col-sm-12 col-md-6 mb-2'>
           <label>Gender</label>
           <select
@@ -88,7 +100,6 @@ const SupplierDetails = ({ onNext, saveData }) => {
           <div className='invalid-feedback'>{errors.gender?.message}</div>
         </div>
 
-        {/* Mobile Number */}
         <div className='col-sm-12 col-md-6 mb-2'>
           <label>Mobile Number</label>
           <input
@@ -100,7 +111,6 @@ const SupplierDetails = ({ onNext, saveData }) => {
         </div>
       </div>
 
-      {/* ID Proof Images */}
       <div className='row'>
         <div className='col-sm-12 col-md-6 mb-2'>
           <label>Upload ID Proof (Front)</label>
@@ -125,7 +135,6 @@ const SupplierDetails = ({ onNext, saveData }) => {
         </div>
       </div>
 
-      {/* Email */}
       <div className='mb-2'>
         <label>Email</label>
         <input

@@ -175,7 +175,7 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
           </label>
           <label>
             <input type='radio' value='group' {...register('premisesType')} />
-            Group of Business Premises (Malls)
+            Group of Bussiness Premises (Malls)
           </label>
         </div>
         <div className='invalid-feedback'>{errors.premisesType?.message}</div>
@@ -183,12 +183,12 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
 
       {watch('premisesType') == 'group' && (
         <div className='mb-2'>
-          <label>Sector</label>
+          <label>Premises name</label>
           <select
             {...register('sector')}
             className={`form-control ${errors.sector ? 'is-invalid' : ''}`}
           >
-            <option value=''>Select Sector</option>
+            <option value=''>Select Premises</option>
             <option value='manufacturing'>Manufacturing</option>
             <option value='service'>Service</option>
             <option value='retail'>Retail</option>
@@ -198,7 +198,7 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
         </div>
       )}
 
-      <div className='mb-2'>
+      {/* <div className='mb-2'>
         <label>Premises Name</label>
         <input
           type='text'
@@ -206,7 +206,7 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
           className={`form-control ${errors.premisesName ? 'is-invalid' : ''}`}
         />
         <div className='invalid-feedback'>{errors.premisesName?.message}</div>
-      </div>
+      </div> */}
 
       <div className='mb-2'>
         <label>Products / Services</label>
