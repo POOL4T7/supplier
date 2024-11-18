@@ -2,7 +2,8 @@ import { useState } from "react";
 
 import SupplierDetails from "../components/SupplierForm/SupplierDetails";
 import BussinessProfile from "../components/SupplierForm/BussinessProfile";
-import ProductDetails from "../components/SupplierForm/ProductDetails";
+import ProductTransfer from "../components/SupplierForm/ProductTransfer";
+import ServiceTransfer from "../components/SupplierForm/ServiceTransfer";
 
 // Main SupplierForm Component
 const SupplierForm = () => {
@@ -58,7 +59,14 @@ const SupplierForm = () => {
             />
           )}
           {currentStep === 2 && (
-            <ProductDetails
+            <ProductTransfer
+              onSubmit={handleSubmit}
+              onPrevious={handlePrevious}
+              saveData={saveData}
+            />
+          )}
+          {currentStep === 3 && (
+            <ServiceTransfer
               onSubmit={handleSubmit}
               onPrevious={handlePrevious}
               saveData={saveData}

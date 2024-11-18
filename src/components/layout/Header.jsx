@@ -30,7 +30,7 @@ const Header = () => {
             </li> */}
           </ul>
           <div className='d-flex'>
-            {userDetails ? (
+            {userDetails?.id ? (
               <>
                 <Link to={'/supplier'} className='nav-link text-white'>
                   Dashboard

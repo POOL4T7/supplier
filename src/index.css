@@ -1,5 +1,5 @@
-nav{
-    padding: 12px 0px !important;
+nav {
+  padding: 12px 0px !important;
 }
 
 h3 {
@@ -14,4 +14,26 @@ h1 {
 h2 {
   font-size: 1.4rem;
   padding: 0.5rem 0;
+}
+
+.upload-container {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  text-align: center;
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.upload-container:hover {
+  border-color: #007bff;
+}
+
+.upload-text {
+  font-size: 16px;
+  color: #666;
+}
+
+.d-none {
+  display: none;
 }

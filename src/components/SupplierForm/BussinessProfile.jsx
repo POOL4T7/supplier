@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
+import axios from 'axios';
 
 const step2Schema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
@@ -31,9 +32,18 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
     mode: 'onTouched',
   });
 
-  const onSubmit = (data) => {
-    saveData(data);
-    onNext();
+  const onSubmit =async (data) => {
+    try {
+      const res = await axios.post(
+        `/api/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
+        data
+      );
+      console.log(res);
+      saveData(data); // Save step data before moving on
+      onNext();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
