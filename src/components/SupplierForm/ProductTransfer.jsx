@@ -43,38 +43,49 @@ const ProductTransfer = () => {
   };
 
   return (
-    <>
+    <div className="container">
+      {/* Row for Product Selection */}
       <div
         className="row align-items-center justify-content-between"
         style={{ maxHeight: "80vh", height: "100%" }}
       >
         {/* Left Container */}
-        <div className="col-md-5 border p-2">
-          <h5>Uploaded Products</h5>
-          {uploadedProducts.map((product) => (
-            <div key={product.id} className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={selectedProducts.includes(product)}
-                onChange={() => toggleSelectProduct(product)}
-              />
-              <label className="form-check-label">{product.name}</label>
-            </div>
-          ))}
+        <div className="col-md-5 border p-3">
+          <h5 className="mb-3">Uploaded Product</h5>
+          {uploadedProducts.length > 0 ? (
+            uploadedProducts.map((product) => (
+              <div key={product.id} className="form-check mb-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id={`uploaded-${product.id}`}
+                  checked={selectedProducts.includes(product)}
+                  onChange={() => toggleSelectProduct(product)}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor={`uploaded-${product.id}`}
+                >
+                  {product.name}
+                </label>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted">No products uploaded.</p>
+          )}
         </div>
 
         {/* Move Buttons */}
-        <div className="col-md-2 d-flex flex-column align-items-cente ">
+        <div className="col-md-2 d-flex flex-column align-items-center">
           <button
-            className="btn btn-xs btn-primary mb-1"
+            className="btn btn-primary mb-2"
             onClick={moveToRight}
             disabled={selectedProducts.length === 0}
           >
             &gt;&gt;
           </button>
           <button
-            className="btn btn-xs btn-primary"
+            className="btn btn-primary"
             onClick={moveToLeft}
             disabled={selectedProducts.length === 0}
           >
@@ -84,25 +95,35 @@ const ProductTransfer = () => {
 
         {/* Right Container */}
         <div className="col-md-5 border p-3">
-          <h5>Selected Products</h5>
-          {movedProducts.map((product) => (
-            <div key={product.id} className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={selectedProducts.includes(product)}
-                onChange={() => toggleSelectProduct(product)}
-              />
-              <label className="form-check-label">{product.name}</label>
-            </div>
-          ))}
+          <h5 className="mb-3">Selected Products</h5>
+          {movedProducts.length > 0 ? (
+            movedProducts.map((product) => (
+              <div key={product.id} className="form-check mb-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id={`moved-${product.id}`}
+                  checked={selectedProducts.includes(product)}
+                  onChange={() => toggleSelectProduct(product)}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor={`moved-${product.id}`}
+                >
+                  {product.name}
+                </label>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted">No products selected.</p>
+          )}
         </div>
       </div>
 
       {/* File Upload Section */}
       <div className="row mt-4">
         <div className="col-md-4">
-          <h3>Upload File</h3>
+          <h3 className="mb-3">Upload File</h3>
           <input
             type="file"
             className="form-control"
@@ -110,7 +131,7 @@ const ProductTransfer = () => {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
