@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import SupplierDetails from "../components/SupplierForm/SupplierDetails";
-import BussinessProfile from "../components/SupplierForm/BussinessProfile";
-import ProductTransfer from "../components/SupplierForm/ProductTransfer";
-import ServiceTransfer from "../components/SupplierForm/ServiceTransfer";
+import SupplierDetails from '../components/SupplierForm/SupplierDetails';
+import BussinessProfile from '../components/SupplierForm/BussinessProfile';
+import ProductTransfer from '../components/SupplierForm/ProductTransfer';
+import ServiceTransfer from '../components/SupplierForm/ServiceTransfer';
 
 // Main SupplierForm Component
 const SupplierForm = () => {
@@ -17,26 +17,26 @@ const SupplierForm = () => {
   const handleNext = () => setCurrentStep((prev) => prev + 1);
   const handlePrevious = () => setCurrentStep((prev) => prev - 1);
   const handleSubmit = () => {
-    console.log("Final form data:", formData);
-    alert("Form submitted!");
+    console.log('Final form data:', formData);
+    alert('Form submitted!');
   };
 
   return (
-    <div className="container mt-4" style={{ maxWidth: "850px" }}>
-      <div className="row">
-        <div className="col-md-3">
-          <div className="list-group">
+    <div className='container mt-4' style={{ maxWidth: '850px' }}>
+      <div className='row'>
+        <div className='col-md-3'>
+          <div className='list-group'>
             {[
-              "Supplier Profile",
-              "Bussiness Profile",
-              "Product Details",
-              "Service Details",
+              'Supplier Profile',
+              'Bussiness Profile',
+              'Product Details',
+              'Service Details',
             ].map((name, step) => (
               <button
                 key={step}
-                type="button"
+                type='button'
                 className={`list-group-item list-group-item-action ${
-                  currentStep === step ? "active" : ""
+                  currentStep === step ? 'active' : ''
                 }`}
                 onClick={() => setCurrentStep(step)}
                 // disabled={currentStep <= step}
@@ -47,10 +47,8 @@ const SupplierForm = () => {
           </div>
         </div>
 
-        <div className="col-md-9">
-          {currentStep === 0 && (
-            <SupplierDetails onNext={handleNext} saveData={saveData} />
-          )}
+        <div className='col-md-9'>
+          {currentStep === 0 && <SupplierDetails onNext={handleNext} />}
           {currentStep === 1 && (
             <BussinessProfile
               onNext={handleNext}

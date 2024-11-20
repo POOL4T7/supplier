@@ -3,25 +3,29 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
 import axios from 'axios';
+import { useAtom } from 'jotai';
+import { userDetailsAtom } from '../../storges/user';
+import { toast } from 'react-toastify';
 
 const step2Schema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
   businessTaxId: yup.string().required('Business tax ID is required'),
   addressLine1: yup.string().required('Address Line 1 is required'),
-  addressLine2: yup.string(),
-  pinCode: yup.string().required('PinCode is required'),
+  addressLine2: yup.string().optional(),
+  zipcode: yup.string().required('zipcode is required'),
   city: yup.string().required('City is required'),
   country: yup.string().required('Country is required'),
   website: yup.string().url('Invalid URL'),
   email: yup.string().email('Invalid email').required('Email is required'),
   businessCategory: yup.string().required('Business category is required'),
   sector: yup.string().required('Sector is required'),
-  premisesType: yup.string().required('Premises type is required'),
-  premisesName: yup.string().required('Premises name is required'),
+  type: yup.string().required('Premises type is required'),
+  premisesName: yup.string().optional(),
   productsServices: yup.string().required('Product/Service is required'),
 });
 
-const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
+const BussinessProfile = ({ onNext }) => {
+  const [supplier] = useAtom(userDetailsAtom);
   const {
     register,
     handleSubmit,
@@ -31,18 +35,23 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
     resolver: yupResolver(step2Schema),
     mode: 'onTouched',
   });
-
-  const onSubmit =async (data) => {
+  console.log('errors', errors);
+  const onSubmit = async (data) => {
     try {
+      data.supplierId = supplier?.id;
       const res = await axios.post(
         `/api/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         data
       );
       console.log(res);
-      saveData(data); // Save step data before moving on
+      toast.success(res.data?.data?.message || 'Supplier profile updated');
+      // saveData(data); // Save step data before moving on
       onNext();
     } catch (e) {
       console.log(e);
+      toast.error(
+        e.response?.data?.error || 'failed: Supplier profile updated'
+      );
     }
   };
 
@@ -93,13 +102,13 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
 
       <div className='row'>
         <div className='col-sm-4 mb-2'>
-          <label>PinCode</label>
+          <label>zipcode</label>
           <input
             type='text'
-            {...register('pinCode')}
-            className={`form-control ${errors.pinCode ? 'is-invalid' : ''}`}
+            {...register('zipcode')}
+            className={`form-control ${errors.zipcode ? 'is-invalid' : ''}`}
           />
-          <div className='invalid-feedback'>{errors.pinCode?.message}</div>
+          <div className='invalid-feedback'>{errors.zipcode?.message}</div>
         </div>
 
         <div className='col-sm-4 mb-2'>
@@ -176,22 +185,18 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
         <label>Premises Type</label>
         <div>
           <label>
-            <input
-              type='radio'
-              value='individual'
-              {...register('premisesType')}
-            />
+            <input type='radio' value='individual' {...register('type')} />
             Individual Premises
           </label>
           <label>
-            <input type='radio' value='group' {...register('premisesType')} />
+            <input type='radio' value='group' {...register('type')} />
             Group of Bussiness Premises (Malls)
           </label>
         </div>
-        <div className='invalid-feedback'>{errors.premisesType?.message}</div>
+        <div className='invalid-feedback'>{errors.type?.message}</div>
       </div>
 
-      {watch('premisesType') == 'group' && (
+      {watch('type') == 'group' && (
         <div className='mb-2'>
           <label>Premises name</label>
           <select
@@ -232,15 +237,6 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
         <div className='invalid-feedback'>{errors.sector?.message}</div>
       </div>
 
-      {/* Additional category and sub-category checkboxes */}
-      {/* Implement checkboxes similar to this format */}
-      <button
-        type='button'
-        className='btn btn-secondary me-2'
-        onClick={onPrevious}
-      >
-        Previous
-      </button>
       <button type='submit' className='btn btn-primary my-2'>
         Next
       </button>
@@ -250,8 +246,6 @@ const BussinessProfile = ({ onNext, onPrevious, saveData }) => {
 
 BussinessProfile.propTypes = {
   onNext: PropTypes.func.isRequired,
-  onPrevious: PropTypes.func.isRequired,
-  saveData: PropTypes.func.isRequired,
 };
 
 export default BussinessProfile;

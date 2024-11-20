@@ -32,9 +32,39 @@ const Header = () => {
           <div className='d-flex'>
             {userDetails?.id ? (
               <>
-                <Link to={'/supplier'} className='nav-link text-white'>
+                {/* <Link to={'/supplier'} className='nav-link text-white'>
                   Dashboard
-                </Link>
+                </Link> */}
+                <ul className='navbar-nav me-auto'>
+                  <li className='nav-item dropdown'>
+                    <a
+                      className='nav-link dropdown-toggle'
+                      data-bs-toggle='dropdown'
+                      href='#'
+                      role='button'
+                      aria-haspopup='true'
+                      aria-expanded='false'
+                    >
+                      Profile
+                    </a>
+                    <div className='dropdown-menu dropdown-menu-end'>
+                      <Link className='dropdown-item' to='/supplier'>
+                        Dashboard
+                      </Link>
+
+                      <div className='dropdown-divider'></div>
+                      <button
+                        className='dropdown-item'
+                        onClick={() => {
+                          localStorage.removeItem('user');
+                          window.location.href = '/';
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </li>
+                </ul>
               </>
             ) : (
               <Link to={'/signin'} className='nav-link text-white'>

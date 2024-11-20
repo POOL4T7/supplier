@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 const ServiceTransfer = () => {
   const [uploadedProducts, setUploadedProducts] = useState([]); // Products from the uploaded file
@@ -10,9 +10,9 @@ const ServiceTransfer = () => {
     if (file) {
       // Mock data, replace this with actual file parsing logic
       const products = [
-        { id: 1, name: "Product 1" },
-        { id: 2, name: "Product 2" },
-        { id: 3, name: "Product 3" },
+        { id: 1, name: 'Product 1' },
+        { id: 2, name: 'Product 2' },
+        { id: 3, name: 'Product 3' },
       ];
       setUploadedProducts(products);
     }
@@ -43,27 +43,27 @@ const ServiceTransfer = () => {
   };
 
   return (
-    <div className="container">
+    <div className='container'>
       {/* Row for Product Selection */}
       <div
-        className="row align-items-center justify-content-between"
-        style={{ maxHeight: "80vh", height: "100%" }}
+        className='row align-items-center justify-content-between'
+        style={{ maxHeight: '80vh', height: '100%' }}
       >
         {/* Left Container */}
-        <div className="col-md-5 border p-3">
-          <h5 className="mb-3">Uploaded Services</h5>
+        <div className='col-md-5 border p-3'>
+          <h5 className='mb-3'>Uploaded Services</h5>
           {uploadedProducts.length > 0 ? (
             uploadedProducts.map((product) => (
-              <div key={product.id} className="form-check mb-2">
+              <div key={product.id} className='form-check mb-2'>
                 <input
-                  type="checkbox"
-                  className="form-check-input"
+                  type='checkbox'
+                  className='form-check-input'
                   id={`uploaded-${product.id}`}
                   checked={selectedProducts.includes(product)}
                   onChange={() => toggleSelectProduct(product)}
                 />
                 <label
-                  className="form-check-label"
+                  className='form-check-label'
                   htmlFor={`uploaded-${product.id}`}
                 >
                   {product.name}
@@ -71,21 +71,21 @@ const ServiceTransfer = () => {
               </div>
             ))
           ) : (
-            <p className="text-muted">No products uploaded.</p>
+            <p className='text-muted'>No service uploaded.</p>
           )}
         </div>
 
         {/* Move Buttons */}
-        <div className="col-md-2 d-flex flex-column align-items-center">
+        <div className='col-md-2 d-flex flex-column align-items-center'>
           <button
-            className="btn btn-primary mb-2"
+            className='btn btn-primary mb-2'
             onClick={moveToRight}
             disabled={selectedProducts.length === 0}
           >
             &gt;&gt;
           </button>
           <button
-            className="btn btn-primary"
+            className='btn btn-primary'
             onClick={moveToLeft}
             disabled={selectedProducts.length === 0}
           >
@@ -94,20 +94,20 @@ const ServiceTransfer = () => {
         </div>
 
         {/* Right Container */}
-        <div className="col-md-5 border p-3">
-          <h5 className="mb-3">Selected Products</h5>
+        <div className='col-md-5 border p-3'>
+          <h5 className='mb-3'>Selected Products</h5>
           {movedProducts.length > 0 ? (
             movedProducts.map((product) => (
-              <div key={product.id} className="form-check mb-2">
+              <div key={product.id} className='form-check mb-2'>
                 <input
-                  type="checkbox"
-                  className="form-check-input"
+                  type='checkbox'
+                  className='form-check-input'
                   id={`moved-${product.id}`}
                   checked={selectedProducts.includes(product)}
                   onChange={() => toggleSelectProduct(product)}
                 />
                 <label
-                  className="form-check-label"
+                  className='form-check-label'
                   htmlFor={`moved-${product.id}`}
                 >
                   {product.name}
@@ -115,21 +115,19 @@ const ServiceTransfer = () => {
               </div>
             ))
           ) : (
-            <p className="text-muted">No products selected.</p>
+            <p className='text-muted'>No services selected.</p>
           )}
         </div>
       </div>
 
       {/* File Upload Section */}
-      <div className="row mt-4">
-        <div className="col-md-4">
-          <h3 className="mb-3">Upload File</h3>
-          <input
-            type="file"
-            className="form-control"
-            onChange={handleFileUpload}
-          />
-        </div>
+      <div>
+        <h3 className='mb-3'>Upload File</h3>
+        <input
+          type='file'
+          className='form-control'
+          onChange={handleFileUpload}
+        />
       </div>
     </div>
   );
