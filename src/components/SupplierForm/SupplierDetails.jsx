@@ -67,7 +67,7 @@ const SupplierDetails = ({ onNext }) => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post(
+      const res = await axios.put(
         `/api/productsearchsupplier/api/supplier/profile/updateSupplier`,
         data
       );

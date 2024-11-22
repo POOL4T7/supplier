@@ -4,6 +4,7 @@ import * as yup from 'yup';
 import FormContainer from '../components/common/FormContainer';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const signupSchema = yup.object().shape({
   email: yup
@@ -17,6 +18,7 @@ const signupSchema = yup.object().shape({
 });
 
 const Signup = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -34,6 +36,8 @@ const Signup = () => {
       toast.success(
         res.data?.message || 'Email is sended on your registred email id'
       );
+      localStorage.setItem('userEmail', data.email);
+      navigate('/register-completeion');
       console.log(res);
     } catch (e) {
       toast.error('something went wrong, please try again after some time');

@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useAtom } from 'jotai';
 import { userDetailsAtom } from '../../storges/user';
 import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 const step2Schema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
@@ -31,11 +32,27 @@ const BussinessProfile = ({ onNext }) => {
     handleSubmit,
     watch,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(step2Schema),
     mode: 'onTouched',
   });
-  console.log('errors', errors);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          '/api/productsearchsupplier/api/supplier/file/supplierBusinessProfileDetails?supplierUserId=1'
+        );
+        console.log(res.data.supplierBusinessDetails);
+        reset(res.data.supplierBusinessDetails);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    // fetchData();
+  }, []);
+
   const onSubmit = async (data) => {
     try {
       data.supplierId = supplier?.id;
