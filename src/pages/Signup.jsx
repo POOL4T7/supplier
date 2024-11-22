@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import FormContainer from '../components/common/FormContainer';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const signupSchema = yup.object().shape({
   email: yup
@@ -82,9 +82,18 @@ const Signup = () => {
           className='btn btn-primary'
           disabled={isSubmitting}
         >
-          Login
+          Signup
         </button>
       </form>
+      <div className='row pt-3'>
+        <div className='col'>
+          Already have account?
+          <Link className='link-primary' to='/signin'>
+            {' '}
+            Login
+          </Link>
+        </div>
+      </div>
     </FormContainer>
   );
 };

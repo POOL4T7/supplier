@@ -50,7 +50,7 @@ const BussinessProfile = ({ onNext }) => {
         console.log(e);
       }
     };
-    // fetchData();
+    fetchData();
   }, []);
 
   const onSubmit = async (data) => {
@@ -255,7 +255,7 @@ const BussinessProfile = ({ onNext }) => {
       </div>
 
       <button type='submit' className='btn btn-primary my-2'>
-        Next
+        Save & Next
       </button>
     </form>
   );

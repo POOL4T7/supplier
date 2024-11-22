@@ -84,7 +84,7 @@ const SignupCompletion = () => {
           className='btn btn-primary'
           disabled={isSubmitting}
         >
-          Login
+          Set up
         </button>
       </form>
     </FormContainer>

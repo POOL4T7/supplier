@@ -237,7 +237,7 @@ const SupplierDetails = ({ onNext }) => {
       </div>
 
       <button type='submit' className='btn btn-primary my-2 my-sm-0'>
-        Next
+        Save & Next
       </button>
     </form>
   );

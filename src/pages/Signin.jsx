@@ -6,7 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 import { userDetailsAtom } from '../storges/user';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 
 const loginSchema = yup.object().shape({
@@ -87,6 +87,15 @@ const LoginForm = () => {
           Login
         </button>
       </form>
+      <div className='row pt-3'>
+        <div className='col'>
+          New Customer?
+          <Link className='link-primary' to='/register'>
+            {' '}
+            Register
+          </Link>
+        </div>
+      </div>
     </FormContainer>
   );
 };

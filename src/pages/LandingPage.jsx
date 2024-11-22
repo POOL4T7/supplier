@@ -11,6 +11,7 @@ const formSchema = yup
     location: yup.string().optional(),
     mall: yup.string().optional(),
     premises: yup.string().optional(),
+    shop: yup.string().optional(),
   })
   .test('at-least-one', 'At least one field is required', (values) =>
     Object.values(values).some((value) => value && value.trim().length > 0)
@@ -90,7 +91,7 @@ const LandingPage = () => {
 
       <form onSubmit={form2.handleSubmit(onSubmitForm2)}>
         <div className='row mb-3 justify-content-center'>
-          <div className='col-12 col-md-2 mb-2'>
+          <div className='col-12 col-md-1 mb-2'>
             <input
               type='text'
               className='form-control'
@@ -106,12 +107,20 @@ const LandingPage = () => {
               {...form2.register('location')}
             />
           </div>
-          <div className='col-12 col-md-4 mb-2'>
+          <div className='col-12 col-md-2 mb-2'>
             <input
               type='text'
               className='form-control'
               placeholder='Select your fav premises'
               {...form2.register('premises')}
+            />
+          </div>
+          <div className='col-12 col-md-2 mb-2'>
+            <input
+              type='text'
+              className='form-control'
+              placeholder='search for shop'
+              {...form2.register('shop')}
             />
           </div>
           <div className='col-12 col-md-2 mb-2'>
