@@ -29,7 +29,7 @@ const router = () => {
           element: <Signup />,
         },
         {
-          path: '/register-completeion',
+          path: '/register-completion',
           element: <SignupCompletion />,
         },
       ],
