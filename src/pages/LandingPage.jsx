@@ -27,7 +27,7 @@ const LandingPage = () => {
 
   const onSubmitForm1 = async (data) => {
     try {
-      const res = await axios.post(`/api/productsearchsupplier/search`, data);
+      const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
       console.log(res);
       // setUserDetails(res.data?.supplierProfile);
       // localStorage.setItem('user', JSON.stringify(res.data?.supplierProfile));
@@ -38,7 +38,7 @@ const LandingPage = () => {
 
   const onSubmitForm2 = async (data) => {
     try {
-      const res = await axios.post(`/api/productsearchsupplier/search`, data);
+      const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
       console.log(res);
       // setUserDetails(res.data?.supplierProfile);
       // localStorage.setItem('user', JSON.stringify(res.data?.supplierProfile));

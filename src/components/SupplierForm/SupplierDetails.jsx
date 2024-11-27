@@ -10,7 +10,7 @@ import { userDetailsAtom } from '../../storges/user';
 import { toast } from 'react-toastify';
 
 const step1Schema = yup.object().shape({
-  registeredName: yup.string().required('Name is required'),
+  supplierName: yup.string().required('Name is required'),
   email: yup.string().email('Invalid email').required('Email is required'),
   gender: yup.string().required('Gender is required'),
   phoneNumber: yup
@@ -67,8 +67,8 @@ const SupplierDetails = ({ onNext }) => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.put(
-        `/api/productsearchsupplier/api/supplier/profile/updateSupplier`,
+      const res = await axios.post(
+        `/proxy/productsearchsupplier/api/supplier/profile/addSupplierInfo`,
         data
       );
       console.log(res);
@@ -83,7 +83,17 @@ const SupplierDetails = ({ onNext }) => {
   };
 
   useEffect(() => {
-    reset(userDetails);
+    async function fetchData() {
+      try {
+        const res = await axios.get(
+          `/proxy/productsearchsupplier/api/supplier/profile/supplierProfileDetails?supplierUserId=1`
+        );
+        reset(res.data);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    fetchData();
   }, [reset, userDetails]);
 
   return (
@@ -92,12 +102,10 @@ const SupplierDetails = ({ onNext }) => {
         <label>Supplier Name</label>
         <input
           type='text'
-          {...register('registeredName')}
-          className={`form-control ${
-            errors.registeredName ? 'is-invalid' : ''
-          }`}
+          {...register('supplierName')}
+          className={`form-control ${errors.supplierName ? 'is-invalid' : ''}`}
         />
-        <div className='invalid-feedback'>{errors.registeredName?.message}</div>
+        <div className='invalid-feedback'>{errors.supplierName?.message}</div>
       </div>
 
       <div className='row'>

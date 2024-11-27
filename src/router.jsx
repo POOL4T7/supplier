@@ -17,7 +17,7 @@ const router = () => {
           element: <LandingPage />,
         },
         {
-          path: '/supplier',
+          path: '/profile',
           element: <Suppiler />,
         },
         {

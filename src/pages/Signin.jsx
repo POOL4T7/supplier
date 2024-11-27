@@ -41,7 +41,7 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     try {
       const res = await axios.post(
-        `/api/productsearchsupplier/api/supplier/profile/login`,
+        `/proxy/productsearchsupplier/api/supplier/profile/login`,
         data
       );
       setUserDetails(res.data?.supplierProfile);

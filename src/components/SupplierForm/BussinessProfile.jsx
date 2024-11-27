@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useAtom } from 'jotai';
 import { userDetailsAtom } from '../../storges/user';
 import { toast } from 'react-toastify';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const step2Schema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
@@ -20,13 +20,14 @@ const step2Schema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
   businessCategory: yup.string().required('Business category is required'),
   sector: yup.string().required('Sector is required'),
-  type: yup.string().required('Premises type is required'),
+  premisesType: yup.string().required('Premises type is required'),
   premisesName: yup.string().optional(),
   productsServices: yup.string().required('Product/Service is required'),
 });
 
 const BussinessProfile = ({ onNext }) => {
   const [supplier] = useAtom(userDetailsAtom);
+  const [isUpdating, setIsUpdating] = useState(false);
   const {
     register,
     handleSubmit,
@@ -42,9 +43,12 @@ const BussinessProfile = ({ onNext }) => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          '/api/productsearchsupplier/api/supplier/file/supplierBusinessProfileDetails?supplierUserId=1'
+          `/proxy/productsearchsupplier/api/supplier/file/supplierBusinessProfileDetails?supplierBusinessId=${supplier.id}`
         );
         console.log(res.data.supplierBusinessDetails);
+        if (res.data.supplierBusinessDetails) {
+          setIsUpdating(true);
+        }
         reset(res.data.supplierBusinessDetails);
       } catch (e) {
         console.log(e);
@@ -57,7 +61,7 @@ const BussinessProfile = ({ onNext }) => {
     try {
       data.supplierId = supplier?.id;
       const res = await axios.post(
-        `/api/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
+        `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         data
       );
       console.log(res);
@@ -104,6 +108,7 @@ const BussinessProfile = ({ onNext }) => {
             className={`form-control ${
               errors.addressLine1 ? 'is-invalid' : ''
             }`}
+            // disabled={isUpdating}
           />
           <div className='invalid-feedback'>{errors.addressLine1?.message}</div>
         </div>
@@ -124,6 +129,7 @@ const BussinessProfile = ({ onNext }) => {
             type='text'
             {...register('zipcode')}
             className={`form-control ${errors.zipcode ? 'is-invalid' : ''}`}
+            disabled={isUpdating}
           />
           <div className='invalid-feedback'>{errors.zipcode?.message}</div>
         </div>
@@ -134,6 +140,7 @@ const BussinessProfile = ({ onNext }) => {
             type='text'
             {...register('city')}
             className={`form-control ${errors.city ? 'is-invalid' : ''}`}
+            disabled={isUpdating}
           />
           <div className='invalid-feedback'>{errors.city?.message}</div>
         </div>
@@ -144,6 +151,7 @@ const BussinessProfile = ({ onNext }) => {
             type='text'
             {...register('country')}
             className={`form-control ${errors.country ? 'is-invalid' : ''}`}
+            disabled={isUpdating}
           />
           <div className='invalid-feedback'>{errors.country?.message}</div>
         </div>
@@ -202,15 +210,19 @@ const BussinessProfile = ({ onNext }) => {
         <label>Premises Type</label>
         <div>
           <label>
-            <input type='radio' value='individual' {...register('type')} />
+            <input
+              type='radio'
+              value='individual'
+              {...register('premisesType')}
+            />
             Individual Premises
           </label>
           <label>
-            <input type='radio' value='group' {...register('type')} />
+            <input type='radio' value='group' {...register('premisesType')} />
             Group of Bussiness Premises (Malls)
           </label>
         </div>
-        <div className='invalid-feedback'>{errors.type?.message}</div>
+        <div className='invalid-feedback'>{errors.premisesType?.message}</div>
       </div>
 
       {watch('type') == 'group' && (

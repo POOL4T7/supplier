@@ -18,6 +18,11 @@ const signupCompletionSchema = yup.object().shape({
 });
 
 const SignupCompletion = () => {
+  // const [searchParams] = useSearchParams();
+
+  // const userEmail = searchParams.get('email');
+  // console.log(userEmail, atob(userEmail));
+
   const navigate = useNavigate();
   const {
     register,
@@ -31,12 +36,12 @@ const SignupCompletion = () => {
     try {
       const email = localStorage.getItem('userEmail');
       const res = await axios.post(
-        `/api/productsearchsupplier/api/supplier/profile/completeSupplierRegistration`,
+        `/proxy/productsearchsupplier/api/supplier/profile/completeSupplierRegistration`,
         { ...data, email: email }
       );
       toast.success(res.data || 'Email is sended on your registred email id');
       console.log(res);
-      navigate('/supplier');
+      navigate('/profile');
     } catch (e) {
       toast.error('something went wrong, please try again after some time');
       console.log(e);

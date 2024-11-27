@@ -48,7 +48,7 @@ const Header = () => {
                       Profile
                     </a>
                     <div className='dropdown-menu dropdown-menu-end'>
-                      <Link className='dropdown-item' to='/supplier'>
+                      <Link className='dropdown-item' to='/profile'>
                         Dashboard
                       </Link>
 
