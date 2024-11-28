@@ -1,20 +1,39 @@
 import { useState } from 'react';
+import { userDetailsAtom } from '../../storges/user';
+import { useAtom } from 'jotai';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const ServiceTransfer = () => {
-  const [uploadedProducts, setUploadedProducts] = useState([]); // Products from the uploaded file
-  const [selectedProducts, setSelectedProducts] = useState([]); // Selected products in the left box
-  const [movedProducts, setMovedProducts] = useState([]); // Products moved to the right box
+  const [uploadedProducts, setUploadedProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [movedProducts, setMovedProducts] = useState([]);
+  const [supplier] = useAtom(userDetailsAtom);
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      // Mock data, replace this with actual file parsing logic
-      const products = [
-        { id: 1, name: 'Product 1' },
-        { id: 2, name: 'Product 2' },
-        { id: 3, name: 'Product 3' },
-      ];
-      setUploadedProducts(products);
+  const handleFileUpload = async (event) => {
+    try {
+      const file = event.target.files[0];
+      const formData = new FormData();
+
+      if (file) {
+        formData.append('file', file);
+        formData.append('supplierId', supplier.id);
+        formData.append('type', 'SERVICE');
+        const res = await axios.post(
+          '/proxy/productsearchsupplier/api/supplier/file/uploadSupplierBusinessDetails',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        toast.success(res.data.message);
+        setUploadedProducts(res.data?.productDetailsList || []);
+      }
+    } catch (e) {
+      console.log(e);
+      toast.error('file uplaod error');
     }
   };
 
@@ -44,13 +63,23 @@ const ServiceTransfer = () => {
 
   return (
     <div className='container'>
-      {/* Row for Product Selection */}
+      <div className='mb-3'>
+        <h3>Upload Service File</h3>
+        <input
+          type='file'
+          className='form-control'
+          onChange={handleFileUpload}
+        />
+      </div>
+
       <div
         className='row align-items-center justify-content-between'
         style={{ maxHeight: '80vh', height: '100%' }}
       >
-        {/* Left Container */}
-        <div className='col-md-5 border p-3'>
+        <div
+          className='col-md-5 border p-3 '
+          style={{ height: '60vh', overflow: 'scroll' }}
+        >
           <h5 className='mb-3'>Uploaded Services</h5>
           {uploadedProducts.length > 0 ? (
             uploadedProducts.map((product) => (
@@ -75,7 +104,6 @@ const ServiceTransfer = () => {
           )}
         </div>
 
-        {/* Move Buttons */}
         <div className='col-md-2 d-flex flex-column align-items-center'>
           <button
             className='btn btn-primary mb-2'
@@ -93,9 +121,11 @@ const ServiceTransfer = () => {
           </button>
         </div>
 
-        {/* Right Container */}
-        <div className='col-md-5 border p-3'>
-          <h5 className='mb-3'>Selected Products</h5>
+        <div
+          className='col-md-5 border p-3'
+          style={{ height: '60vh', overflow: 'scroll' }}
+        >
+          <h5 className='mb-3'>Selected Services</h5>
           {movedProducts.length > 0 ? (
             movedProducts.map((product) => (
               <div key={product.id} className='form-check mb-2'>
@@ -118,16 +148,6 @@ const ServiceTransfer = () => {
             <p className='text-muted'>No services selected.</p>
           )}
         </div>
-      </div>
-
-      {/* File Upload Section */}
-      <div>
-        <h3 className='mb-3'>Upload File</h3>
-        <input
-          type='file'
-          className='form-control'
-          onChange={handleFileUpload}
-        />
       </div>
     </div>
   );

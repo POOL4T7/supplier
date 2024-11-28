@@ -54,7 +54,7 @@ const step1Schema = yup.object().shape({
 });
 
 const SupplierDetails = ({ onNext }) => {
-  const [userDetails] = useAtom(userDetailsAtom);
+  const [userDetails, setUserDetails] = useAtom(userDetailsAtom);
   const {
     register,
     handleSubmit,
@@ -71,7 +71,15 @@ const SupplierDetails = ({ onNext }) => {
         `/proxy/productsearchsupplier/api/supplier/profile/addSupplierInfo`,
         data
       );
-      console.log(res);
+      const d = {
+        ...userDetails,
+        ...data,
+      };
+      setUserDetails({
+        ...userDetails,
+        ...data,
+      });
+      localStorage.setItem('user', JSON.stringify(d));
       toast.success(res.data?.data?.message || 'Supplier profile updated');
 
       onNext();
@@ -89,6 +97,7 @@ const SupplierDetails = ({ onNext }) => {
           `/proxy/productsearchsupplier/api/supplier/profile/supplierProfileDetails?supplierUserId=1`
         );
         reset(res.data);
+        // setUserDetails(res.data);
       } catch (e) {
         console.log(e);
       }
@@ -99,7 +108,7 @@ const SupplierDetails = ({ onNext }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className='mb-2'>
-        <label>Supplier Name</label>
+        <label className='form-label'>Supplier Name</label>
         <input
           type='text'
           {...register('supplierName')}
@@ -110,7 +119,7 @@ const SupplierDetails = ({ onNext }) => {
 
       <div className='row'>
         <div className='col-sm-12 col-md-6 mb-2'>
-          <label>Gender</label>
+          <label className='form-label'>Gender</label>
           <select
             {...register('gender')}
             className={`form-control ${errors.gender ? 'is-invalid' : ''}`}
@@ -124,7 +133,7 @@ const SupplierDetails = ({ onNext }) => {
         </div>
 
         <div className='col-sm-12 col-md-6 mb-2'>
-          <label>Phone Number</label>
+          <label className='form-label'>Phone Number</label>
           <input
             type='text'
             {...register('phoneNumber')}
@@ -171,7 +180,7 @@ const SupplierDetails = ({ onNext }) => {
       </div> */}
 
       <div className='mb-2'>
-        <label>Email</label>
+        <label className='form-label'>Email</label>
         <input
           type='email'
           {...register('email')}
@@ -183,7 +192,7 @@ const SupplierDetails = ({ onNext }) => {
       {/* Address Fields */}
       <div className='row'>
         <div className='col-sm-12 col-md-6 mb-2'>
-          <label>Address Line 1</label>
+          <label className='form-label'>Address Line 1</label>
           <input
             type='text'
             {...register('addressLine1')}
@@ -195,7 +204,7 @@ const SupplierDetails = ({ onNext }) => {
         </div>
 
         <div className='col-sm-12 col-md-6 mb-2'>
-          <label>Address Line 2</label>
+          <label className='form-label'>Address Line 2</label>
           <input
             type='text'
             {...register('addressLine2')}
@@ -209,7 +218,7 @@ const SupplierDetails = ({ onNext }) => {
 
       <div className='row'>
         <div className='col-sm-12 col-md-6 mb-2'>
-          <label>Zipcode</label>
+          <label className='form-label'>Zipcode</label>
           <input
             type='text'
             {...register('zipcode')}
@@ -219,7 +228,7 @@ const SupplierDetails = ({ onNext }) => {
         </div>
 
         <div className='col-sm-12 col-md-6 mb-2'>
-          <label>City</label>
+          <label className='form-label'>City</label>
           <input
             type='text'
             {...register('city')}
@@ -230,7 +239,7 @@ const SupplierDetails = ({ onNext }) => {
       </div>
 
       <div className='mb-2'>
-        <label>Country</label>
+        <label className='form-label'>Country</label>
         <select
           {...register('country')}
           className={`form-control ${errors.country ? 'is-invalid' : ''}`}

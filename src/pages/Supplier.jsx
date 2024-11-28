@@ -49,13 +49,7 @@ const SupplierForm = () => {
 
         <div className='col-md-9'>
           {currentStep === 0 && <SupplierDetails onNext={handleNext} />}
-          {currentStep === 1 && (
-            <BussinessProfile
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-              saveData={saveData}
-            />
-          )}
+          {currentStep === 1 && <BussinessProfile />}
           {currentStep === 2 && (
             <ProductTransfer
               onSubmit={handleSubmit}

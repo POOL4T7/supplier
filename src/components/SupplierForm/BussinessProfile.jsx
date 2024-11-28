@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import * as yup from 'yup';
 import axios from 'axios';
 import { useAtom } from 'jotai';
@@ -11,11 +11,6 @@ import { useEffect, useState } from 'react';
 const step2Schema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
   businessTaxId: yup.string().required('Business tax ID is required'),
-  addressLine1: yup.string().required('Address Line 1 is required'),
-  addressLine2: yup.string().optional(),
-  zipcode: yup.string().required('zipcode is required'),
-  city: yup.string().required('City is required'),
-  country: yup.string().required('Country is required'),
   website: yup.string().url('Invalid URL'),
   email: yup.string().email('Invalid email').required('Email is required'),
   businessCategory: yup.string().required('Business category is required'),
@@ -25,20 +20,19 @@ const step2Schema = yup.object().shape({
   productsServices: yup.string().required('Product/Service is required'),
 });
 
-const BussinessProfile = ({ onNext }) => {
-  const [supplier] = useAtom(userDetailsAtom);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-    reset,
-  } = useForm({
-    resolver: yupResolver(step2Schema),
-    mode: 'onTouched',
-  });
+const addressSchema = yup.object().shape({
+  addressLine1: yup.string().required('Address Line 1 is required'),
+  addressLine2: yup.string().optional(),
+  zipcode: yup.string().required('zipcode is required'),
+  city: yup.string().required('City is required'),
+  country: yup.string().required('Country is required'),
+});
 
+const BussinessProfile = () => {
+  const [supplier] = useAtom(userDetailsAtom);
+  const [step, setStep] = useState(0);
+  // const [isUpdating, setIsUpdating] = useState(false);
+  const [data, setData] = useState({});
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,27 +41,69 @@ const BussinessProfile = ({ onNext }) => {
         );
         console.log(res.data.supplierBusinessDetails);
         if (res.data.supplierBusinessDetails) {
-          setIsUpdating(true);
+          // setIsUpdating(true);
+          setData(res.data.supplierBusinessDetails);
         }
-        reset(res.data.supplierBusinessDetails);
       } catch (e) {
         console.log(e);
       }
     };
     fetchData();
   }, []);
+  return (
+    <>
+      <div className='d-flex gap-2 mb-2'>
+        <button
+          className={`btn ${step == 0 ? 'btn-primary' : 'btn-outline-primary'}`}
+          type='button'
+          style={{ width: '100%' }}
+          onClick={() => setStep(0)}
+        >
+          Address
+        </button>
+        <button
+          className={`btn ${step == 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+          type='button'
+          style={{ width: '100%' }}
+          onClick={() => setStep(1)}
+        >
+          Bussiness Profile
+        </button>
+      </div>
+      {step == 0 && <AddressForm data={data} />}
+      {step == 1 && <Profile data={data} />}
+    </>
+  );
+};
 
+// BussinessProfile.propTypes = {
+//   onNext: PropTypes.func.isRequired,
+// };
+
+const AddressForm = (data) => {
+  // eslint-disable-next-line no-unused-vars
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(addressSchema),
+    mode: 'onTouched',
+  });
   const onSubmit = async (data) => {
     try {
-      data.supplierId = supplier?.id;
       const res = await axios.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         data
       );
       console.log(res);
-      toast.success(res.data?.data?.message || 'Supplier profile updated');
+      toast.success(
+        res.data?.data?.message || 'Supplier bussiness profile updated'
+      );
       // saveData(data); // Save step data before moving on
-      onNext();
     } catch (e) {
       console.log(e);
       toast.error(
@@ -76,31 +112,16 @@ const BussinessProfile = ({ onNext }) => {
     }
   };
 
+  useEffect(() => {
+    // console.log('data', data);
+    reset(data.data);
+  }, [data, reset]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className='mb-2'>
-        <label>Business Name</label>
-        <input
-          type='text'
-          {...register('businessName')}
-          className={`form-control ${errors.businessName ? 'is-invalid' : ''}`}
-        />
-        <div className='invalid-feedback'>{errors.businessName?.message}</div>
-      </div>
-
-      <div className='mb-2'>
-        <label>Business Tax ID</label>
-        <input
-          type='text'
-          {...register('businessTaxId')}
-          className={`form-control ${errors.businessTaxId ? 'is-invalid' : ''}`}
-        />
-        <div className='invalid-feedback'>{errors.businessTaxId?.message}</div>
-      </div>
-
       <div className='row'>
         <div className='mb-2'>
-          <label>Business Address</label>
+          <label className='form-label'>Business Address</label>
           <input
             type='text'
             {...register('addressLine1')}
@@ -124,7 +145,7 @@ const BussinessProfile = ({ onNext }) => {
 
       <div className='row'>
         <div className='col-sm-4 mb-2'>
-          <label>zipcode</label>
+          <label className='form-label'>Zipcode</label>
           <input
             type='text'
             {...register('zipcode')}
@@ -135,7 +156,7 @@ const BussinessProfile = ({ onNext }) => {
         </div>
 
         <div className='col-sm-4 mb-2'>
-          <label>City</label>
+          <label className='form-label'>City</label>
           <input
             type='text'
             {...register('city')}
@@ -146,7 +167,7 @@ const BussinessProfile = ({ onNext }) => {
         </div>
 
         <div className='col-sm-4 mb-2'>
-          <label>Country</label>
+          <label className='form-label'>Country</label>
           <input
             type='text'
             {...register('country')}
@@ -156,9 +177,73 @@ const BussinessProfile = ({ onNext }) => {
           <div className='invalid-feedback'>{errors.country?.message}</div>
         </div>
       </div>
+      <button type='submit' className='btn btn-primary my-2'>
+        Send OTP
+      </button>
+    </form>
+  );
+};
+
+const Profile = (data) => {
+  const [supplier] = useAtom(userDetailsAtom);
+  // const [isUpdating, setIsUpdating] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(step2Schema),
+    mode: 'onTouched',
+  });
+  const onSubmit = async (data) => {
+    try {
+      data.supplierId = supplier?.id;
+      const res = await axios.post(
+        `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
+        data
+      );
+      console.log(res);
+      toast.success(res.data?.data?.message || 'Supplier profile updated');
+      // saveData(data); // Save step data before moving on
+    } catch (e) {
+      console.log(e);
+      toast.error(
+        e.response?.data?.error || 'failed: Supplier profile updated'
+      );
+    }
+  };
+
+  useEffect(() => {
+    reset(data.data);
+  }, [data, reset]);
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className='mb-2'>
+        <label className='form-label'>Business Name</label>
+        <input
+          type='text'
+          {...register('businessName')}
+          className={`form-control ${errors.businessName ? 'is-invalid' : ''}`}
+        />
+        <div className='invalid-feedback'>{errors.businessName?.message}</div>
+      </div>
 
       <div className='mb-2'>
-        <label>Website</label>
+        <label className='form-label'>Business Tax ID</label>
+        <input
+          type='text'
+          {...register('businessTaxId')}
+          className={`form-control ${errors.businessTaxId ? 'is-invalid' : ''}`}
+        />
+        <div className='invalid-feedback'>{errors.businessTaxId?.message}</div>
+      </div>
+
+      <div className='mb-2'>
+        <label className='form-label'>Website</label>
         <input
           type='url'
           {...register('website')}
@@ -168,7 +253,7 @@ const BussinessProfile = ({ onNext }) => {
       </div>
 
       <div className='mb-2'>
-        <label>Email</label>
+        <label className='form-label'>Email</label>
         <input
           type='email'
           {...register('email')}
@@ -178,7 +263,7 @@ const BussinessProfile = ({ onNext }) => {
       </div>
 
       <div className='mb-2'>
-        <label>Business Category</label>
+        <label className='form-label'>Business Category</label>
         <input
           type='text'
           {...register('businessCategory')}
@@ -192,7 +277,7 @@ const BussinessProfile = ({ onNext }) => {
       </div>
 
       <div className='mb-2'>
-        <label>Sector</label>
+        <label className='form-label'>Sector</label>
         <select
           {...register('sector')}
           className={`form-control ${errors.sector ? 'is-invalid' : ''}`}
@@ -207,9 +292,9 @@ const BussinessProfile = ({ onNext }) => {
       </div>
 
       <div className='mb-2'>
-        <label>Premises Type</label>
+        <label className='form-label'>Premises Type</label>
         <div>
-          <label>
+          <label className='form-label'>
             <input
               type='radio'
               value='individual'
@@ -217,7 +302,7 @@ const BussinessProfile = ({ onNext }) => {
             />
             Individual Premises
           </label>
-          <label>
+          <label className='form-label m-2'>
             <input type='radio' value='group' {...register('premisesType')} />
             Group of Bussiness Premises (Malls)
           </label>
@@ -227,7 +312,7 @@ const BussinessProfile = ({ onNext }) => {
 
       {watch('type') == 'group' && (
         <div className='mb-2'>
-          <label>Premises name</label>
+          <label className='form-label'>Premises name</label>
           <select
             {...register('sector')}
             className={`form-control ${errors.sector ? 'is-invalid' : ''}`}
@@ -253,7 +338,7 @@ const BussinessProfile = ({ onNext }) => {
       </div> */}
 
       <div className='mb-2'>
-        <label>Products / Services</label>
+        <label className='form-label'>Products / Services</label>
         <select
           {...register('productsServices')}
           className={`form-control ${errors.sector ? 'is-invalid' : ''}`}
@@ -267,14 +352,10 @@ const BussinessProfile = ({ onNext }) => {
       </div>
 
       <button type='submit' className='btn btn-primary my-2'>
-        Save & Next
+        Save
       </button>
     </form>
   );
-};
-
-BussinessProfile.propTypes = {
-  onNext: PropTypes.func.isRequired,
 };
 
 export default BussinessProfile;

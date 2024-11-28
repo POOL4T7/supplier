@@ -1,20 +1,41 @@
+import axios from 'axios';
 import { useState } from 'react';
-const products = [
-  { id: 1, name: 'Product 1' },
-  { id: 2, name: 'Product 2' },
-  { id: 3, name: 'Product 3' },
-];
+import { userDetailsAtom } from '../../storges/user';
+import { useAtom } from 'jotai';
+import { toast } from 'react-toastify';
+
 const ProductTransfer = () => {
-  const [uploadedProducts, setUploadedProducts] = useState(products);
+  const [uploadedProducts, setUploadedProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [movedProducts, setMovedProducts] = useState([]);
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
+  const [supplier] = useAtom(userDetailsAtom);
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setUploadedProducts(products);
+  const handleFileUpload = async (event) => {
+    try {
+      const file = event.target.files[0];
+      const formData = new FormData();
+
+      if (file) {
+        formData.append('file', file);
+        formData.append('supplierId', supplier.id);
+        formData.append('type', 'PRODUCT');
+        const res = await axios.post(
+          '/proxy/productsearchsupplier/api/supplier/file/uploadSupplierBusinessDetails',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        toast.success(res.data.message);
+        setUploadedProducts(res.data?.productDetailsList || []);
+      }
+    } catch (e) {
+      console.log(e);
+      toast.error('file uplaod error');
     }
   };
 
@@ -58,11 +79,22 @@ const ProductTransfer = () => {
 
   return (
     <div className='container'>
+      <div className='mb-3'>
+        <h3>Upload Product File</h3>
+        <input
+          type='file'
+          className='form-control'
+          onChange={handleFileUpload}
+        />
+      </div>
       <div
         className='row align-items-center justify-content-between'
         style={{ maxHeight: '80vh', height: '100%' }}
       >
-        <div className='col-md-5 border p-3'>
+        <div
+          className='col-md-5 border p-3'
+          style={{ height: '60vh', overflow: 'scroll' }}
+        >
           <h5 className='mb-3'>Uploaded Product</h5>
           {uploadedProducts.length > 0 ? (
             uploadedProducts.map((product) => (
@@ -104,7 +136,10 @@ const ProductTransfer = () => {
           </button>
         </div>
 
-        <div className='col-md-5 border p-3'>
+        <div
+          className='col-md-5 border pt-3'
+          style={{ height: '60vh', overflow: 'scroll' }}
+        >
           <h5 className='mb-3'>Selected Product</h5>
           {movedProducts.length > 0 ? (
             movedProducts.map((product) => (
@@ -128,15 +163,6 @@ const ProductTransfer = () => {
             <p className='text-muted'>No products selected.</p>
           )}
         </div>
-      </div>
-
-      <div>
-        <h3 className='mb-3'>Upload File</h3>
-        <input
-          type='file'
-          className='form-control'
-          onChange={handleFileUpload}
-        />
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ const Header = () => {
     <nav className='navbar navbar-expand-lg bg-dark' data-bs-theme='dark'>
       <div className='container-fluid'>
         <Link className='navbar-brand' to='/'>
-          Supplier
+          Search
         </Link>
         <button
           className='navbar-toggler'
@@ -45,7 +45,7 @@ const Header = () => {
                       aria-haspopup='true'
                       aria-expanded='false'
                     >
-                      Profile
+                      {userDetails.supplierName}
                     </a>
                     <div className='dropdown-menu dropdown-menu-end'>
                       <Link className='dropdown-item' to='/profile'>
