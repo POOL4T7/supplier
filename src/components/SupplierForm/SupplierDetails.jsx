@@ -94,7 +94,7 @@ const SupplierDetails = ({ onNext }) => {
     async function fetchData() {
       try {
         const res = await axios.get(
-          `/proxy/productsearchsupplier/api/supplier/profile/supplierProfileDetails?supplierUserId=1`
+          `/proxy/productsearchsupplier/api/supplier/profile/supplierProfileDetails?supplierUserId=${userDetails?.id}`
         );
         reset(res.data);
         // setUserDetails(res.data);
