@@ -11,6 +11,7 @@ const ProductTransfer = () => {
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
   const [supplier] = useAtom(userDetailsAtom);
+  const [productValue, setProductValue] = useState('');
 
   const handleFileUpload = async (event) => {
     try {
@@ -77,6 +78,13 @@ const ProductTransfer = () => {
     setIsLeftSelected(false);
   };
 
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+    if (!productValue) return;
+    setUploadedProducts([...uploadedProducts, { id: 1, name: productValue }]);
+    setProductValue('');
+  };
+
   return (
     <div className='container'>
       <div className='mb-3'>
@@ -96,6 +104,19 @@ const ProductTransfer = () => {
           style={{ height: '60vh', overflow: 'scroll' }}
         >
           <h5 className='mb-3'>Uploaded Product</h5>
+          <form className='flex gap-2'>
+            <input
+              className='w-75'
+              value={productValue}
+              onChange={(e) => setProductValue(e.target.value)}
+            />
+            <button
+              className='w-20 btn btn-primary btn-sm ml-2'
+              onClick={handleAddProduct}
+            >
+              Add
+            </button>
+          </form>
           {uploadedProducts.length > 0 ? (
             uploadedProducts.map((product) => (
               <div key={product.id} className='form-check mb-2'>
