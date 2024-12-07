@@ -6,7 +6,7 @@ import { useAtom } from 'jotai';
 
 const Layout = () => {
   const [, setUserDetails] = useAtom(userDetailsAtom);
-  
+
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (user) {

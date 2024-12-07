@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import SupplierDetails from '../components/SupplierForm/SupplierDetails';
-// import BussinessProfile from '../components/SupplierForm/BussinessProfile';
 import ProductTransfer from '../components/SupplierForm/ProductTransfer';
 import ServiceTransfer from '../components/SupplierForm/ServiceTransfer';
 import BussinessProfile from '../components/SupplierForm/BussinessProfile';
@@ -9,18 +8,8 @@ import BussinessProfile from '../components/SupplierForm/BussinessProfile';
 // Main SupplierForm Component
 const SupplierForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  // const [formData, setFormData] = useState({});
-
-  // const saveData = (data) => {
-  //   setFormData((prev) => ({ ...prev, ...data }));
-  // };
 
   const handleNext = () => setCurrentStep((prev) => prev + 1);
-  // const handlePrevious = () => setCurrentStep((prev) => prev - 1);
-  // const handleSubmit = () => {
-  //   console.log('Final form data:', formData);
-  //   alert('Form submitted!');
-  // };
 
   return (
     <div className='container mt-4' style={{ maxWidth: '850px' }}>

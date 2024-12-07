@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FormContainer from '../components/common/FormContainer';
-import axios from 'axios';
+import axiosInstance from '../axios';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 import { userDetailsAtom } from '../storges/user';
@@ -40,12 +40,13 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post(
+      const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/profile/login`,
         data
       );
       setUserDetails(res.data?.supplierProfile);
       localStorage.setItem('user', JSON.stringify(res.data?.supplierProfile));
+      localStorage.setItem('authAccessToken', res.data.accessToken);
     } catch (e) {
       toast.error(e.response?.data?.message || 'Something went wrong');
     }

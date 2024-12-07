@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FormContainer from '../components/common/FormContainer';
-import axios from 'axios';
+import axiosInstance from 'axios';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
@@ -29,7 +29,7 @@ const Signup = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post(
+      const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/profile/register`,
         data
       );

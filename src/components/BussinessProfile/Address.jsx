@@ -1,9 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import axios from 'axios';
+import axiosInstance from '../../axios';
 import { toast } from 'react-toastify';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useAtom } from 'jotai';
+import { userDetailsAtom } from '../../storges/user';
+import PropTypes from 'prop-types';
 
 const addressSchema = yup.object().shape({
   addressLine1: yup.string().required('Address Line 1 is required'),
@@ -15,16 +18,13 @@ const addressSchema = yup.object().shape({
   premisesName: yup.string().optional(),
 });
 
-const Address = () => {
-  // eslint-disable-next-line no-unused-vars
-  const [isUpdating, setIsUpdating] = useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [data, setData] = useState();
+const Address = ({ data }) => {
+  const [supplier] = useAtom(userDetailsAtom);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
     watch,
   } = useForm({
@@ -33,9 +33,9 @@ const Address = () => {
   });
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post(
+      const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
-        data
+        { ...data, email: supplier.email }
       );
       console.log(res);
       toast.success(
@@ -123,7 +123,7 @@ const Address = () => {
             type='text'
             {...register('zipcode')}
             className={`form-control ${errors.zipcode ? 'is-invalid' : ''}`}
-            disabled={isUpdating}
+            // disabled={isUpdating}
           />
           <div className='invalid-feedback'>{errors.zipcode?.message}</div>
         </div>
@@ -134,7 +134,7 @@ const Address = () => {
             type='text'
             {...register('city')}
             className={`form-control ${errors.city ? 'is-invalid' : ''}`}
-            disabled={isUpdating}
+            // disabled={isUpdating}
           />
           <div className='invalid-feedback'>{errors.city?.message}</div>
         </div>
@@ -145,16 +145,24 @@ const Address = () => {
             type='text'
             {...register('country')}
             className={`form-control ${errors.country ? 'is-invalid' : ''}`}
-            disabled={isUpdating}
+            // disabled={isUpdating}
           />
           <div className='invalid-feedback'>{errors.country?.message}</div>
         </div>
       </div>
-      <button type='submit' className='btn btn-primary my-2'>
-        Send OTP
+      <button
+        type='submit'
+        className='btn btn-primary my-2'
+        disabled={isSubmitting}
+      >
+        Verify
       </button>
     </form>
   );
+};
+
+Address.propTypes = {
+  data: PropTypes.object,
 };
 
 export default Address;

@@ -1,8 +1,33 @@
+import { useEffect, useState } from 'react';
 import Address from '../BussinessProfile/Address';
 import BussinessCategory from '../BussinessProfile/BussinessCategory';
 import Details from '../BussinessProfile/Details';
+import axiosInstance from '../../axios';
+import { userDetailsAtom } from '../../storges/user';
+import { useAtom } from 'jotai';
 
 const BussinessProfile = () => {
+  const [data, setData] = useState({});
+  const [supplier] = useAtom(userDetailsAtom);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.get(
+          `/proxy/productsearchsupplier/api/supplier/file/supplierBusinessProfileDetails?supplierBusinessId=${supplier.id}`
+        );
+        // console.log(res.data.supplierBusinessDetails, '666');
+        if (res.data.supplierBusinessDetails) {
+          // setIsUpdating(true);
+          setData(res.data.supplierBusinessDetails);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, [supplier.id]);
+
   return (
     <div>
       <div className='accordion' id='accordionExample'>
@@ -28,7 +53,7 @@ const BussinessProfile = () => {
             data-bs-parent='#accordionExample'
           >
             <div className='accordion-body'>
-              <Address />
+              <Address data={data} />
             </div>
           </div>
         </div>
@@ -54,7 +79,7 @@ const BussinessProfile = () => {
             data-bs-parent='#accordionExample'
           >
             <div className='accordion-body'>
-              <Details />
+              <Details data={data} />
             </div>
           </div>
         </div>
@@ -80,7 +105,7 @@ const BussinessProfile = () => {
             data-bs-parent='#accordionExample'
           >
             <div className='accordion-body'>
-              <BussinessCategory />
+              <BussinessCategory data={data} />
             </div>
           </div>
         </div>

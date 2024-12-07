@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import FormContainer from '../components/common/FormContainer';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const signupCompletionSchema = yup.object().shape({
   password: yup
@@ -18,10 +18,9 @@ const signupCompletionSchema = yup.object().shape({
 });
 
 const SignupCompletion = () => {
-  // const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  // const userEmail = searchParams.get('email');
-  // console.log(userEmail, atob(userEmail));
+  const userEmail = searchParams.get('email');
 
   const navigate = useNavigate();
   const {
@@ -34,14 +33,14 @@ const SignupCompletion = () => {
 
   const onSubmit = async (data) => {
     try {
-      const email = localStorage.getItem('userEmail');
+      const email = atob(userEmail);
       const res = await axios.post(
         `/proxy/productsearchsupplier/api/supplier/profile/completeSupplierRegistration`,
         { ...data, email: email }
       );
       toast.success(res.data || 'Email is sended on your registred email id');
       console.log(res);
-      navigate('/profile');
+      navigate('/signin');
     } catch (e) {
       toast.error('something went wrong, please try again after some time');
       console.log(e);

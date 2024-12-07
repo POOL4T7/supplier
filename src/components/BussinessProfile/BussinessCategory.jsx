@@ -6,9 +6,11 @@ import { useAtom } from 'jotai';
 import { userDetailsAtom } from '../../storges/user';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
+import axiosInstance from '../../axios';
 
 const categorySchema = yup.object().shape({
-  productsServices: yup
+  productOrService: yup
     .string()
     .required('Product/Service selection is required'),
   productCategory: yup.string().optional(),
@@ -17,7 +19,7 @@ const categorySchema = yup.object().shape({
   serviceSubCategory: yup.string().optional(),
 });
 
-const BussinessCategory = () => {
+const BussinessCategory = ({ data }) => {
   const [supplier] = useAtom(userDetailsAtom);
 
   const {
@@ -26,6 +28,7 @@ const BussinessCategory = () => {
     formState: { errors },
     watch,
     setValue,
+    reset,
   } = useForm({
     resolver: yupResolver(categorySchema),
     mode: 'onTouched',
@@ -48,14 +51,25 @@ const BussinessCategory = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await axiosInstance.get(
+        '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetailsDetails'
+      );
+      console.log(res);
+    };
+    fetchData();
+    reset(data);
+  }, []);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className='mb-2'>
         <label className='form-label'>Products / Services</label>
         <select
-          {...register('productsServices')}
+          {...register('productOrService')}
           className={`form-control ${
-            errors.productsServices ? 'is-invalid' : ''
+            errors.productOrService ? 'is-invalid' : ''
           }`}
         >
           <option value=''>Select Type</option>
@@ -64,17 +78,17 @@ const BussinessCategory = () => {
           <option value='both'>Both</option>
         </select>
         <div className='invalid-feedback'>
-          {errors.productsServices?.message}
+          {errors.productOrService?.message}
         </div>
       </div>
 
-      {watch('productsServices') === 'products' && (
+      {watch('productOrService') === 'products' && (
         <ProductList setValue={setValue} errors={errors} />
       )}
-      {watch('productsServices') === 'services' && (
+      {watch('productOrService') === 'services' && (
         <ServiceList setValue={setValue} errors={errors} />
       )}
-      {watch('productsServices') === 'both' && (
+      {watch('productOrService') === 'both' && (
         <>
           <ProductList setValue={setValue} errors={errors} />
           <ServiceList setValue={setValue} errors={errors} />
@@ -176,4 +190,8 @@ ProductList.propTypes = {
 ServiceList.propTypes = {
   setValue: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
+};
+
+BussinessCategory.propTypes = {
+  data: PropTypes.object,
 };

@@ -3,7 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
 // import { isValidFileType, MAX_FILE_SIZE } from '../../utils/form';
-import axios from 'axios';
+import axiosInstance from '../../axios';
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { userDetailsAtom } from '../../storges/user';
@@ -44,7 +44,7 @@ const step1Schema = yup.object().shape({
     // })
     .optional(),
   addressLine1: yup.string().required('Address Line 1 is required'),
-  addressLine2: yup.string(),
+  addressLine2: yup.string().optional(),
   zipcode: yup
     .string()
     .required('zipcode is required')
@@ -67,9 +67,21 @@ const SupplierDetails = ({ onNext }) => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post(
+      delete data?.password;
+      const formData = {
+        supplierName: data.supplierName,
+        gender: data.gender,
+        addressLine1: data.addressLine1,
+        addressLine2: data.addressLine2,
+        city: data.city,
+        zipcode: data.zipcode,
+        phoneNumber: data.phoneNumber,
+        email: data.email,
+        country: data.country,
+      };
+      const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/profile/addSupplierInfo`,
-        data
+        formData
       );
       const d = {
         ...userDetails,
@@ -93,16 +105,21 @@ const SupplierDetails = ({ onNext }) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await axios.get(
-          `/proxy/productsearchsupplier/api/supplier/profile/supplierProfileDetails?supplierUserId=${userDetails?.id}`
-        );
-        reset(res.data);
+        // const res = await axiosInstance.get(
+        //   `/proxy/productsearchsupplier/api/supplier/profile/supplierProfileDetails?supplierUserId=${userDetails?.id}`,
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${userDetails.accessToken}`,
+        //     },
+        //   }
+        // );
+        reset(userDetails);
         // setUserDetails(res.data);
       } catch (e) {
         console.log(e);
       }
     }
-    fetchData();
+    if (userDetails?.id) fetchData();
   }, [reset, userDetails]);
 
   return (
@@ -185,6 +202,7 @@ const SupplierDetails = ({ onNext }) => {
           type='email'
           {...register('email')}
           className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+          disabled
         />
         <div className='invalid-feedback'>{errors.email?.message}</div>
       </div>

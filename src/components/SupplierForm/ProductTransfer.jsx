@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '../../axios';
 import { useState } from 'react';
 import { userDetailsAtom } from '../../storges/user';
 import { useAtom } from 'jotai';
@@ -22,7 +22,7 @@ const ProductTransfer = () => {
         formData.append('file', file);
         formData.append('supplierId', supplier.id);
         formData.append('type', 'PRODUCT');
-        const res = await axios.post(
+        const res = await axiosInstance.post(
           '/proxy/productsearchsupplier/api/supplier/file/uploadSupplierBusinessDetails',
           formData,
           {
@@ -81,7 +81,15 @@ const ProductTransfer = () => {
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!productValue) return;
-    setUploadedProducts([...uploadedProducts, { id: 1, name: productValue }]);
+    const [productName, description] = productValue.split(',');
+    if (!productName || !description) {
+      toast.error('Please upload product in correct format');
+      return;
+    }
+    setUploadedProducts([
+      ...uploadedProducts,
+      { id: 1, productName, description },
+    ]);
     setProductValue('');
   };
 
@@ -131,7 +139,7 @@ const ProductTransfer = () => {
                   className='form-check-label'
                   htmlFor={`uploaded-${product.id}`}
                 >
-                  {product.name}
+                  {product.productName}
                 </label>
               </div>
             ))
@@ -176,7 +184,7 @@ const ProductTransfer = () => {
                   className='form-check-label'
                   htmlFor={`moved-${product.id}`}
                 >
-                  {product.name}
+                  {product.productName}
                 </label>
               </div>
             ))

@@ -1,11 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import axios from 'axios';
 import { useAtom } from 'jotai';
 import { userDetailsAtom } from '../../storges/user';
 import { toast } from 'react-toastify';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import axiosInstance from '../../axios';
+import PropTypes from 'prop-types';
 
 const step2Schema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
@@ -15,40 +16,9 @@ const step2Schema = yup.object().shape({
   sector: yup.string().required('Sector is required'),
 });
 
-const Details = () => {
+const Details = ({ data }) => {
   const [supplier] = useAtom(userDetailsAtom);
-
-  // const [isUpdating, setIsUpdating] = useState(false);
-  const [data, setData] = useState({});
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(
-          `/proxy/productsearchsupplier/api/supplier/file/supplierBusinessProfileDetails?supplierBusinessId=${supplier.id}`
-        );
-        console.log(res.data.supplierBusinessDetails);
-        if (res.data.supplierBusinessDetails) {
-          // setIsUpdating(true);
-          setData(res.data.supplierBusinessDetails);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchData();
-  }, []);
-
-  return (
-    <>
-      <Profile data={data} />
-    </>
-  );
-};
-
-const Profile = (data) => {
-  const [supplier] = useAtom(userDetailsAtom);
-  // const [isUpdating, setIsUpdating] = useState(false);
-
+  console.log(data);
   const {
     register,
     handleSubmit,
@@ -62,11 +32,11 @@ const Profile = (data) => {
   const onSubmit = async (data) => {
     try {
       data.supplierId = supplier?.id;
-      const res = await axios.post(
+      const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         data
       );
-      console.log(res);
+
       toast.success(res.data?.data?.message || 'Supplier profile updated');
       // saveData(data); // Save step data before moving on
     } catch (e) {
@@ -78,7 +48,7 @@ const Profile = (data) => {
   };
 
   useEffect(() => {
-    reset(data.data);
+    reset(data);
   }, [data, reset]);
 
   return (
@@ -143,6 +113,10 @@ const Profile = (data) => {
       </button>
     </form>
   );
+};
+
+Details.propTypes = {
+  data: PropTypes.object,
 };
 
 export default Details;
