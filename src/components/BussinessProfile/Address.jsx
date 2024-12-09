@@ -9,6 +9,7 @@ import { userDetailsAtom } from '../../storges/user';
 import PropTypes from 'prop-types';
 
 const addressSchema = yup.object().shape({
+  businessName: yup.string().required('Business name is required'),
   addressLine1: yup.string().required('Address Line 1 is required'),
   addressLine2: yup.string().optional(),
   zipcode: yup.string().required('zipcode is required'),
@@ -52,11 +53,20 @@ const Address = ({ data }) => {
 
   useEffect(() => {
     // console.log('data', data);
-    if (data) reset(data?.data);
+    if (data) reset(data);
   }, [data, reset]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <div className='mb-2'>
+        <label className='form-label'>Business Name</label>
+        <input
+          type='text'
+          {...register('businessName')}
+          className={`form-control ${errors.businessName ? 'is-invalid' : ''}`}
+        />
+        <div className='invalid-feedback'>{errors.businessName?.message}</div>
+      </div>
       <div className='mb-2'>
         <label className='form-label'>Premises Type</label>
         <div>
@@ -79,17 +89,15 @@ const Address = ({ data }) => {
       {watch('premisesType') == 'group' && (
         <div className='mb-2'>
           <label className='form-label'>Premises name</label>
-          <select
-            {...register('sector')}
-            className={`form-control ${errors.sector ? 'is-invalid' : ''}`}
-          >
-            <option value=''>Select Premises</option>
-            <option value='manufacturing'>Manufacturing</option>
-            <option value='service'>Service</option>
-            <option value='retail'>Retail</option>
-            <option value='wholesale'>Wholesale</option>
-          </select>
-          <div className='invalid-feedback'>{errors.sector?.message}</div>
+          <input
+            type='text'
+            {...register('premisesName')}
+            placeholder='Premises name'
+            className={`form-control ${
+              errors.premisesName ? 'is-invalid' : ''
+            }`}
+          />
+          <div className='invalid-feedback'>{errors.premisesName?.message}</div>
         </div>
       )}
       <div className='row'>
@@ -102,7 +110,6 @@ const Address = ({ data }) => {
             className={`form-control ${
               errors.addressLine1 ? 'is-invalid' : ''
             }`}
-            // disabled={isUpdating}
           />
           <div className='invalid-feedback'>{errors.addressLine1?.message}</div>
         </div>

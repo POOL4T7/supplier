@@ -32,7 +32,10 @@ const ProductTransfer = () => {
           }
         );
         toast.success(res.data.message);
-        setUploadedProducts(res.data?.productDetailsList || []);
+        setUploadedProducts([
+          ...uploadedProducts,
+          ...(res.data?.productDetailsList || []),
+        ]);
       }
     } catch (e) {
       console.log(e);
@@ -93,16 +96,63 @@ const ProductTransfer = () => {
     setProductValue('');
   };
 
+  const submit = async (e) => {
+    e.preventDefault();
+    try {
+      const data = {
+        supplierBusinessId: supplier.id,
+        productId: movedProducts.map((item) => item.id),
+        status: true,
+      };
+      const res = await axiosInstance.post(
+        '/proxyproductsearchsupplier/api/supplier/file/productservicestatus',
+        data
+      );
+      console.log(res);
+      toast.success(res.data.message);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className='container'>
       <div className='mb-3'>
-        <h3>Upload Product File</h3>
+        <div className='d-flex justify-content-between mb-2'>
+          <h3>Upload Product File</h3>
+          <button
+            className='btn btn-primary mt-2'
+            onClick={submit}
+            disabled={!movedProducts.length}
+          >
+            Update
+          </button>
+        </div>
         <input
           type='file'
           className='form-control'
           onChange={handleFileUpload}
         />
       </div>
+      <form>
+        <div className='row'>
+          <div className='col-10'>
+            <div className='mb-2'>
+              <input
+                type='text'
+                value={productValue}
+                className={`form-control`}
+                onChange={(e) => setProductValue(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className='col-2'>
+            <button className=' btn btn-primary ' onClick={handleAddProduct}>
+              Add
+            </button>
+          </div>
+        </div>
+      </form>
       <div
         className='row align-items-center justify-content-between'
         style={{ maxHeight: '80vh', height: '100%' }}
@@ -112,19 +162,7 @@ const ProductTransfer = () => {
           style={{ height: '60vh', overflow: 'scroll' }}
         >
           <h5 className='mb-3'>Uploaded Product</h5>
-          <form className='flex gap-2'>
-            <input
-              className='w-75'
-              value={productValue}
-              onChange={(e) => setProductValue(e.target.value)}
-            />
-            <button
-              className='w-20 btn btn-primary btn-sm ml-2'
-              onClick={handleAddProduct}
-            >
-              Add
-            </button>
-          </form>
+
           {uploadedProducts.length > 0 ? (
             uploadedProducts.map((product) => (
               <div key={product.id} className='form-check mb-2'>

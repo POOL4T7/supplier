@@ -54,7 +54,7 @@ const BussinessCategory = ({ data }) => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await axiosInstance.get(
-        '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetailsDetails'
+        '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetailsDetails?type=products'
       );
       console.log(res);
     };

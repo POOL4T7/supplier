@@ -48,7 +48,7 @@ const LoginForm = () => {
       localStorage.setItem('user', JSON.stringify(res.data?.supplierProfile));
       localStorage.setItem('authAccessToken', res.data.accessToken);
     } catch (e) {
-      toast.error(e.response?.data?.message || 'Something went wrong');
+      toast.error(e.response?.data?.errorMessage || 'Something went wrong');
     }
   };
 

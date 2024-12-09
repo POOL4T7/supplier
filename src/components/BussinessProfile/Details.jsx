@@ -9,7 +9,7 @@ import axiosInstance from '../../axios';
 import PropTypes from 'prop-types';
 
 const step2Schema = yup.object().shape({
-  businessName: yup.string().required('Business name is required'),
+ 
   businessTaxId: yup.string().required('Business tax ID is required'),
   website: yup.string().url('Invalid URL'),
   email: yup.string().email('Invalid email').required('Email is required'),
@@ -53,15 +53,7 @@ const Details = ({ data }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className='mb-2'>
-        <label className='form-label'>Business Name</label>
-        <input
-          type='text'
-          {...register('businessName')}
-          className={`form-control ${errors.businessName ? 'is-invalid' : ''}`}
-        />
-        <div className='invalid-feedback'>{errors.businessName?.message}</div>
-      </div>
+
 
       <div className='mb-2'>
         <label className='form-label'>Business Tax ID</label>

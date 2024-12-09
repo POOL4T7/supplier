@@ -23,6 +23,7 @@ const Signup = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm({
     resolver: yupResolver(signupSchema),
   });
@@ -38,6 +39,7 @@ const Signup = () => {
       );
       localStorage.setItem('userEmail', data.email);
       // navigate('/register-completeion');
+      reset();
     } catch (e) {
       toast.error('something went wrong, please try again after some time');
       console.log(e);
