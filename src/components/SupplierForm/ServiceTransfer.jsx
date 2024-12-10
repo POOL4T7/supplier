@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { userDetailsAtom } from '../../storges/user';
 import { useAtom } from 'jotai';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../axios';
 
@@ -23,7 +22,7 @@ const ServiceTransfer = () => {
         formData.append('file', file);
         formData.append('supplierId', supplier.id);
         formData.append('type', 'SERVICE');
-        const res = await axios.post(
+        const res = await axiosInstance.post(
           '/proxy/productsearchsupplier/api/supplier/file/uploadSupplierBusinessDetails',
           formData,
           {
@@ -35,7 +34,7 @@ const ServiceTransfer = () => {
         toast.success(res.data.message);
         setUploadedProducts([
           ...uploadedProducts,
-          ...(res.data?.productDetailsList || []),
+          ...(res.data?.serviceDetailsList || []),
         ]);
       }
     } catch (e) {
@@ -85,14 +84,14 @@ const ServiceTransfer = () => {
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!productValue) return;
-    const [productName, description] = productValue.split(',');
-    if (!productName || !description) {
-      toast.error('Please upload product in correct format');
+    const [serviceName, serviceDescription] = productValue.split(',');
+    if (!serviceName || !serviceDescription) {
+      toast.error('Please upload service in correct format');
       return;
     }
     setUploadedProducts([
       ...uploadedProducts,
-      { id: 1, productName, description },
+      { id: 1, serviceName, serviceDescription },
     ]);
     setProductValue('');
   };
@@ -178,7 +177,7 @@ const ServiceTransfer = () => {
                   className='form-check-label'
                   htmlFor={`uploaded-${product.id}`}
                 >
-                  {product.name}
+                  {product.serviceName}
                 </label>
               </div>
             ))
@@ -191,14 +190,14 @@ const ServiceTransfer = () => {
           <button
             className='btn btn-primary mb-2'
             onClick={moveToRight}
-            disabled={!isRightSelected}
+            disabled={!isLeftSelected}
           >
             &gt;&gt;
           </button>
           <button
             className='btn btn-primary'
             onClick={moveToLeft}
-            disabled={!isLeftSelected}
+            disabled={!isRightSelected}
           >
             &lt;&lt;
           </button>
@@ -223,7 +222,7 @@ const ServiceTransfer = () => {
                   className='form-check-label'
                   htmlFor={`moved-${product.id}`}
                 >
-                  {product.name}
+                  {product.serviceName}
                 </label>
               </div>
             ))

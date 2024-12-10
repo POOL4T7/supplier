@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axiosInstance from '../../axios';
 import { userDetailsAtom } from '../../storges/user';
 import { useAtom } from 'jotai';
@@ -33,6 +33,11 @@ const bussinessSchema = yup.object().shape({
 const BussinessProfile = () => {
   // const [data, setData] = useState({});
   const [supplier] = useAtom(userDetailsAtom);
+  // eslint-disable-next-line no-unused-vars
+  const [category, setCategory] = useState({
+    category: [],
+    subCategory: [],
+  });
 
   const {
     register,
@@ -69,7 +74,7 @@ const BussinessProfile = () => {
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         { ...data, supplierId: supplier.id }
       );
-      console.log(res);
+
       toast.success(
         res.data?.data?.message || 'Supplier bussiness profile updated'
       );
@@ -81,6 +86,20 @@ const BussinessProfile = () => {
       );
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.get(
+          '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetailsDetails?type=products'
+        );
+        console.log(res);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    if (watch('productsServices')) fetchData();
+  }, [watch('productsServices')]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -356,7 +375,7 @@ const BussinessProfile = () => {
                 </div>
               </div>
 
-              {watch('productsServices') != '' && (
+              {watch('productsServices') && (
                 <ProductList
                   setValue={setValue}
                   errors={errors}
