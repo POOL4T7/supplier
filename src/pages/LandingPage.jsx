@@ -5,8 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import Spinner from '../components/common/Spinner';
-import { FaMapLocationDot } from 'react-icons/fa6';
-// import { FaMapMarkerAlt } from 'react-icons/fa';
+import LocationIcon from '../components/common/LocationIcon';
 
 const formSchema = yup
   .object()
@@ -171,7 +170,7 @@ const LandingPage = () => {
           <p className='text-danger'>Please select at least one value</p>
         )}
       </>
-
+      {/* <LocationIcon /> */}
       <div className='container my-4'>
         <div className='row g-4'>
           {productList?.map((item) => (
@@ -192,7 +191,7 @@ const LandingPage = () => {
                   </p>
                   {/* Address */}
                   <p className='card-text text-muted'>
-                    <FaMapLocationDot className='text-danger me-2' />
+                    <LocationIcon />
                     {item.supplierBusinessDetails.addressLine1},{' '}
                     {item.supplierBusinessDetails.addressLine2},{' '}
                     {item.supplierBusinessDetails.city},{' '}
