@@ -1,5 +1,7 @@
 import { atom } from 'jotai';
 
 const userDetailsAtom = atom({});
+const productCategory = atom({});
+const serviceCategory = atom({});
 
-export { userDetailsAtom };
+export { userDetailsAtom, productCategory, serviceCategory };

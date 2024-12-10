@@ -47,6 +47,7 @@ const LoginForm = () => {
       setUserDetails(res.data?.supplierProfile);
       localStorage.setItem('user', JSON.stringify(res.data?.supplierProfile));
       localStorage.setItem('authAccessToken', res.data.accessToken);
+      window.location.href = '/';
     } catch (e) {
       toast.error(e.response?.data?.errorMessage || 'Something went wrong');
     }

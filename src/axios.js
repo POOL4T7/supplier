@@ -39,7 +39,7 @@ axiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 403) {
       // Handle unauthorized errors (e.g., redirect to login)
       localStorage.removeItem('user');
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('authAccessToken');
       console.warn('Unauthorized! Redirecting to login...');
       window.location.href = '/signin';
     }
