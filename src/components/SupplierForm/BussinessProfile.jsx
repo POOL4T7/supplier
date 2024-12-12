@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 
 const bussinessSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
+  businessdescription: yup.string().optional(),
   addressLine1: yup.string().required('Address Line 1 is required'),
   addressLine2: yup.string().optional(),
   zipcode: yup.string().required('zipcode is required'),
@@ -24,10 +25,10 @@ const bussinessSchema = yup.object().shape({
   productsServices: yup
     .string()
     .required('Product/Service selection is required'),
-  businessCategory: yup.string().optional(),
-  businessSubCategory: yup.string().optional(),
-  serviceCategory: yup.string().optional(),
-  serviceSubCategory: yup.string().optional(),
+  // businessCategory: yup.string().optional(),
+  // businessSubCategory: yup.string().optional(),
+  // serviceCategory: yup.string().optional(),
+  // serviceSubCategory: yup.string().optional(),
 });
 
 const BussinessProfile = () => {
@@ -45,12 +46,12 @@ const BussinessProfile = () => {
     formState: { errors, isSubmitting },
     reset,
     watch,
-    setValue,
+    // setValue,
   } = useForm({
     resolver: yupResolver(bussinessSchema),
     mode: 'onTouched',
   });
-  console.log('errors', errors);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,19 +88,19 @@ const BussinessProfile = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axiosInstance.get(
-          '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetailsDetails?type=products'
-        );
-        console.log(res);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    if (watch('productsServices')) fetchData();
-  }, [watch('productsServices')]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(
+  //         '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetailsDetails?type=products'
+  //       );
+  //       console.log(res);
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
+  //   if (watch('productsServices')) fetchData();
+  // }, [watch('productsServices')]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -138,6 +139,18 @@ const BussinessProfile = () => {
                   />
                   <div className='invalid-feedback'>
                     {errors.businessName?.message}
+                  </div>
+                </div>
+                <div className='mb-2'>
+                  <label className='form-label'>Business Description</label>
+                  <textarea
+                    {...register('businessdescription')}
+                    className={`form-control ${
+                      errors.businessdescription ? 'is-invalid' : ''
+                    }`}
+                  />
+                  <div className='invalid-feedback'>
+                    {errors.businessdescription?.message}
                   </div>
                 </div>
                 <div className='mb-2'>
@@ -332,66 +345,6 @@ const BussinessProfile = () => {
                 </select>
                 <div className='invalid-feedback'>{errors.sector?.message}</div>
               </div>
-            </div>
-          </div>
-        </div>
-        <div className='accordion-item'>
-          <h2 className='accordion-header' id='headingThree'>
-            <button
-              className='accordion-button collapsed'
-              type='button'
-              data-bs-toggle='collapse'
-              data-bs-target='#collapseThree'
-              aria-expanded='false'
-              aria-controls='collapseThree'
-            >
-              <span style={{ fontWeight: 'bolder', fontSize: '1.2rem' }}>
-                Bussiness Category
-              </span>
-            </button>
-          </h2>
-          <div
-            id='collapseThree'
-            className='accordion-collapse collapse'
-            aria-labelledby='headingThree'
-            data-bs-parent='#accordionExample'
-          >
-            <div className='accordion-body'>
-              <div className='mb-2'>
-                <label className='form-label'>Products / Services</label>
-                <select
-                  {...register('productsServices')}
-                  className={`form-control ${
-                    errors.productsServices ? 'is-invalid' : ''
-                  }`}
-                >
-                  <option value=''>Select Type</option>
-                  <option value='product'>Product</option>
-                  <option value='service'>Service</option>
-                  <option value='both'>Both</option>
-                </select>
-                <div className='invalid-feedback'>
-                  {errors.productsServices?.message}
-                </div>
-              </div>
-
-              {watch('productsServices') && (
-                <ProductList
-                  setValue={setValue}
-                  errors={errors}
-                  type={watch('productsServices')}
-                />
-              )}
-              {/* {watch('serviceCategory') === 'services' && (
-                <ServiceList setValue={setValue} errors={errors} />
-              )}
-              {watch('serviceCategory') === 'both' && (
-                <>
-                  <ProductList setValue={setValue} errors={errors} />
-                  <ServiceList setValue={setValue} errors={errors} />
-                </>
-              )} */}
-
               <button
                 type='submit'
                 className='btn btn-primary my-2'

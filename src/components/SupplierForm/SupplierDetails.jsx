@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import * as yup from 'yup';
 // import { isValidFileType, MAX_FILE_SIZE } from '../../utils/form';
 import axiosInstance from '../../axios';
@@ -53,7 +53,7 @@ const step1Schema = yup.object().shape({
   country: yup.string().required('Country is required'),
 });
 
-const SupplierDetails = ({ onNext }) => {
+const SupplierDetails = () => {
   const [userDetails, setUserDetails] = useAtom(userDetailsAtom);
   const {
     register,
@@ -94,7 +94,7 @@ const SupplierDetails = ({ onNext }) => {
       localStorage.setItem('user', JSON.stringify(d));
       toast.success(res.data?.data?.message || 'Supplier profile updated');
 
-      onNext();
+      // onNext();
     } catch (e) {
       toast.error(
         e.response?.data?.error || 'failed: Supplier profile updated'
@@ -278,8 +278,8 @@ const SupplierDetails = ({ onNext }) => {
   );
 };
 
-SupplierDetails.propTypes = {
-  onNext: PropTypes.func.isRequired,
-};
+// SupplierDetails.propTypes = {
+//   onNext: PropTypes.func.isRequired,
+// };
 
 export default SupplierDetails;
