@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
-import Header from './components/layout/Header.jsx';
-import { Outlet } from 'react-router-dom';
+import Header from '../components/layout/Header.jsx';
+
 import {
   // productCategory,
   // serviceCategory,
   userDetailsAtom,
-} from './storges/user.js';
+} from '../storges/user.js';
 import { useAtom } from 'jotai';
-import axiosInstance from './axios.js';
+import axiosInstance from '../axios.js';
+import { Outlet } from 'react-router-dom';
 
 const Layout = () => {
   const [, setUserDetails] = useAtom(userDetailsAtom);

@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './bootstrap.css';
+import './style.css';
 import App from './App.jsx';
 import './index.css';
 import { ToastContainer } from 'react-toastify';
