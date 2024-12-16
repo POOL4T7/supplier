@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import SupplierDetails from '../components/SupplierForm/SupplierDetails';
-// import ProductTransfer from '../components/SupplierForm/ProductTransfer';
+import ProductList from '../components/Product/ProductList';
 // import ServiceTransfer from '../components/SupplierForm/ServiceTransfer';
 import BussinessProfile from '../components/SupplierForm/BussinessProfile';
 // import ProductList from '../components/Product/ProductList';
 // import ServiceList from '../components/Services';
+import ProductCategory from '../components/Product/ProductCategory';
+import ProductSubCategory from '../components/Product/ProductSubCategory';
+
+import ServiceCategory from '../components/Service/ServiceCategory';
+import ServiceSubCategory from '../components/Service/ServiceSubCategory';
+import ServiceList from '../components/Service/ServiceList';
 
 const SupplierForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -24,12 +30,12 @@ const SupplierForm = () => {
   ];
 
   const toggleSubmenu = (index) => {
-    setCurrentStep((prev) => (prev === index ? null : index));
+    setCurrentStep(index);
     setExpanded((prev) => (prev === index ? null : index));
   };
 
   return (
-    <div className='container mt-4' style={{ maxWidth: '850px' }}>
+    <div className='container mt-4' style={{ maxWidth: '1000px' }}>
       <div className='row'>
         <div className='col-md-3'>
           <div className='list-group'>
@@ -80,10 +86,16 @@ const SupplierForm = () => {
         <div className='col-md-9'>
           {currentStep === 0 && <SupplierDetails />}
           {currentStep === 1 && <BussinessProfile />}
-          {/* {currentStep === 2 && <ProductTransfer />}
-          {currentStep === 3 && <ServiceTransfer />} */}
-          {/* {currentStep === '2-2' && <ProductList />}
-          {currentStep === '3-2' && <ServiceList />} */}
+          {/* product page */}
+          {currentStep === 2 && <ProductCategory />}
+          {currentStep === '2-0' && <ProductCategory />}
+          {currentStep === '2-1' && <ProductSubCategory />}
+          {currentStep === '2-2' && <ProductList />}
+          {/* service pages */}
+          {currentStep === 3 && <ServiceCategory />}
+          {currentStep === '3-0' && <ServiceCategory />}
+          {currentStep === '3-1' && <ServiceSubCategory />}
+          {currentStep === '3-2' && <ServiceList />}
         </div>
       </div>
     </div>

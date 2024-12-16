@@ -4,7 +4,7 @@ import { userDetailsAtom } from '../../storges/user';
 import { useAtom } from 'jotai';
 import { toast } from 'react-toastify';
 
-const ProductList = () => {
+const ServiceList = () => {
   const [uploadedProducts, setUploadedProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [movedProducts, setMovedProducts] = useState([]);
@@ -43,7 +43,7 @@ const ProductList = () => {
     }
   };
 
-  const toggleSelectProduct = (product, type) => {
+  const toggleSelectProduct = (service, type) => {
     if (type === 'left') {
       setIsLeftSelected(false);
       setIsRightSelected(true);
@@ -52,9 +52,9 @@ const ProductList = () => {
       setIsRightSelected(false);
     }
     setSelectedProducts((prevSelected) => {
-      const newTemp = prevSelected.includes(product)
-        ? prevSelected.filter((p) => p !== product)
-        : [...prevSelected, product];
+      const newTemp = prevSelected.includes(service)
+        ? prevSelected.filter((p) => p !== service)
+        : [...prevSelected, service];
       if (newTemp.length == 0) {
         setIsLeftSelected(false);
         setIsRightSelected(false);
@@ -86,7 +86,7 @@ const ProductList = () => {
     if (!productValue) return;
     const [productName, description] = productValue.split(',');
     if (!productName || !description) {
-      toast.error('Please upload product in correct format');
+      toast.error('Please upload service in correct format');
       return;
     }
     setUploadedProducts([
@@ -119,7 +119,7 @@ const ProductList = () => {
     <div className='container'>
       <div className='mb-3'>
         <div className='d-flex justify-content-between mb-2'>
-          <h3>Upload Product File</h3>
+          <h3>Upload Service File</h3>
           <button
             className='btn btn-primary mt-2'
             onClick={submit}
@@ -161,23 +161,23 @@ const ProductList = () => {
           className='col-md-5 border p-3'
           style={{ height: '60vh', overflow: 'scroll' }}
         >
-          <h5 className='mb-3'>Uploaded Product</h5>
+          <h5 className='mb-3'>Uploaded Service</h5>
 
           {uploadedProducts.length > 0 ? (
-            uploadedProducts.map((product) => (
-              <div key={product.id} className='form-check mb-2'>
+            uploadedProducts.map((service) => (
+              <div key={service.id} className='form-check mb-2'>
                 <input
                   type='checkbox'
                   className='form-check-input'
-                  id={`uploaded-${product.id}`}
-                  checked={selectedProducts.includes(product)}
-                  onChange={() => toggleSelectProduct(product, 'left')}
+                  id={`uploaded-${service.id}`}
+                  checked={selectedProducts.includes(service)}
+                  onChange={() => toggleSelectProduct(service, 'left')}
                 />
                 <label
                   className='form-check-label'
-                  htmlFor={`uploaded-${product.id}`}
+                  htmlFor={`uploaded-${service.id}`}
                 >
-                  {product.productName}
+                  {service.productName}
                 </label>
               </div>
             ))
@@ -207,22 +207,22 @@ const ProductList = () => {
           className='col-md-5 border pt-3'
           style={{ height: '60vh', overflow: 'scroll' }}
         >
-          <h5 className='mb-3'>Selected Product</h5>
+          <h5 className='mb-3'>Selected Service</h5>
           {movedProducts.length > 0 ? (
-            movedProducts.map((product) => (
-              <div key={product.id} className='form-check mb-2'>
+            movedProducts.map((service) => (
+              <div key={service.id} className='form-check mb-2'>
                 <input
                   type='checkbox'
                   className='form-check-input'
-                  id={`moved-${product.id}`}
-                  checked={selectedProducts.includes(product)}
-                  onChange={() => toggleSelectProduct(product, 'right')}
+                  id={`moved-${service.id}`}
+                  checked={selectedProducts.includes(service)}
+                  onChange={() => toggleSelectProduct(service, 'right')}
                 />
                 <label
                   className='form-check-label'
-                  htmlFor={`moved-${product.id}`}
+                  htmlFor={`moved-${service.id}`}
                 >
-                  {product.productName}
+                  {service.productName}
                 </label>
               </div>
             ))
@@ -235,4 +235,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default ServiceList;
