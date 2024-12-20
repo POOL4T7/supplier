@@ -1,19 +1,27 @@
 // import axiosInstance from '../../axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axiosInstance from '../../axios';
+import { useAtom } from 'jotai';
+import { bussinessProfile } from '../../storges/user';
 // import { userDetailsAtom } from '../../storges/user';
 // import { useAtom } from 'jotai';
 // import { toast } from 'react-toastify';
 
 const ProductSubCategory = () => {
-  const [uploadedCategories, setUploadedCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [movedCategories, setMovedCategories] = useState([]);
+  const [uploadedSubCategories, setUploadedSubCategories] = useState([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
+  const [movedSubCategories, setMovedCategories] = useState([]);
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
   // const [supplier] = useAtom(userDetailsAtom);
-  const [categoriesValue, setCategoriesValue] = useState('');
+  const [subCategoriesValue, setSubCategoriesValue] = useState('');
+  const [description, setDescription] = useState('');
 
   const [category, setCategory] = useState('');
+
+  const [bussiness] = useAtom(bussinessProfile);
+
+  const [categoryList, setCategoryList] = useState([]);
 
   const toggleSelectProduct = (product, type) => {
     if (type === 'left') {
@@ -23,7 +31,7 @@ const ProductSubCategory = () => {
       setIsLeftSelected(true);
       setIsRightSelected(false);
     }
-    setSelectedCategories((prevSelected) => {
+    setSelectedSubCategories((prevSelected) => {
       const newTemp = prevSelected.includes(product)
         ? prevSelected.filter((p) => p !== product)
         : [...prevSelected, product];
@@ -35,39 +43,66 @@ const ProductSubCategory = () => {
     });
   };
 
-  const moveToRight = () => {
-    setMovedCategories((prev) => [...prev, ...selectedCategories]);
-    setUploadedCategories((prev) =>
-      prev.filter((p) => !selectedCategories.includes(p))
+  const moveToRight = async () => {
+    
+    await axiosInstance.post(
+      '/proxy/productsearchsupplier/supplierSubCategoryDetailsStatus',
+      {
+        supplierBusinessId: bussiness.id,
+        categoryIds: [...movedSubCategories, ...selectedSubCategories].map(
+          (item) => item.id
+        ),
+        status: true,
+      }
     );
-    setSelectedCategories([]);
+    setMovedCategories((prev) => [...prev, ...selectedSubCategories]);
+    setUploadedSubCategories((prev) =>
+      prev.filter((p) => !selectedSubCategories.includes(p))
+    );
+    setSelectedSubCategories([]);
     setIsRightSelected(false);
   };
 
-  const moveToLeft = () => {
-    setUploadedCategories((prev) => [...prev, ...selectedCategories]);
-    setMovedCategories((prev) =>
-      prev.filter((p) => !selectedCategories.includes(p))
+  const moveToLeft = async () => {
+    await axiosInstance.post(
+      '/proxy/productsearchsupplier/supplierSubCategoryDetailsStatus',
+      {
+        supplierBusinessId: bussiness.id,
+        categoryIds: [...uploadedSubCategories, ...selectedSubCategories].map(
+          (item) => item.id
+        ),
+        status: false,
+      }
     );
-    setSelectedCategories([]);
+    setUploadedSubCategories((prev) => [...prev, ...selectedSubCategories]);
+    setMovedCategories((prev) =>
+      prev.filter((p) => !selectedSubCategories.includes(p))
+    );
+    setSelectedSubCategories([]);
     setIsLeftSelected(false);
   };
 
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
 
-    const list = categoriesValue.split(',').map((item, idx) => {
-      return {
-        id: idx,
-        name: item,
-      };
-    });
-    // if (!productName || !description) {
-    //   toast.error('Please upload product in correct format');
-    //   return;
-    // }
-    setUploadedCategories([...uploadedCategories, ...list]);
-    setCategoriesValue('');
+    const res = await axiosInstance.post(
+      '/proxy/productsearchsupplier/saveSupplierSubCategoryDetails',
+      {
+        subCategoryName: subCategoriesValue,
+        subCategoryDecription: description,
+        productsServices: 'products',
+        categoryId: category.id,
+        supplierBusinessId: bussiness.id,
+      }
+    );
+    console.log(res);
+    const p = {
+      name: res.data.supplierSubCategoryName,
+      id: res.data.id,
+    };
+    setUploadedSubCategories([...uploadedSubCategories, p]);
+    setSubCategoriesValue('');
+    setDescription('');
   };
 
   // const submit = async (e) => {
@@ -75,7 +110,7 @@ const ProductSubCategory = () => {
   //   try {
   //     const data = {
   //       supplierBusinessId: supplier.id,
-  //       productId: movedCategories.map((item) => item.id),
+  //       productId: movedSubCategories.map((item) => item.id),
   //       status: true,
   //     };
   //     const res = await axiosInstance.post(
@@ -89,6 +124,35 @@ const ProductSubCategory = () => {
   //   }
   // };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.post(
+          '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetails',
+          {
+            supplierBusinessId: bussiness.id,
+            businessDescription: bussiness.businessDescription,
+            productsServices: 'services',
+          }
+        );
+        console.log(res);
+        setCategoryList(
+          res.data
+            .filter((item) => item.active)
+            .map((item) => {
+              return {
+                id: item.categoryId,
+                name: item.categoryName,
+              };
+            })
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className='container'>
       <div className='mb-3'>
@@ -96,26 +160,35 @@ const ProductSubCategory = () => {
           <div className='col-10'>
             <h3>Add Product Sub Category</h3>
           </div>
-          <div className='col-2'>
+          {/* <div className='col-2'>
             {category && (
               <button
                 className='btn btn-primary'
                 // onClick={submit}
-                disabled={!movedCategories.length}
+                disabled={!movedSubCategories.length}
               >
                 Update
               </button>
             )}
-          </div>
+          </div> */}
         </div>
         <div>
           <select
             className='form-select'
             id='categoryName'
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(JSON.parse(e.target.value));
+              console.log(category);
+              // setUploadedSubCategories(JSON.parse(e.target.value));
+            }}
           >
             <option value={''}>Select Category</option>
-            <option value={'option1s'}>Option 1</option>
+
+            {categoryList.map((item) => (
+              <option key={item.id} value={JSON.stringify(item)}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -127,10 +200,19 @@ const ProductSubCategory = () => {
                 <div className='mb-2'>
                   <input
                     type='text'
-                    value={categoriesValue}
+                    value={subCategoriesValue}
                     className={`form-control`}
                     placeholder='enter sub category name'
-                    onChange={(e) => setCategoriesValue(e.target.value)}
+                    onChange={(e) => setSubCategoriesValue(e.target.value)}
+                  />
+                </div>
+                <div className='mb-2'>
+                  <input
+                    type='text'
+                    value={description}
+                    className={`form-control`}
+                    placeholder='enter category description'
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
               </div>
@@ -138,7 +220,7 @@ const ProductSubCategory = () => {
                 <button
                   className=' btn btn-primary '
                   onClick={handleAddProduct}
-                  disabled={!categoriesValue}
+                  disabled={!subCategoriesValue}
                 >
                   Add
                 </button>
@@ -155,14 +237,14 @@ const ProductSubCategory = () => {
             >
               <h5 className='mb-3'>Product sub category</h5>
 
-              {uploadedCategories.length > 0 ? (
-                uploadedCategories.map((product) => (
+              {uploadedSubCategories?.length > 0 ? (
+                uploadedSubCategories.map((product) => (
                   <div key={product.id} className='form-check mb-2'>
                     <input
                       type='checkbox'
                       className='form-check-input'
                       id={`uploaded-${product.id}`}
-                      checked={selectedCategories.includes(product)}
+                      checked={selectedSubCategories.includes(product)}
                       onChange={() => toggleSelectProduct(product, 'left')}
                     />
                     <label
@@ -200,14 +282,14 @@ const ProductSubCategory = () => {
               style={{ height: '60vh', overflow: 'scroll' }}
             >
               <h5 className='mb-3'>Selected Product sub category</h5>
-              {movedCategories.length > 0 ? (
-                movedCategories.map((product) => (
+              {movedSubCategories.length > 0 ? (
+                movedSubCategories.map((product) => (
                   <div key={product.id} className='form-check mb-2'>
                     <input
                       type='checkbox'
                       className='form-check-input'
                       id={`moved-${product.id}`}
-                      checked={selectedCategories.includes(product)}
+                      checked={selectedSubCategories.includes(product)}
                       onChange={() => toggleSelectProduct(product, 'right')}
                     />
                     <label

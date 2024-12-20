@@ -1,5 +1,7 @@
-// import axiosInstance from '../../axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axiosInstance from '../../axios';
+import { useAtom } from 'jotai';
+import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 // import { userDetailsAtom } from '../../storges/user';
 // import { useAtom } from 'jotai';
 // import { toast } from 'react-toastify';
@@ -10,8 +12,11 @@ const ProductCategory = () => {
   const [movedCategories, setMovedCategories] = useState([]);
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
-  // const [supplier] = useAtom(userDetailsAtom);
   const [categoriesValue, setCategoriesValue] = useState('');
+  const [description, setDescription] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [supplier] = useAtom(userDetailsAtom);
+  const [bussiness] = useAtom(bussinessProfile);
 
   const toggleSelectProduct = (product, type) => {
     if (type === 'left') {
@@ -33,16 +38,38 @@ const ProductCategory = () => {
     });
   };
 
-  const moveToRight = () => {
+  const moveToRight = async () => {
+    await axiosInstance.post(
+      '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
+      {
+        supplierBusinessId: bussiness.id,
+        categoryIds: [...movedCategories, ...selectedCategories].map(
+          (item) => item.id
+        ),
+        status: true,
+      }
+    );
     setMovedCategories((prev) => [...prev, ...selectedCategories]);
+    // console.log('movedCategories', movedCategories);
     setUploadedCategories((prev) =>
       prev.filter((p) => !selectedCategories.includes(p))
     );
     setSelectedCategories([]);
+
     setIsRightSelected(false);
   };
 
-  const moveToLeft = () => {
+  const moveToLeft = async () => {
+    await axiosInstance.post(
+      '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
+      {
+        supplierBusinessId: bussiness.id,
+        categoryIds: [...uploadedCategories, ...selectedCategories].map(
+          (item) => item.id
+        ),
+        status: false,
+      }
+    );
     setUploadedCategories((prev) => [...prev, ...selectedCategories]);
     setMovedCategories((prev) =>
       prev.filter((p) => !selectedCategories.includes(p))
@@ -51,22 +78,66 @@ const ProductCategory = () => {
     setIsLeftSelected(false);
   };
 
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
 
-    const list = categoriesValue.split(',').map((item, idx) => {
-      return {
-        id: idx,
-        name: item,
-      };
-    });
-    // if (!productName || !description) {
-    //   toast.error('Please upload product in correct format');
-    //   return;
-    // }
-    setUploadedCategories([...uploadedCategories, ...list]);
+    const res = await axiosInstance.post(
+      '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
+      {
+        categoryName: categoriesValue,
+        productsServices: 'products',
+        supplierBusinessId: bussiness.id,
+        categoryDescription: description,
+      }
+    );
+    const p = {
+      name: res.data.supplierCategoryName,
+      id: res.data.id,
+    };
+
+    setUploadedCategories([p, ...uploadedCategories]);
     setCategoriesValue('');
+    setDescription('');
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.post(
+          '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetails',
+          {
+            supplierBusinessId: bussiness.id,
+            businessDescription: bussiness.businessDescription,
+            productsServices: 'productsServices',
+          }
+        );
+        console.log(res);
+        setUploadedCategories(
+          res.data
+            .filter((item) => !item.active)
+            .map((item) => {
+              return {
+                id: item.categoryId,
+                name: item.categoryName,
+              };
+            })
+        );
+        setMovedCategories(
+          res.data
+            .filter((item) => item.active)
+            .map((item) => {
+              return {
+                id: item.categoryId,
+                name: item.categoryName,
+              };
+            })
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
 
   // const submit = async (e) => {
   //   e.preventDefault();
@@ -104,7 +175,7 @@ const ProductCategory = () => {
           <div className='col-10'>
             <h3>Add Product Category</h3>
           </div>
-          <div className='col-2'>
+          {/* <div className='col-2'>
             <button
               className='btn btn-primary'
               // onClick={submit}
@@ -112,7 +183,7 @@ const ProductCategory = () => {
             >
               Update
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
       <form>
@@ -125,6 +196,15 @@ const ProductCategory = () => {
                 className={`form-control`}
                 placeholder='enter category name'
                 onChange={(e) => setCategoriesValue(e.target.value)}
+              />
+            </div>
+            <div className='mb-2'>
+              <input
+                type='text'
+                value={description}
+                className={`form-control`}
+                placeholder='enter category description'
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
           </div>

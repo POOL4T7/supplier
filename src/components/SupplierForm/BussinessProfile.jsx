@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../axios';
-import { userDetailsAtom } from '../../storges/user';
+import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import { useAtom } from 'jotai';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 const bussinessSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
-  businessdescription: yup.string().optional(),
+  businessDescription: yup.string().optional(),
   addressLine1: yup.string().required('Address Line 1 is required'),
   addressLine2: yup.string().optional(),
   zipcode: yup.string().required('zipcode is required'),
@@ -22,9 +22,6 @@ const bussinessSchema = yup.object().shape({
   website: yup.string().url('Invalid URL'),
   email: yup.string().email('Invalid email').required('Email is required'),
   sector: yup.string().required('Sector is required'),
-  productsServices: yup
-    .string()
-    .required('Product/Service selection is required'),
   // businessCategory: yup.string().optional(),
   // businessSubCategory: yup.string().optional(),
   // serviceCategory: yup.string().optional(),
@@ -34,6 +31,7 @@ const bussinessSchema = yup.object().shape({
 const BussinessProfile = () => {
   // const [data, setData] = useState({});
   const [supplier] = useAtom(userDetailsAtom);
+  const [bussiness] = useAtom(bussinessProfile);
   // eslint-disable-next-line no-unused-vars
   const [category, setCategory] = useState({
     category: [],
@@ -53,27 +51,16 @@ const BussinessProfile = () => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axiosInstance.get(
-          `/proxy/productsearchsupplier/api/supplier/file/supplierBusinessProfileDetails?supplierBusinessId=${supplier.id}`
-        );
-
-        if (res.data.supplierBusinessDetails) {
-          reset, res.data.supplierBusinessDetails;
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchData();
-  }, [reset, supplier.id]);
+    if (bussiness) {
+      reset(bussiness);
+    }
+  }, [reset, bussiness]);
 
   const onSubmit = async (data) => {
     try {
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
-        { ...data, supplierId: supplier.id }
+        { ...data, supplierId: supplier.id, supplierBusinessId: bussiness.id }
       );
 
       toast.success(
@@ -144,13 +131,13 @@ const BussinessProfile = () => {
                 <div className='mb-2'>
                   <label className='form-label'>Business Description</label>
                   <textarea
-                    {...register('businessdescription')}
+                    {...register('businessDescription')}
                     className={`form-control ${
-                      errors.businessdescription ? 'is-invalid' : ''
+                      errors.businessDescription ? 'is-invalid' : ''
                     }`}
                   />
                   <div className='invalid-feedback'>
-                    {errors.businessdescription?.message}
+                    {errors.businessDescription?.message}
                   </div>
                 </div>
                 <div className='mb-2'>

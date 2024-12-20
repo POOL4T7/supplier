@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Header from './components/layout/Header.jsx';
 import { Outlet } from 'react-router-dom';
 import {
+  bussinessProfile,
   // productCategory,
   // serviceCategory,
   userDetailsAtom,
@@ -11,6 +12,7 @@ import axiosInstance from './axios.js';
 
 const Layout = () => {
   const [, setUserDetails] = useAtom(userDetailsAtom);
+  const [, setBussinessProfile] = useAtom(bussinessProfile);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -26,6 +28,19 @@ const Layout = () => {
           }
         );
         setUserDetails(res.data);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    async function fetchBussinessProfile() {
+      try {
+        const res = await axiosInstance.get(
+          `/proxy/productsearchsupplier/api/supplier/file/supplierBusinessProfileDetails?supplierProfileId=${user.id}`
+        );
+
+        if (res.data.supplierBusinessDetails) {
+          setBussinessProfile(res.data.supplierBusinessDetails);
+        }
       } catch (e) {
         console.log(e);
       }
@@ -49,6 +64,7 @@ const Layout = () => {
     // }
     if (user?.id) {
       fetchProfileData();
+      fetchBussinessProfile();
       // fetchCategoryData();
     }
   }, []);
