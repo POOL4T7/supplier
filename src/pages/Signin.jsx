@@ -26,7 +26,7 @@ const LoginForm = () => {
   console.log('userDetails', userDetails);
   useEffect(() => {
     if (userDetails?.id) {
-      navigate('/');
+      navigate('/profile');
     }
   }, [navigate, userDetails]);
 
@@ -47,7 +47,7 @@ const LoginForm = () => {
       setUserDetails(res.data?.supplierProfile);
       localStorage.setItem('user', JSON.stringify(res.data?.supplierProfile));
       localStorage.setItem('authAccessToken', res.data.accessToken);
-      window.location.href = '/';
+      window.location.href = '/profile';
     } catch (e) {
       toast.error(e.response?.data?.errorMessage || 'Something went wrong');
     }
