@@ -132,10 +132,10 @@ const ServiceCategory = () => {
           {
             supplierBusinessId: bussiness.id,
             businessDescription: bussiness.businessDescription,
-            productsServices: 'productsServices',
+            productsServices: 'services',
           }
         );
-        console.log(res);
+
         setUploadedCategories(
           res.data
             .filter((item) => !item.active)
