@@ -15,6 +15,7 @@ const signupSchema = yup.object().shape({
     .string()
     .min(3, 'fullName must be at least 3 characters')
     .required('fullName is required'),
+  userType: yup.string().oneOf(['supplier', 'admin'], 'Select a user type'),
 });
 
 const Signup = () => {
@@ -54,6 +55,39 @@ const Signup = () => {
         style={{ maxWidth: '500px' }}
       >
         <h2>Signup</h2>
+        <div className='mb-3'>
+          <label className='form-label d-block'>User Type</label>
+          <div className='form-check form-check-inline'>
+            <input
+              className='form-check-input'
+              type='radio'
+              id='supplier'
+              value='supplier'
+              {...register('userType')}
+              defaultChecked
+            />
+            <label className='form-check-label' htmlFor='supplier'>
+              Supplier
+            </label>
+          </div>
+          <div className='form-check form-check-inline'>
+            <input
+              className='form-check-input'
+              type='radio'
+              id='admin'
+              value='admin'
+              {...register('userType')}
+            />
+            <label className='form-check-label' htmlFor='admin'>
+              Admin
+            </label>
+          </div>
+          {errors.userType && (
+            <small className='text-danger d-block'>
+              {errors.userType.message}
+            </small>
+          )}
+        </div>
 
         <div className='mb-3'>
           <label>Email</label>

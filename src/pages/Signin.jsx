@@ -18,6 +18,7 @@ const loginSchema = yup.object().shape({
     .string()
     .min(3, 'Password must be at least 6 characters')
     .required('Password is required'),
+  userType: yup.string().oneOf(['supplier', 'admin'], 'Select a user type'),
 });
 
 const LoginForm = () => {
@@ -67,12 +68,13 @@ const LoginForm = () => {
             <input
               className='form-check-input'
               type='radio'
-              id='customer'
-              value='customer'
+              id='supplier'
+              value='supplier'
               {...register('userType')}
+              defaultChecked
             />
-            <label className='form-check-label' htmlFor='customer'>
-              Customer
+            <label className='form-check-label' htmlFor='supplier'>
+              Supplier
             </label>
           </div>
           <div className='form-check form-check-inline'>

@@ -81,16 +81,16 @@ const ServiceCategory = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
-    const list = categoriesValue.split(',').map((item, idx) => {
-      return {
-        id: idx,
-        name: item,
-      };
-    });
+    // const list = categoriesValue.split(',').map((item, idx) => {
+    //   return {
+    //     id: idx,
+    //     name: item,
+    //   };
+    // });
     const res = await axiosInstance.post(
       '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
       {
-        categoryName: list[0].name,
+        categoryName: categoriesValue,
         productsServices: 'services',
         supplierBusinessId: bussiness.id,
         categoryDescription: description,
