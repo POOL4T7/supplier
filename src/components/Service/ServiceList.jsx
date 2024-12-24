@@ -1,6 +1,6 @@
 import axiosInstance from '../../axios';
-import { useState } from 'react';
-import { userDetailsAtom } from '../../storges/user';
+import { useEffect, useState } from 'react';
+import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import { useAtom } from 'jotai';
 import { toast } from 'react-toastify';
 
@@ -12,6 +12,7 @@ const ServiceList = () => {
   const [isRightSelected, setIsRightSelected] = useState(false);
   const [supplier] = useAtom(userDetailsAtom);
   const [productValue, setProductValue] = useState('');
+  const [bussiness] = useAtom(bussinessProfile);
 
   const handleFileUpload = async (event) => {
     try {
@@ -21,7 +22,8 @@ const ServiceList = () => {
       if (file) {
         formData.append('file', file);
         formData.append('supplierId', supplier.id);
-        formData.append('type', 'PRODUCT');
+        formData.append('supplierBusinessId', bussiness.id);
+        formData.append('type', 'SERVICE');
         const res = await axiosInstance.post(
           '/proxy/productsearchsupplier/api/supplier/file/uploadSupplierBusinessDetails',
           formData,
@@ -34,7 +36,7 @@ const ServiceList = () => {
         toast.success(res.data.message);
         setUploadedProducts([
           ...uploadedProducts,
-          ...(res.data?.productDetailsList || []),
+          ...(res.data?.serviceDetailsList || []),
         ]);
       }
     } catch (e) {
@@ -84,14 +86,14 @@ const ServiceList = () => {
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!productValue) return;
-    const [productName, description] = productValue.split(',');
-    if (!productName || !description) {
+    const [serviceName, serviceDescription] = productValue.split(',');
+    if (!serviceName || !serviceDescription) {
       toast.error('Please upload service in correct format');
       return;
     }
     setUploadedProducts([
       ...uploadedProducts,
-      { id: 1, productName, description },
+      { id: 1, serviceName, serviceDescription },
     ]);
     setProductValue('');
   };
@@ -101,8 +103,9 @@ const ServiceList = () => {
     try {
       const data = {
         supplierBusinessId: supplier.id,
-        productId: movedProducts.map((item) => item.id),
+        serviceId: movedProducts.map((item) => item.id),
         status: true,
+        supplierId: supplier.id,
       };
       const res = await axiosInstance.post(
         '/proxyproductsearchsupplier/api/supplier/file/productservicestatus',
@@ -114,6 +117,21 @@ const ServiceList = () => {
       console.log(e);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.get(
+          `/proxy/productsearchsupplier/services/getAllServiceDetails?supplierBusinessId=${bussiness.id}`
+        );
+        setUploadedProducts(res.data.filter((item) => !item.active));
+        setMovedProducts(res.data.filter((item) => item.active));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className='container'>
@@ -177,7 +195,7 @@ const ServiceList = () => {
                   className='form-check-label'
                   htmlFor={`uploaded-${service.id}`}
                 >
-                  {service.productName}
+                  {service.serviceName}
                 </label>
               </div>
             ))
@@ -222,7 +240,7 @@ const ServiceList = () => {
                   className='form-check-label'
                   htmlFor={`moved-${service.id}`}
                 >
-                  {service.productName}
+                  {service.serviceName}
                 </label>
               </div>
             ))

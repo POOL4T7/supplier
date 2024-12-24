@@ -61,7 +61,38 @@ const LoginForm = () => {
         style={{ maxWidth: '500px' }}
       >
         <h2>Login</h2>
-
+        <div className='mb-3'>
+          <label className='form-label d-block'>User Type</label>
+          <div className='form-check form-check-inline'>
+            <input
+              className='form-check-input'
+              type='radio'
+              id='customer'
+              value='customer'
+              {...register('userType')}
+            />
+            <label className='form-check-label' htmlFor='customer'>
+              Customer
+            </label>
+          </div>
+          <div className='form-check form-check-inline'>
+            <input
+              className='form-check-input'
+              type='radio'
+              id='admin'
+              value='admin'
+              {...register('userType')}
+            />
+            <label className='form-check-label' htmlFor='admin'>
+              Admin
+            </label>
+          </div>
+          {errors.userType && (
+            <small className='text-danger d-block'>
+              {errors.userType.message}
+            </small>
+          )}
+        </div>
         <div className='mb-3'>
           <label>Email</label>
           <input

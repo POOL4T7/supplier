@@ -1,6 +1,6 @@
 import axiosInstance from '../../axios';
-import { useState } from 'react';
-import { userDetailsAtom } from '../../storges/user';
+import { useEffect, useState } from 'react';
+import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import { useAtom } from 'jotai';
 import { toast } from 'react-toastify';
 
@@ -13,6 +13,7 @@ const ProductList = () => {
   const [supplier] = useAtom(userDetailsAtom);
   const [productValue, setProductValue] = useState('');
 
+  const [bussiness] = useAtom(bussinessProfile);
   const handleFileUpload = async (event) => {
     try {
       const file = event.target.files[0];
@@ -21,6 +22,7 @@ const ProductList = () => {
       if (file) {
         formData.append('file', file);
         formData.append('supplierId', supplier.id);
+        formData.append('supplierBusinessId', bussiness.id);
         formData.append('type', 'PRODUCT');
         const res = await axiosInstance.post(
           '/proxy/productsearchsupplier/api/supplier/file/uploadSupplierBusinessDetails',
@@ -100,12 +102,13 @@ const ProductList = () => {
     e.preventDefault();
     try {
       const data = {
-        supplierBusinessId: supplier.id,
+        supplierBusinessId: bussiness.id,
         productId: movedProducts.map((item) => item.id),
         status: true,
+        supplierId: supplier.id,
       };
       const res = await axiosInstance.post(
-        '/proxyproductsearchsupplier/api/supplier/file/productservicestatus',
+        '/proxy/productsearchsupplier/api/supplier/file/productservicestatus',
         data
       );
       console.log(res);
@@ -115,6 +118,20 @@ const ProductList = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.get(
+          `/proxy/productsearchsupplier/products/getAllProductDetails?supplierBusinessId=${bussiness.id}`
+        );
+        setUploadedProducts(res.data.filter((item) => !item.active));
+        setMovedProducts(res.data.filter((item) => item.active));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div className='container'>
       <div className='mb-3'>

@@ -159,7 +159,7 @@ const ProductCategory = () => {
         console.log(e);
       }
     };
-    fetchData();
+    if (bussiness.id && description) fetchData();
   }, [bussiness.id, description]);
 
   useEffect(() => {
