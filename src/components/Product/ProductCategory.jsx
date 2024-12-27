@@ -170,7 +170,7 @@ const ProductCategory = () => {
 
   return (
     <div className='container'>
-      <form>
+      <>
         <div className='row mb-4'>
           <div className='col-10'>
             <input
@@ -184,7 +184,7 @@ const ProductCategory = () => {
               type='text'
               value={description}
               className='form-control mt-2'
-              placeholder='Enter category description'
+              placeholder='Enter bussiness description'
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
@@ -198,7 +198,7 @@ const ProductCategory = () => {
             </button>
           </div>
         </div>
-      </form>
+      </>
       <div className='row'>
         <div className='col-md-5'>
           <input

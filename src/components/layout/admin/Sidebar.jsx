@@ -11,7 +11,7 @@ const Sidebar = () => {
           <div className='sb-sidenav-menu'>
             <div className='nav'>
               <div className='sb-sidenav-menu-heading'>Core</div>
-              <Link className='nav-link' to='/supplier-list'>
+              <Link className='nav-link' to='/admin/supplier-list'>
                 <div className='sb-nav-link-icon'>
                   <i className='fas fa-tachometer-alt'></i>
                 </div>

@@ -86,8 +86,8 @@ const ServiceList = () => {
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!productValue) return;
-    const [serviceName, serviceDescription] = productValue.split(',');
-    if (!serviceName || !serviceDescription) {
+    const [brand, serviceName, serviceDescription] = productValue.split(',');
+    if (!serviceName || !serviceDescription || !brand) {
       toast.error('Please upload service in correct format');
       return;
     }
@@ -95,6 +95,22 @@ const ServiceList = () => {
       ...uploadedProducts,
       { id: 1, serviceName, serviceDescription },
     ]);
+    const res = axiosInstance.post(
+      'proxy/productsearchsupplier/api/supplier/file/addProductsOrServices',
+      {
+        fileRowDataList: [
+          {
+            name: serviceName,
+            brand,
+            serviceDescription,
+          },
+        ],
+        supplierBusinessId: bussiness.id,
+        type: 'PRODUCT',
+        supplierId: supplier.id,
+      }
+    );
+    console.log('res', res);
     setProductValue('');
   };
 

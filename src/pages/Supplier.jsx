@@ -11,7 +11,7 @@ import ServiceList from '../components/Service/ServiceList';
 const SupplierForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [expanded, setExpanded] = useState(null);
-  console.log('currentStep', currentStep);
+  // console.log('currentStep', currentStep);
   const sidebar = [
     { name: 'Supplier Profile', sub: [] },
     { name: 'Bussiness Profile', sub: [] },
@@ -83,12 +83,12 @@ const SupplierForm = () => {
           {currentStep === 0 && <SupplierDetails />}
           {currentStep === 1 && <BussinessProfile />}
           {/* product page */}
-          {currentStep === 2 && <ProductCategory />}
+          {currentStep === 2 && <h3>Product page</h3>}
           {currentStep === '2-0' && <ProductCategory />}
           {currentStep === '2-1' && <ProductSubCategory />}
           {currentStep === '2-2' && <ProductList />}
           {/* service pages */}
-          {currentStep === 3 && <ServiceCategory />}
+          {currentStep === 3 && <h3>Service page</h3>}
           {currentStep === '3-0' && <ServiceCategory />}
           {currentStep === '3-1' && <ServiceSubCategory />}
           {currentStep === '3-2' && <ServiceList />}

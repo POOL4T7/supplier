@@ -87,15 +87,33 @@ const ProductList = () => {
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!productValue) return;
-    const [brandName, productName, description] = productValue.split(',');
-    if (!productName || !description) {
-      toast.error('Please upload product in correct format');
+    const [brand, productName, description] = productValue.split(',');
+    if (!productName || !description || !brand) {
+      toast.error(
+        'Please upload product in correct format brand,name,description'
+      );
       return;
     }
     setUploadedProducts([
       ...uploadedProducts,
-      { id: 1, brandName, productName, description },
+      { id: 1, brand, productName, description },
     ]);
+    const res = axiosInstance.post(
+      'proxy/productsearchsupplier/api/supplier/file/addProductsOrServices',
+      {
+        fileRowDataList: [
+          {
+            name: productName,
+            brand,
+            description,
+          },
+        ],
+        supplierBusinessId: bussiness.id,
+        type: 'PRODUCT',
+        supplierId: supplier.id,
+      }
+    );
+    console.log('res', res);
     setProductValue('');
   };
 
