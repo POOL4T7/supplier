@@ -18,16 +18,16 @@ const loginSchema = yup.object().shape({
     .string()
     .min(3, 'Password must be at least 6 characters')
     .required('Password is required'),
-  userType: yup.string().oneOf(['supplier', 'admin'], 'Select a user type'),
+  userType: yup.string().oneOf(['Supplier', 'Admin'], 'Select a user type'),
 });
 
 const LoginForm = () => {
   const [userDetails, setUserDetails] = useAtom(userDetailsAtom);
+  // const [allRoles] = useAtom(roles);
   const navigate = useNavigate();
-  console.log('userDetails', userDetails);
   useEffect(() => {
     if (userDetails?.id) {
-      navigate('/profile');
+      // navigate('/profile');
     }
   }, [navigate, userDetails]);
 
@@ -38,17 +38,21 @@ const LoginForm = () => {
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
-
   const onSubmit = async (data) => {
     try {
       const res = await axiosInstance.post(
-        `/proxy/productsearchsupplier/api/supplier/profile/login`,
+        `/proxy/productsearchsupplier/user/login`,
         data
       );
-      setUserDetails(res.data?.supplierProfile);
-      localStorage.setItem('user', JSON.stringify(res.data?.supplierProfile));
+      setUserDetails(res.data?.userDetails);
+      localStorage.setItem('user', JSON.stringify(res.data?.userDetails));
       localStorage.setItem('authAccessToken', res.data.accessToken);
-      window.location.href = '/profile';
+
+      if (userDetails.userType == 'admin') {
+        window.location.href = '/admin';
+      } else {
+        window.location.href = '/profile';
+      }
     } catch (e) {
       toast.error(e.response?.data?.errorMessage || 'Something went wrong');
     }
@@ -62,39 +66,7 @@ const LoginForm = () => {
         style={{ maxWidth: '500px' }}
       >
         <h2>Login</h2>
-        <div className='mb-3'>
-          <label className='form-label d-block'>User Type</label>
-          <div className='form-check form-check-inline'>
-            <input
-              className='form-check-input'
-              type='radio'
-              id='supplier'
-              value='supplier'
-              {...register('userType')}
-              defaultChecked
-            />
-            <label className='form-check-label' htmlFor='supplier'>
-              Supplier
-            </label>
-          </div>
-          <div className='form-check form-check-inline'>
-            <input
-              className='form-check-input'
-              type='radio'
-              id='admin'
-              value='admin'
-              {...register('userType')}
-            />
-            <label className='form-check-label' htmlFor='admin'>
-              Admin
-            </label>
-          </div>
-          {errors.userType && (
-            <small className='text-danger d-block'>
-              {errors.userType.message}
-            </small>
-          )}
-        </div>
+
         <div className='mb-3'>
           <label>Email</label>
           <input

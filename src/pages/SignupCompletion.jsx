@@ -35,7 +35,7 @@ const SignupCompletion = () => {
     try {
       const email = atob(userEmail);
       const res = await axios.post(
-        `/proxy/productsearchsupplier/api/supplier/profile/completeSupplierRegistration`,
+        `/proxy/productsearchsupplier/user/completeSupplierRegistration`,
         { ...data, email: email }
       );
       toast.success(res.data || 'Email is sended on your registred email id');

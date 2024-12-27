@@ -14,6 +14,7 @@ const ProductList = () => {
   const [productValue, setProductValue] = useState('');
 
   const [bussiness] = useAtom(bussinessProfile);
+
   const handleFileUpload = async (event) => {
     try {
       const file = event.target.files[0];
@@ -86,14 +87,14 @@ const ProductList = () => {
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!productValue) return;
-    const [productName, description] = productValue.split(',');
+    const [brandName, productName, description] = productValue.split(',');
     if (!productName || !description) {
       toast.error('Please upload product in correct format');
       return;
     }
     setUploadedProducts([
       ...uploadedProducts,
-      { id: 1, productName, description },
+      { id: 1, brandName, productName, description },
     ]);
     setProductValue('');
   };
@@ -132,6 +133,7 @@ const ProductList = () => {
     };
     fetchData();
   }, []);
+
   return (
     <div className='container'>
       <div className='mb-3'>

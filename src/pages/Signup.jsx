@@ -5,6 +5,8 @@ import FormContainer from '../components/common/FormContainer';
 import axiosInstance from 'axios';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import { roles } from '../storges/user';
+import { useAtom } from 'jotai';
 
 const signupSchema = yup.object().shape({
   email: yup
@@ -20,6 +22,7 @@ const signupSchema = yup.object().shape({
 
 const Signup = () => {
   // const navigate = useNavigate();
+  const [allRoles] = useAtom(roles);
   const {
     register,
     handleSubmit,
@@ -32,7 +35,7 @@ const Signup = () => {
   const onSubmit = async (data) => {
     try {
       const res = await axiosInstance.post(
-        `/proxy/productsearchsupplier/api/supplier/profile/register`,
+        `/proxy/productsearchsupplier/user/register`,
         data
       );
       toast.success(
@@ -55,6 +58,26 @@ const Signup = () => {
         style={{ maxWidth: '500px' }}
       >
         <h2>Signup</h2>
+        <div className='mb-3'>
+          <label htmlFor='role' className='form-label'>
+            Role
+          </label>
+          <select
+            className={`form-select ${errors.userType ? 'is-invalid' : ''}`}
+            id='role'
+            {...register('userType')}
+          >
+            <option value=''>Select a role</option>
+            {allRoles?.map((item) => (
+              <option key={item.roleId} value={item.roleName}>
+                {item.roleName}
+              </option>
+            ))}
+          </select>
+          {errors.userType && (
+            <div className='invalid-feedback'>{errors.userType.message}</div>
+          )}
+        </div>
         <div className='mb-3'>
           <label className='form-label d-block'>User Type</label>
           <div className='form-check form-check-inline'>

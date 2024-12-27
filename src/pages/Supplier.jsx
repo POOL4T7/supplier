@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import SupplierDetails from '../components/SupplierForm/SupplierDetails';
 import ProductList from '../components/Product/ProductList';
-// import ServiceTransfer from '../components/SupplierForm/ServiceTransfer';
 import BussinessProfile from '../components/SupplierForm/BussinessProfile';
-// import ProductList from '../components/Product/ProductList';
-// import ServiceList from '../components/Services';
 import ProductCategory from '../components/Product/ProductCategory';
 import ProductSubCategory from '../components/Product/ProductSubCategory';
-
 import ServiceCategory from '../components/Service/ServiceCategory';
 import ServiceSubCategory from '../components/Service/ServiceSubCategory';
 import ServiceList from '../components/Service/ServiceList';

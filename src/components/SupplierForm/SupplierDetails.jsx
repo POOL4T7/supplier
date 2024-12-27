@@ -78,6 +78,7 @@ const SupplierDetails = () => {
         phoneNumber: data.phoneNumber,
         email: data.email,
         country: data.country,
+        supplierId: userDetails.id,
       };
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/profile/addSupplierInfo`,
@@ -85,11 +86,12 @@ const SupplierDetails = () => {
       );
       const d = {
         ...userDetails,
-        ...data,
+        ...formData,
       };
+
       setUserDetails({
         ...userDetails,
-        ...data,
+        ...formData,
       });
       localStorage.setItem('user', JSON.stringify(d));
       toast.success(res.data?.data?.message || 'Supplier profile updated');
@@ -105,14 +107,15 @@ const SupplierDetails = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        // const res = await axiosInstance.get(
-        //   `/proxy/productsearchsupplier/api/supplier/profile/supplierProfileDetails?supplierUserId=${userDetails?.id}`,
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${userDetails.accessToken}`,
-        //     },
-        //   }
-        // );
+        const res = await axiosInstance.get(
+          `/proxy/productsearchsupplier/api/supplier/profile/supplierProfileDetails?supplierUserId=${userDetails?.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${userDetails.accessToken}`,
+            },
+          }
+        );
+        console.log(res);
         reset(userDetails);
         // setUserDetails(res.data);
       } catch (e) {

@@ -45,7 +45,7 @@ const Header = () => {
                       aria-haspopup='true'
                       aria-expanded='false'
                     >
-                      {userDetails.supplierFullName}
+                      {userDetails.supplierName}
                     </a>
                     <div className='dropdown-menu dropdown-menu-end'>
                       <Link className='dropdown-item' to='/profile'>
