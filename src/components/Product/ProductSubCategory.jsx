@@ -155,6 +155,7 @@ const ProductSubCategory = () => {
             onChange={(e) => {
               setCategory(JSON.parse(e.target.value));
               console.log(JSON.parse(e.target.value));
+              // productsearchsupplier/getSubCategoryDetails?categoryId=1&type=products
               const cat = categoryList.find(
                 (item) => item.id === JSON.parse(e.target.value).id
               );

@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../axios';
 import { useAtom } from 'jotai';
-import { bussinessProfile, userDetailsAtom } from '../../storges/user';
+import {
+  bussinessProfile,
+  productCategory,
+  userDetailsAtom,
+} from '../../storges/user';
 
 const ProductCategory = () => {
   const [uploadedCategories, setUploadedCategories] = useState([]);
@@ -20,6 +24,8 @@ const ProductCategory = () => {
   // eslint-disable-next-line no-unused-vars
   const [supplier] = useAtom(userDetailsAtom);
   const [bussiness] = useAtom(bussinessProfile);
+  const [categoryList] = useAtom(productCategory);
+  const [allDesc, setAllDesc] = useState([]);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -58,6 +64,7 @@ const ProductCategory = () => {
           (item) => item.id
         ),
         status: true,
+        supplierBusinessDescription: description,
       }
     );
     setMovedCategories((prev) => [...prev, ...selectedCategories]);
@@ -66,6 +73,10 @@ const ProductCategory = () => {
     );
     setSelectedCategories([]);
     setIsRightSelected(false);
+    if (!allDesc.includes(description)) {
+      setAllDesc([...allDesc, description]);
+    }
+    setDescription('');
   };
 
   const moveToLeft = async () => {
@@ -114,7 +125,7 @@ const ProductCategory = () => {
       setUploadedSearch(query);
       setFilteredUploadedCategories(
         uploadedCategories.filter((category) =>
-          category.name.toLowerCase().includes(query.toLowerCase())
+          category.categoryName.toLowerCase().includes(query.toLowerCase())
         )
       );
     } else {
@@ -122,7 +133,7 @@ const ProductCategory = () => {
       setMovedSearch(query);
       setFilteredMovedCategories(
         movedCategories.filter((category) =>
-          category.name?.toLowerCase().includes(query.toLowerCase())
+          category.categoryName?.toLowerCase().includes(query.toLowerCase())
         )
       );
     }
@@ -131,47 +142,39 @@ const ProductCategory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axiosInstance.post(
-          '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetails',
-          {
-            supplierBusinessId: bussiness.id,
-            businessDescription: description,
-            productsServices: 'products',
-          }
+        const res = await axiosInstance.get(
+          '/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products'
         );
-        setUploadedCategories(
-          res.data
-            .filter((item) => !item.active)
-            .map((item) => ({
-              id: item.categoryId,
-              name: item.categoryName,
-            }))
-        );
+        // console.log(res);
+
         setMovedCategories(
           res.data
             .filter((item) => item.active)
             .map((item) => ({
               id: item.categoryId,
-              name: item.categoryName,
+              categoryName: item.supplierCategoryName,
             }))
         );
       } catch (e) {
         console.log(e);
       }
     };
-    if (bussiness.id && description) fetchData();
+    fetchData();
   }, [bussiness.id, description]);
 
   useEffect(() => {
     if (bussiness) {
       setDescription(bussiness.businessDescription);
     }
+    if (categoryList?.length) {
+      setUploadedCategories(categoryList);
+    }
   }, []);
 
   return (
     <div className='container'>
       <>
-        <div className='row mb-4'>
+        <div className='row mb-2'>
           <div className='col-10'>
             <input
               type='text'
@@ -198,6 +201,17 @@ const ProductCategory = () => {
             </button>
           </div>
         </div>
+        <div className='mb-4 d-flex flex-wrap gap-2'>
+          {allDesc.map((item, index) => (
+            <span
+              key={index}
+              className='badge rounded-pill bg-primary px-3 py-2 text-white'
+              style={{ cursor: 'pointer' }}
+            >
+              {item}
+            </span>
+          ))}
+        </div>
       </>
       <div className='row'>
         <div className='col-md-5'>
@@ -221,7 +235,9 @@ const ProductCategory = () => {
                   checked={selectedCategories.includes(product)}
                   onChange={() => toggleSelectProduct(product, 'left')}
                 />
-                <label className='form-check-label'>{product.name}</label>
+                <label className='form-check-label'>
+                  {product.categoryName}
+                </label>
               </div>
             ))}
           </div>
@@ -265,7 +281,9 @@ const ProductCategory = () => {
                   checked={selectedCategories.includes(product)}
                   onChange={() => toggleSelectProduct(product, 'right')}
                 />
-                <label className='form-check-label'>{product.name}</label>
+                <label className='form-check-label'>
+                  {product.categoryName}
+                </label>
               </div>
             ))}
           </div>
