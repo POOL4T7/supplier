@@ -17,7 +17,7 @@ const signupSchema = yup.object().shape({
     .string()
     .min(3, 'fullName must be at least 3 characters')
     .required('fullName is required'),
-  userType: yup.string().oneOf(['supplier', 'admin'], 'Select a user type'),
+  userType: yup.string().oneOf(['Supplier', 'Admin'], 'Select a user type'),
 });
 
 const Signup = () => {

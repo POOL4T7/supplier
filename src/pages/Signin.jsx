@@ -18,7 +18,7 @@ const loginSchema = yup.object().shape({
     .string()
     .min(3, 'Password must be at least 6 characters')
     .required('Password is required'),
-  userType: yup.string().oneOf(['Supplier', 'Admin'], 'Select a user type'),
+  // userType: yup.string().oneOf(['Supplier', 'Admin'], 'Select a user type'),
 });
 
 const LoginForm = () => {
