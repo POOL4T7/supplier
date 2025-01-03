@@ -1,8 +1,12 @@
 // import axiosInstance from '../../axios';
-import { useEffect, useState } from 'react';
-import axiosInstance from '../../axios';
-import { useAtom } from 'jotai';
-import { bussinessProfile, userDetailsAtom } from '../../storges/user';
+import { useEffect, useState } from "react";
+import axiosInstance from "../../axios";
+import { useAtom } from "jotai";
+import {
+  bussinessProfile,
+  serviceCategory,
+  userDetailsAtom,
+} from "../../storges/user";
 // import { userDetailsAtom } from '../../storges/user';
 // import { useAtom } from 'jotai';
 // import { toast } from 'react-toastify';
@@ -14,14 +18,16 @@ const ServiceCategory = () => {
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
 
-  const [categoriesValue, setCategoriesValue] = useState('');
-  const [description, setDescription] = useState('');
+  const [categoriesValue, setCategoriesValue] = useState("");
+  const [description, setDescription] = useState("");
+  const [allDesc, setAllDesc] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [supplier] = useAtom(userDetailsAtom);
   const [bussiness] = useAtom(bussinessProfile);
+  const [categoryList] = useAtom(serviceCategory);
 
   const toggleSelectProduct = (service, type) => {
-    if (type === 'left') {
+    if (type === "left") {
       setIsLeftSelected(false);
       setIsRightSelected(true);
     } else {
@@ -42,13 +48,14 @@ const ServiceCategory = () => {
 
   const moveToRight = async () => {
     await axiosInstance.post(
-      '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
+      "/proxy/productsearchsupplier/supplierCategoryDetailsStatus",
       {
         supplierBusinessId: bussiness.id,
         categoryIds: [...movedCategories, ...selectedCategories].map(
           (item) => item.id
         ),
         status: true,
+        supplierBusinessDescription: description,
       }
     );
     setMovedCategories((prev) => [...prev, ...selectedCategories]);
@@ -57,11 +64,15 @@ const ServiceCategory = () => {
     );
     setSelectedCategories([]);
     setIsRightSelected(false);
+    if (!allDesc.includes(description)) {
+      setAllDesc([...allDesc, description]);
+    }
+    setDescription('');
   };
 
   const moveToLeft = async () => {
     await axiosInstance.post(
-      '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
+      "/proxy/productsearchsupplier/supplierCategoryDetailsStatus",
       {
         supplierBusinessId: bussiness.id,
         categoryIds: [...uploadedCategories, ...selectedCategories].map(
@@ -88,21 +99,21 @@ const ServiceCategory = () => {
     //   };
     // });
     const res = await axiosInstance.post(
-      '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
+      "/proxy/productsearchsupplier/saveSupplierCategoryDetails",
       {
         categoryName: categoriesValue,
-        productsServices: 'services',
+        productsServices: "services",
         supplierBusinessId: bussiness.id,
         categoryDescription: description,
       }
     );
     const p = {
-      name: res.data.supplierCategoryName,
+      categoryName: res.data.supplierCategoryName,
       id: res.data.id,
     };
 
     setUploadedCategories([p, ...uploadedCategories]);
-    setCategoriesValue('');
+    setCategoriesValue("");
   };
 
   // const submit = async (e) => {
@@ -127,47 +138,49 @@ const ServiceCategory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axiosInstance.post(
-          '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetails',
-          {
-            supplierBusinessId: bussiness.id,
-            businessDescription: bussiness.businessDescription,
-            productsServices: 'services',
-          }
+        const res = await axiosInstance.get(
+          "/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services"
         );
 
-        setUploadedCategories(
-          res.data
-            .filter((item) => !item.active)
-            .map((item) => {
-              return {
-                id: item.categoryId,
-                name: item.categoryName,
-              };
-            })
-        );
         setMovedCategories(
           res.data
             .filter((item) => item.active)
-            .map((item) => {
-              return {
-                id: item.categoryId,
-                name: item.categoryName,
-              };
-            })
+            .map((item) => ({
+              id: item.categoryId,
+              categoryName: item.supplierCategoryName,
+            }))
         );
+        // setMovedCategories(
+        //   res.data
+        //     .filter((item) => item.active)
+        //     .map((item) => {
+        //       return {
+        //         id: item.categoryId,
+        //         name: item.categoryName,
+        //       };
+        //     })
+        // );
       } catch (e) {
         console.log(e);
       }
     };
     fetchData();
+  }, [bussiness.id, description]);
+
+  useEffect(() => {
+    if (bussiness) {
+      setDescription(bussiness.businessDescription);
+    }
+    if (categoryList?.length) {
+      setUploadedCategories(categoryList);
+    }
   }, []);
 
   return (
-    <div className='container'>
-      <div className='mb-3'>
-        <div className='row'>
-          <div className='col-10'>
+    <div className="container">
+      <div className="mb-3">
+        <div className="row">
+          <div className="col-10">
             <h3>Add Service Category</h3>
           </div>
           {/* <div className='col-2'>
@@ -182,30 +195,30 @@ const ServiceCategory = () => {
         </div>
       </div>
       <form>
-        <div className='row'>
-          <div className='col-10'>
-            <div className='mb-2'>
+        <div className="row">
+          <div className="col-10">
+            <div className="mb-2">
               <input
-                type='text'
+                type="text"
                 value={categoriesValue}
                 className={`form-control`}
-                placeholder='enter category name'
+                placeholder="enter category name"
                 onChange={(e) => setCategoriesValue(e.target.value)}
               />
             </div>
-            <div className='mb-2'>
+            <div className="mb-2">
               <input
-                type='text'
+                type="text"
                 value={description}
                 className={`form-control`}
-                placeholder='enter category description'
+                placeholder="enter category description"
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
           </div>
-          <div className='col-2'>
+          <div className="col-2">
             <button
-              className=' btn btn-primary '
+              className=" btn btn-primary "
               onClick={handleAddProduct}
               disabled={!categoriesValue}
             >
@@ -214,49 +227,60 @@ const ServiceCategory = () => {
           </div>
         </div>
       </form>
+      <div className='mb-4 d-flex flex-wrap gap-2'>
+          {allDesc.map((item, index) => (
+            <span
+              key={index}
+              className='badge rounded-pill bg-primary px-3 py-2 text-white'
+              style={{ cursor: 'pointer' }}
+            >
+              {item}
+            </span>
+          ))}
+        </div>
       <div
-        className='row align-items-center justify-content-between'
-        style={{ maxHeight: '80vh', height: '100%' }}
+        className="row align-items-center justify-content-between"
+        style={{ maxHeight: "80vh", height: "100%" }}
       >
         <div
-          className='col-md-5 border p-3'
-          style={{ height: '60vh', overflow: 'scroll' }}
+          className="col-md-5 border p-3"
+          style={{ height: "60vh", overflow: "scroll" }}
         >
-          <h5 className='mb-3'>Service Category</h5>
+          <h5 className="mb-3">Service Category</h5>
 
           {uploadedCategories.length > 0 ? (
             uploadedCategories.map((service) => (
-              <div key={service.id} className='form-check mb-2'>
+              <div key={service.id} className="form-check mb-2">
                 <input
-                  type='checkbox'
-                  className='form-check-input'
+                  type="checkbox"
+                  className="form-check-input"
                   id={`uploaded-${service.id}`}
                   checked={selectedCategories.includes(service)}
-                  onChange={() => toggleSelectProduct(service, 'left')}
+                  onChange={() => toggleSelectProduct(service, "left")}
                 />
                 <label
-                  className='form-check-label'
+                  className="form-check-label"
                   htmlFor={`uploaded-${service.id}`}
                 >
-                  {service.name}
+                  {service.categoryName}
                 </label>
               </div>
             ))
           ) : (
-            <p className='text-muted'>No service category added.</p>
+            <p className="text-muted">No service category added.</p>
           )}
         </div>
 
-        <div className='col-md-2 d-flex flex-column align-items-center'>
+        <div className="col-md-2 d-flex flex-column align-items-center">
           <button
-            className='btn btn-primary mb-2'
+            className="btn btn-primary mb-2"
             onClick={moveToRight}
             disabled={!isRightSelected}
           >
             &gt;&gt;
           </button>
           <button
-            className='btn btn-primary'
+            className="btn btn-primary"
             onClick={moveToLeft}
             disabled={!isLeftSelected}
           >
@@ -265,30 +289,30 @@ const ServiceCategory = () => {
         </div>
 
         <div
-          className='col-md-5 border pt-3'
-          style={{ height: '60vh', overflow: 'scroll' }}
+          className="col-md-5 border pt-3"
+          style={{ height: "60vh", overflow: "scroll" }}
         >
-          <h5 className='mb-3'>Selected Service Category</h5>
+          <h5 className="mb-3">Selected Service Category</h5>
           {movedCategories.length > 0 ? (
             movedCategories.map((service) => (
-              <div key={service.id} className='form-check mb-2'>
+              <div key={service.id} className="form-check mb-2">
                 <input
-                  type='checkbox'
-                  className='form-check-input'
+                  type="checkbox"
+                  className="form-check-input"
                   id={`moved-${service.id}`}
                   checked={selectedCategories.includes(service)}
-                  onChange={() => toggleSelectProduct(service, 'right')}
+                  onChange={() => toggleSelectProduct(service, "right")}
                 />
                 <label
-                  className='form-check-label'
+                  className="form-check-label"
                   htmlFor={`moved-${service.id}`}
                 >
-                  {service.name}
+                  {service.categoryName}
                 </label>
               </div>
             ))
           ) : (
-            <p className='text-muted'>No service category selected.</p>
+            <p className="text-muted">No service category selected.</p>
           )}
         </div>
       </div>

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import axiosInstance from '../../axios';
-import { useAtom } from 'jotai';
-import { bussinessProfile } from '../../storges/user';
+import { useEffect, useState } from "react";
+import axiosInstance from "../../axios";
+import { useAtom } from "jotai";
+import { bussinessProfile } from "../../storges/user";
 
 const ServiceSubCategory = () => {
   const [uploadedSubCategories, setUploadedSubCategories] = useState([]);
@@ -10,17 +10,17 @@ const ServiceSubCategory = () => {
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
 
-  const [subCategoriesValue, setSubCategoriesValue] = useState('');
-  const [category, setCategory] = useState('');
+  const [subCategoriesValue, setSubCategoriesValue] = useState("");
+  const [category, setCategory] = useState("");
   const [bussiness] = useAtom(bussinessProfile);
   const [categoryList, setCategoryList] = useState([]);
 
   // Search states
-  const [searchUploaded, setSearchUploaded] = useState('');
-  const [searchMoved, setSearchMoved] = useState('');
+  const [searchUploaded, setSearchUploaded] = useState("");
+  const [searchMoved, setSearchMoved] = useState("");
 
   const toggleSelectProduct = (product, type) => {
-    if (type === 'left') {
+    if (type === "left") {
       setIsLeftSelected(false);
       setIsRightSelected(true);
     } else {
@@ -41,7 +41,7 @@ const ServiceSubCategory = () => {
 
   const moveToRight = async () => {
     await axiosInstance.post(
-      '/proxy/productsearchsupplier/supplierSubCategoryDetailsStatus',
+      "/proxy/productsearchsupplier/supplierSubCategoryDetailsStatus",
       {
         supplierBusinessId: bussiness.id,
         subCategoryIds: [...movedSubCategories, ...selectedSubCategories].map(
@@ -49,6 +49,7 @@ const ServiceSubCategory = () => {
         ),
         status: true,
         categoryId: category.id,
+        supplierBusinessDescription: bussiness.businessDescription,
       }
     );
 
@@ -62,7 +63,7 @@ const ServiceSubCategory = () => {
 
   const moveToLeft = async () => {
     await axiosInstance.post(
-      '/proxy/productsearchsupplier/supplierSubCategoryDetailsStatus',
+      "/proxy/productsearchsupplier/supplierSubCategoryDetailsStatus",
       {
         supplierBusinessId: bussiness.id,
         subCategoryIds: [
@@ -86,32 +87,32 @@ const ServiceSubCategory = () => {
     e.preventDefault();
 
     const res = await axiosInstance.post(
-      '/proxy/productsearchsupplier/saveSupplierSubCategoryDetails',
+      "/proxy/productsearchsupplier/saveSupplierSubCategoryDetails",
       {
         subCategoryName: subCategoriesValue,
-        productsServices: 'services',
+        productsServices: "services",
         categoryId: category.id,
         supplierBusinessId: bussiness.id,
       }
     );
 
     const newCategory = {
-      name: res.data.supplierSubCategoryName,
+      subCategoryName: res.data.supplierSubCategoryName,
       id: res.data.id,
     };
     setUploadedSubCategories([...uploadedSubCategories, newCategory]);
-    setSubCategoriesValue('');
+    setSubCategoriesValue("");
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axiosInstance.post(
-          '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetails',
+          "/proxy/productsearchsupplier/getCategoryAndSubCategoryDetails",
           {
             supplierBusinessId: bussiness.id,
             businessDescription: bussiness.businessDescription,
-            productsServices: 'services',
+            productsServices: "services",
           }
         );
 
@@ -134,54 +135,39 @@ const ServiceSubCategory = () => {
 
   // Filtered lists for search
   const filteredUploadedSubCategories = uploadedSubCategories.filter((item) =>
-    item.name.toLowerCase().includes(searchUploaded.toLowerCase())
+    item.subCategoryName.toLowerCase().includes(searchUploaded.toLowerCase())
   );
   const filteredMovedSubCategories = movedSubCategories.filter((item) =>
-    item.name.toLowerCase().includes(searchMoved.toLowerCase())
+    item.subCategoryName.toLowerCase().includes(searchMoved.toLowerCase())
   );
 
+  const changeCategory = async (e) => {
+    const cate = JSON.parse(e.target.value);
+    setCategory(cate);
+
+    const res = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSubCategoryDetails?categoryId=${cate.id}&type=services`
+    );
+
+    setUploadedSubCategories(res.data);
+
+  };
+
   return (
-    <div className='container'>
-      <div className='mb-3'>
-        <div className='row'>
-          <div className='col-10'>
+    <div className="container">
+      <div className="mb-3">
+        <div className="row">
+          <div className="col-10">
             <h3>Add Service Sub Category</h3>
           </div>
         </div>
         <div>
           <select
-            className='form-select'
-            id='categoryName'
-            onChange={(e) => {
-              setCategory(JSON.parse(e.target.value));
-              console.log(JSON.parse(e.target.value));
-              const cat = categoryList.find(
-                (item) => item.id === JSON.parse(e.target.value).id
-              );
-              console.log(cat);
-              setUploadedSubCategories(
-                cat.subCategories
-                  .filter((item) => !item.active)
-                  .map((item) => {
-                    return {
-                      id: item.subCategoryId,
-                      name: item.subCategoryName,
-                    };
-                  })
-              );
-              setMovedSubCategories(
-                cat.subCategories
-                  .filter((item) => item.active)
-                  .map((item) => {
-                    return {
-                      id: item.subCategoryId,
-                      name: item.subCategoryName,
-                    };
-                  })
-              );
-            }}
+            className="form-select"
+            id="categoryName"
+            onChange={changeCategory}
           >
-            <option value=''>Select Category</option>
+            <option value="">Select Category</option>
             {categoryList.map((item) => (
               <option key={item.id} value={JSON.stringify(item)}>
                 {item.name}
@@ -193,21 +179,21 @@ const ServiceSubCategory = () => {
       {category && (
         <>
           <form>
-            <div className='row'>
-              <div className='col-10'>
-                <div className='mb-2'>
+            <div className="row">
+              <div className="col-10">
+                <div className="mb-2">
                   <input
-                    type='text'
+                    type="text"
                     value={subCategoriesValue}
-                    className='form-control'
-                    placeholder='Enter sub category name'
+                    className="form-control"
+                    placeholder="Enter sub category name"
                     onChange={(e) => setSubCategoriesValue(e.target.value)}
                   />
                 </div>
               </div>
-              <div className='col-2'>
+              <div className="col-2">
                 <button
-                  className='btn btn-primary'
+                  className="btn btn-primary"
                   onClick={handleAddProduct}
                   disabled={!subCategoriesValue}
                 >
@@ -216,44 +202,44 @@ const ServiceSubCategory = () => {
               </div>
             </div>
           </form>
-          <div className='row'>
-            <div className='col-md-5'>
+          <div className="row">
+            <div className="col-md-5">
               <input
-                type='text'
+                type="text"
                 value={searchUploaded}
-                className='form-control mb-3'
-                placeholder='Search uploaded sub categories'
-                onChange={(e) => setSearchUploaded(e.target.value, 'uploaded')}
+                className="form-control mb-3"
+                placeholder="Search uploaded sub categories"
+                onChange={(e) => setSearchUploaded(e.target.value, "uploaded")}
               />
               <div
-                className='border p-3'
-                style={{ height: '60vh', overflowY: 'scroll' }}
+                className="border p-3"
+                style={{ height: "60vh", overflowY: "scroll" }}
               >
                 <h5>Uploaded Categories</h5>
                 {filteredUploadedSubCategories?.map((product) => (
-                  <div key={product.id} className='form-check mb-2'>
+                  <div key={product.id} className="form-check mb-2">
                     <input
-                      type='checkbox'
-                      className='form-check-input'
+                      type="checkbox"
+                      className="form-check-input"
                       checked={selectedSubCategories.includes(product)}
-                      onChange={() => toggleSelectProduct(product, 'left')}
+                      onChange={() => toggleSelectProduct(product, "left")}
                     />
-                    <label className='form-check-label'>{product.name}</label>
+                    <label className="form-check-label">{product.subCategoryName}</label>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
+            <div className="col-md-2 d-flex flex-column justify-content-center align-items-center">
               <button
-                className='btn btn-primary mb-2'
+                className="btn btn-primary mb-2"
                 onClick={moveToRight}
                 disabled={!isRightSelected}
               >
                 &gt;&gt;
               </button>
               <button
-                className='btn btn-primary'
+                className="btn btn-primary"
                 onClick={moveToLeft}
                 disabled={!isLeftSelected}
               >
@@ -261,28 +247,28 @@ const ServiceSubCategory = () => {
               </button>
             </div>
 
-            <div className='col-md-5'>
+            <div className="col-md-5">
               <input
-                type='text'
+                type="text"
                 value={searchMoved}
-                className='form-control mb-3'
-                placeholder='Search moved sub categories'
-                onChange={(e) => setSearchMoved(e.target.value, 'moved')}
+                className="form-control mb-3"
+                placeholder="Search moved sub categories"
+                onChange={(e) => setSearchMoved(e.target.value, "moved")}
               />
               <div
-                className='border p-3'
-                style={{ height: '60vh', overflowY: 'scroll' }}
+                className="border p-3"
+                style={{ height: "60vh", overflowY: "scroll" }}
               >
                 <h5>Moved Categories</h5>
                 {filteredMovedSubCategories.map((product) => (
-                  <div key={product.id} className='form-check mb-2'>
+                  <div key={product.id} className="form-check mb-2">
                     <input
-                      type='checkbox'
-                      className='form-check-input'
+                      type="checkbox"
+                      className="form-check-input"
                       checked={selectedSubCategories.includes(product)}
-                      onChange={() => toggleSelectProduct(product, 'right')}
+                      onChange={() => toggleSelectProduct(product, "right")}
                     />
-                    <label className='form-check-label'>{product.name}</label>
+                    <label className="form-check-label">{product.subCategoryName}</label>
                   </div>
                 ))}
               </div>

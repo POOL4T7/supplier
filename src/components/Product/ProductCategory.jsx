@@ -111,7 +111,7 @@ const ProductCategory = () => {
       }
     );
     const p = {
-      name: res.data.supplierCategoryName,
+      categoryName: res.data.supplierCategoryName,
       id: res.data.id,
     };
 
