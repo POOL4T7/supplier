@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { roles } from '../storges/user';
 import { useAtom } from 'jotai';
+import Spinner from '../components/common/Spinner';
 
 const signupSchema = yup.object().shape({
   email: yup
@@ -107,7 +108,7 @@ const Signup = () => {
           className='btn btn-primary'
           disabled={isSubmitting}
         >
-          Signup
+          {isSubmitting && <Spinner width="15px" height="15px" />}  Signup
         </button>
       </form>
       <div className='row pt-3'>
