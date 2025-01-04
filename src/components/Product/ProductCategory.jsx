@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../axios';
 import { useAtom } from 'jotai';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import CreatableSelect from 'react-select/creatable';
 
 const ProductCategory = () => {
+  const selectRef = useRef(null);
   const [uploadedCategories, setUploadedCategories] = useState([]);
   const [filteredUploadedCategories, setFilteredUploadedCategories] = useState(
     []
@@ -140,13 +141,26 @@ const ProductCategory = () => {
       const res = await axiosInstance.get(
         `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
       );
-      const categories = res.data.map((item) => ({
-        id: item.id,
-        categoryName: item.supplierCategoryName,
-        categoryDescription: item.supplierCategoryDescription,
-      }));
+      let desc = [];
+      const categories = res.data.map((item) => {
+        if (!desc.includes(item.supplierCategoryDescription))
+          desc.push(item.supplierCategoryDescription);
+        return {
+          id: item.id,
+          categoryName: item.supplierCategoryName,
+          categoryDescription: item.supplierCategoryDescription,
+        };
+      });
       setMovedCategories(categories);
-      // setFilteredCategories((prev) => ({ ...prev, moved: categories }));
+      const temp = desc.splice(-4);
+      setAllDesc(temp);
+      if (selectRef.current && temp.length) {
+        selectRef.current.setValue({
+          value: temp[0],
+          label: temp[0],
+        });
+      }
+     
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -212,13 +226,13 @@ const ProductCategory = () => {
       <>
         <div className='mb-2'>
           <CreatableSelect
+            ref={selectRef}
             isClearable
             options={description}
             classNamePrefix='react-select'
             onChange={async (value) => {
               setD(value?.value);
               if (value) {
-                // Handle the value selection logic
                 const res2 = await axiosInstance.get(
                   `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
                 );
@@ -239,6 +253,14 @@ const ProductCategory = () => {
                 key={index}
                 className='badge rounded-pill bg-primary px-3 py-2 text-white'
                 style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  if (selectRef.current) {
+                    selectRef.current.setValue({
+                      value: item,
+                      label: item,
+                    });
+                  }
+                }}
               >
                 {item}
               </span>
