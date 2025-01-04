@@ -1,15 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '../../axios';
 import { useAtom } from 'jotai';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
-
 import CreatableSelect from 'react-select/creatable';
-
-// const selectOptions = [
-//   { value: 'chocolate', label: 'Chocolate' },
-//   { value: 'strawberry', label: 'Strawberry' },
-//   { value: 'vanilla', label: 'Vanilla' },
-// ];
 
 const ProductCategory = () => {
   const [uploadedCategories, setUploadedCategories] = useState([]);
@@ -29,6 +22,7 @@ const ProductCategory = () => {
   const [supplier] = useAtom(userDetailsAtom);
   const [bussiness] = useAtom(bussinessProfile);
   const [allDesc, setAllDesc] = useState([]);
+  const [d, setD] = useState('');
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -67,7 +61,7 @@ const ProductCategory = () => {
           (item) => item.id
         ),
         status: true,
-        supplierBusinessDescription: description,
+        supplierBusinessDescription: d,
       }
     );
     setMovedCategories((prev) => [...prev, ...selectedCategories]);
@@ -76,10 +70,9 @@ const ProductCategory = () => {
     );
     setSelectedCategories([]);
     setIsRightSelected(false);
-    if (!allDesc.includes(description)) {
-      setAllDesc([...allDesc, description]);
+    if (!allDesc.includes(d)) {
+      setAllDesc([...allDesc, d]);
     }
-    // setDescription('');
   };
 
   const moveToLeft = async () => {
@@ -110,7 +103,7 @@ const ProductCategory = () => {
         categoryName: categoriesValue,
         productsServices: 'products',
         supplierBusinessId: bussiness.id,
-        categoryDescription: description,
+        categoryDescription: d,
       }
     );
     const p = {
@@ -141,70 +134,41 @@ const ProductCategory = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await axiosInstance.get(
-  //         '/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products'
-  //       );
-  //       // console.log(res);
+  // Fetch categories
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await axiosInstance.get(
+        `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
+      );
+      const categories = res.data.map((item) => ({
+        id: item.id,
+        categoryName: item.supplierCategoryName,
+        categoryDescription: item.supplierCategoryDescription,
+      }));
+      setMovedCategories(categories);
+      // setFilteredCategories((prev) => ({ ...prev, moved: categories }));
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  }, [bussiness.id]);
 
-  //       setMovedCategories(
-  //         res.data
-  //           .filter((item) => item.active)
-  //           .map((item) => ({
-  //             id: item.categoryId,
-  //             categoryName: item.supplierCategoryName,
-  //           }))
-  //       );
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [bussiness.id, description]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await axiosInstance.get(
-  //         `productsearchsupplier/getCategoryDetails?type=products&businessDescription=${d}`
-  //       );
-  //       console.log(res.data);
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleInputChange = async (inputValue) => {
     if (!inputValue.trim()) {
       setDescription([]);
       return;
     }
-
     try {
       const res = await axiosInstance.get(
         `/proxy/productsearchsupplier/getAllBusinessDescription?description=${inputValue}`
       );
-      // const res2 = await axiosInstance.get(
-      //   `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${d}`
-      // );
-
-      // setUploadedCategories(res2.data);
-
-      // const res = await axiosInstance.post(
-      //   '/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription',
-      //   {
-      //     supplierBusinessId: bussiness.id,
-      //     supplierBusinessDescription: inputValue,
-      //   }
-      // );
       const data = Array.isArray(res.data) ? res.data : [];
       setDescription(
         data.map((desc) => ({
-          value: desc.id,
+          value: desc.description,
           label: desc.description,
         }))
       );
@@ -235,7 +199,7 @@ const ProductCategory = () => {
           }
         );
         setDescription([...description, { label: value, value }]);
-        // setD(value);
+        setD(value);
         console.log('Business description added successfully');
       } catch (error) {
         console.error('Error adding business description:', error);
@@ -246,37 +210,43 @@ const ProductCategory = () => {
   return (
     <div className='container'>
       <>
+        <div className='mb-2'>
+          <CreatableSelect
+            isClearable
+            options={description}
+            classNamePrefix='react-select'
+            onChange={async (value) => {
+              setD(value?.value);
+              if (value) {
+                // Handle the value selection logic
+                const res2 = await axiosInstance.get(
+                  `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
+                );
+                setUploadedCategories(res2.data);
+              }
+            }}
+            onInputChange={(inputValue) => {
+              if (inputValue.length > 2) debouncedInputChange(inputValue);
+              return inputValue;
+            }}
+            onCreateOption={handleCreate}
+          />
+        </div>
+        {allDesc.length > 0 && (
+          <div className='mb-4 d-flex flex-wrap gap-2'>
+            {allDesc.map((item, index) => (
+              <span
+                key={index}
+                className='badge rounded-pill bg-primary px-3 py-2 text-white'
+                style={{ cursor: 'pointer' }}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        )}
         <div className='row mb-2'>
           <div className='col-10'>
-            <div className='mb-2'>
-              <CreatableSelect
-                isClearable
-                options={description}
-                classNamePrefix='react-select'
-                onChange={async (value) => {
-                  console.log('value', value);
-                  if (value) {
-                    // Handle the value selection logic
-                    const res2 = await axiosInstance.get(
-                      `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
-                    );
-                    setUploadedCategories(res2.data);
-                  }
-                }}
-                onInputChange={(inputValue) => {
-                  if (inputValue.length > 2) debouncedInputChange(inputValue);
-                  return inputValue;
-                }}
-                onCreateOption={handleCreate}
-              />
-            </div>
-            {/* <input
-              type='text'
-              value={description}
-              className='form-control mb-2'
-              placeholder='Enter bussiness description'
-              onChange={(e) => setDescription(e.target.value)}
-            /> */}
             <input
               type='text'
               value={categoriesValue}
@@ -294,17 +264,6 @@ const ProductCategory = () => {
               Add
             </button>
           </div>
-        </div>
-        <div className='mb-4 d-flex flex-wrap gap-2'>
-          {allDesc.map((item, index) => (
-            <span
-              key={index}
-              className='badge rounded-pill bg-primary px-3 py-2 text-white'
-              style={{ cursor: 'pointer' }}
-            >
-              {item}
-            </span>
-          ))}
         </div>
       </>
       <div className='row'>

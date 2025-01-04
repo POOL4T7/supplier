@@ -16,10 +16,10 @@ const ProductSubCategory = () => {
 
   const [allCategoryList, setAllCategoryList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  // Search states
   const [searchUploaded, setSearchUploaded] = useState('');
   const [searchMoved, setSearchMoved] = useState('');
   const [descriptionList, setDescriptionList] = useState([]);
+  const [d, setD] = useState('');
 
   const toggleSelectProduct = (product, type) => {
     if (type === 'left') {
@@ -51,7 +51,7 @@ const ProductSubCategory = () => {
         ),
         status: true,
         categoryId: category.id,
-        supplierBusinessDescription: bussiness.businessDescription,
+        supplierBusinessDescription: d,
       }
     );
 
@@ -110,10 +110,7 @@ const ProductSubCategory = () => {
     const fetchData = async () => {
       try {
         const res = await axiosInstance.get(
-          '/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products'
-        );
-        const res2 = await axiosInstance.get(
-          '/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products'
+          `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
         );
 
         setAllCategoryList(
@@ -126,7 +123,7 @@ const ProductSubCategory = () => {
             }))
         );
         setDescriptionList(
-          res2.data.map((item) => item.supplierCategoryDescription)
+          res.data.map((item) => item.supplierCategoryDescription)
         );
       } catch (e) {
         console.log(e);
@@ -151,6 +148,10 @@ const ProductSubCategory = () => {
     const res = await axiosInstance.get(
       `/proxy/productsearchsupplier/getSubCategoryDetails?categoryId=${cate.id}&type=products`
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierSubCategoryDetails?supplierCategoryId=${cate.id}&type=products`
+    );
+    setMovedSubCategories(res2.data);
 
     setUploadedSubCategories(res.data);
   };
@@ -160,6 +161,7 @@ const ProductSubCategory = () => {
       (item) => item.supplierCategoryDescription === e.target.value
     );
     setCategoryList(cateList);
+    setD(e.target.value);
   };
 
   return (
@@ -176,12 +178,12 @@ const ProductSubCategory = () => {
             id='categoryName'
             onChange={bussinessDescription}
           >
+            <option value=''>Select bussiness description</option>
             {descriptionList.map((item) => (
               <option key={item} value={item}>
                 {item}
               </option>
             ))}
-            <option value=''>Select bussiness description</option>
           </select>
         </div>
         <div>

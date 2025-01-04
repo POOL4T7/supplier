@@ -19,10 +19,10 @@ import Spinner from '../common/Spinner';
 
 const bussinessSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
-  businessDescription: yup.object().shape({
-    label: yup.string().required(),
-    value: yup.string().required(),
-  }),
+  // businessDescription: yup.object().shape({
+  //   label: yup.string().required(),
+  //   value: yup.string().required(),
+  // }),
   addressLine1: yup.string().required('Address Line 1 is required'),
   addressLine2: yup.string().optional(),
   zipcode: yup.string().required('zipcode is required'),
