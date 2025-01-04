@@ -12,6 +12,8 @@ const ProductList = () => {
   const [isRightSelected, setIsRightSelected] = useState(false);
   const [supplier] = useAtom(userDetailsAtom);
   const [productValue, setProductValue] = useState('');
+  const [brand, setBrand] = useState('');
+  const [productDescription, setProductDescription] = useState('');
 
   const [bussiness] = useAtom(bussinessProfile);
 
@@ -84,28 +86,18 @@ const ProductList = () => {
     setIsLeftSelected(false);
   };
 
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!productValue) return;
-    const [brand, productName, description] = productValue.split(',');
-    if (!productName || !description || !brand) {
-      toast.error(
-        'Please upload product in correct format brand,name,description'
-      );
-      return;
-    }
-    setUploadedProducts([
-      ...uploadedProducts,
-      { id: 1, brand, productName, description },
-    ]);
-    const res = axiosInstance.post(
+
+    const res = await axiosInstance.post(
       'proxy/productsearchsupplier/api/supplier/file/addProductsOrServices',
       {
         fileRowDataList: [
           {
-            name: productName,
+            name: productValue,
             brand,
-            description,
+            description: productDescription,
           },
         ],
         supplierBusinessId: bussiness.id,
@@ -113,8 +105,19 @@ const ProductList = () => {
         supplierId: supplier.id,
       }
     );
-    console.log('res', res);
+
+    setUploadedProducts([
+      ...uploadedProducts,
+      {
+        id: res.data.productDetailsList[0].id,
+        brand: res.data.productDetailsList[0],
+        productName: productValue,
+        description: productDescription,
+      },
+    ]);
     setProductValue('');
+    setBrand('');
+    setProductDescription('');
   };
 
   const submit = async (e) => {
@@ -174,33 +177,40 @@ const ProductList = () => {
       <form>
         <div className='row'>
           <div className='col-10'>
-            <div className='mb-2'>
-              <input
-                type='text'
-                value={productValue}
-                className={`form-control`}
-                onChange={(e) => setProductValue(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className='col-10'>
-            <div className='mb-2'>
-              <input
-                type='text'
-                value={productValue}
-                className={`form-control`}
-                onChange={(e) => setProductValue(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className='col-10'>
-            <div className='mb-2'>
-              <input
-                type='text'
-                value={productValue}
-                className={`form-control`}
-                onChange={(e) => setProductValue(e.target.value)}
-              />
+            <div className='row'>
+              <div className='col-3'>
+                <div className='mb-2'>
+                  <input
+                    type='text'
+                    value={brand}
+                    className={`form-control`}
+                    onChange={(e) => setBrand(e.target.value)}
+                    placeholder='brand name'
+                  />
+                </div>
+              </div>
+              <div className='col-4'>
+                <div className='mb-2'>
+                  <input
+                    type='text'
+                    value={productValue}
+                    className={`form-control`}
+                    onChange={(e) => setProductValue(e.target.value)}
+                    placeholder='product name'
+                  />
+                </div>
+              </div>
+              <div className='col-5'>
+                <div className='mb-2'>
+                  <input
+                    type='text'
+                    value={productDescription}
+                    className={`form-control`}
+                    onChange={(e) => setProductDescription(e.target.value)}
+                    placeholder='product description'
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div className='col-2'>
