@@ -7,10 +7,22 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import Spinner from '../common/Spinner';
+
+// import CreatableSelect from 'react-select/creatable';
+
+// const selectOptions = [
+//   { value: 'chocolate', label: 'Chocolate' },
+//   { value: 'strawberry', label: 'Strawberry' },
+//   { value: 'vanilla', label: 'Vanilla' },
+// ];
 
 const bussinessSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
-  businessDescription: yup.string().optional(),
+  businessDescription: yup.object().shape({
+    label: yup.string().required(),
+    value: yup.string().required(),
+  }),
   addressLine1: yup.string().required('Address Line 1 is required'),
   addressLine2: yup.string().optional(),
   zipcode: yup.string().required('zipcode is required'),
@@ -19,7 +31,10 @@ const bussinessSchema = yup.object().shape({
   premisesType: yup.string().required('Premises type is required'),
   premisesName: yup.string().optional(),
   businessTaxId: yup.string().required('Business tax ID is required'),
-  website: yup.string().url('Invalid URL'),
+  website: yup
+    .string()
+    .required('Website is required')
+    .matches(/.*\..*/, 'Invalid website'),
   email: yup.string().email('Invalid email').required('Email is required'),
   sector: yup.string().required('Sector is required'),
   // businessCategory: yup.string().optional(),
@@ -38,12 +53,23 @@ const BussinessProfile = () => {
     subCategory: [],
   });
 
+  // const [options, setOptions] = useState(['Option 1', 'Option 2', 'Option 3']); // Initial options
+  // const [newOption, setNewOption] = useState('');
+
+  // const handleAddOption = () => {
+  //   if (newOption.trim() && !options.includes(newOption.trim())) {
+  //     setOptions((prevOptions) => [...prevOptions, newOption.trim()]);
+  //     setNewOption(''); // Clear the input field
+  //   }
+  // };
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
     watch,
+    // control,
     // setValue,
   } = useForm({
     resolver: yupResolver(bussinessSchema),
@@ -58,6 +84,7 @@ const BussinessProfile = () => {
 
   const onSubmit = async (data) => {
     try {
+      delete data.businessDescription;
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         { ...data, supplierId: supplier.id, supplierBusinessId: bussiness.id }
@@ -128,18 +155,85 @@ const BussinessProfile = () => {
                     {errors.businessName?.message}
                   </div>
                 </div>
-                <div className='mb-2'>
+
+                {/* <div className='mb-2'>
                   <label className='form-label'>Business Description</label>
-                  <textarea
+                  <Controller
+                    name='businessDescription'
+                    control={control}
+                    defaultValue={null}
+                    rules={{ required: 'Business Description is required' }}
+                    render={({ field }) => (
+                      <CreatableSelect
+                        {...field}
+                        isClearable
+                        options={selectOptions}
+                        className={`form-control ${
+                          errors.businessDescription ? 'is-invalid' : ''
+                        }`}
+                        classNamePrefix='react-select'
+                      />
+                    )}
+                  />
+                  {errors.businessDescription && (
+                    <div className='invalid-feedback'>
+                      {errors.businessDescription.message}
+                    </div>
+                  )}
+                </div> */}
+                {/* <div className='mb-2'>
+                  <CreatableSelect
+                    isClearable
+                    options={selectOptions}
+                    className={`form-control ${
+                      errors.businessDescription ? 'is-invalid' : ''
+                    }`}
+                    classNamePrefix='react-select'
+                    onChange={async (value) => {
+                      await axiosInstance.post(
+                        '/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription',
+                        {
+                          supplierBusinessId: bussiness.id,
+                          supplierBusinessDescription: value.value,
+                        }
+                      );
+                    }}
+                  />
+                </div> */}
+                {/* <div className='mb-2'>
+                  <label className='form-label'>Business Description</label>
+                  <select
                     {...register('businessDescription')}
                     className={`form-control ${
                       errors.businessDescription ? 'is-invalid' : ''
                     }`}
-                  />
+                  >
+                    {options.map((option, index) => (
+                      <option key={index} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
                   <div className='invalid-feedback'>
                     {errors.businessDescription?.message}
                   </div>
-                </div>
+                  <div className='mt-2'>
+                    <input
+                      type='text'
+                      className='form-control'
+                      value={newOption}
+                      onChange={(e) => setNewOption(e.target.value)}
+                      placeholder='Add new option'
+                    />
+                    <button
+                      type='button'
+                      className='btn btn-primary mt-2'
+                      onClick={handleAddOption}
+                    >
+                      Add Option
+                    </button>
+                  </div>
+                </div> */}
                 <div className='mb-2'>
                   <label className='form-label'>Premises Type</label>
                   <div>
@@ -295,7 +389,7 @@ const BussinessProfile = () => {
               <div className='mb-2'>
                 <label className='form-label'>Website</label>
                 <input
-                  type='url'
+                  type='text'
                   {...register('website')}
                   className={`form-control ${
                     errors.website ? 'is-invalid' : ''
@@ -337,7 +431,7 @@ const BussinessProfile = () => {
                 className='btn btn-primary my-2'
                 disabled={isSubmitting}
               >
-                Save
+                {isSubmitting && <Spinner width='15px' height='15px' />} Save
               </button>
             </div>
           </div>

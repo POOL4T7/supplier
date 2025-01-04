@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { userDetailsAtom } from '../../storges/user';
 import { toast } from 'react-toastify';
+import Spinner from '../common/Spinner';
 
 const step1Schema = yup.object().shape({
   supplierName: yup.string().required('Name is required'),
@@ -59,7 +60,7 @@ const SupplierDetails = () => {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(step1Schema),
     mode: 'onTouched',
@@ -274,8 +275,12 @@ const SupplierDetails = () => {
         <div className='invalid-feedback'>{errors.country?.message}</div>
       </div>
 
-      <button type='submit' className='btn btn-primary my-2 my-sm-0'>
-        Save & Next
+      <button
+        type='submit'
+        className='btn btn-primary my-2 my-sm-0'
+        disabled={isSubmitting}
+      >
+        {isSubmitting && <Spinner width='15px' height='15px' />} Save
       </button>
     </form>
   );

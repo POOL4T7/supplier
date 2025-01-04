@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../axios';
 import { useAtom } from 'jotai';
-import {
-  bussinessProfile,
-  productCategory,
-  userDetailsAtom,
-} from '../../storges/user';
+import { bussinessProfile, userDetailsAtom } from '../../storges/user';
+
+import CreatableSelect from 'react-select/creatable';
+
+// const selectOptions = [
+//   { value: 'chocolate', label: 'Chocolate' },
+//   { value: 'strawberry', label: 'Strawberry' },
+//   { value: 'vanilla', label: 'Vanilla' },
+// ];
 
 const ProductCategory = () => {
   const [uploadedCategories, setUploadedCategories] = useState([]);
@@ -18,13 +22,12 @@ const ProductCategory = () => {
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
   const [categoriesValue, setCategoriesValue] = useState('');
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState([]);
   const [uploadedSearch, setUploadedSearch] = useState('');
   const [movedSearch, setMovedSearch] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [supplier] = useAtom(userDetailsAtom);
   const [bussiness] = useAtom(bussinessProfile);
-  const [categoryList] = useAtom(productCategory);
   const [allDesc, setAllDesc] = useState([]);
 
   useEffect(() => {
@@ -76,7 +79,7 @@ const ProductCategory = () => {
     if (!allDesc.includes(description)) {
       setAllDesc([...allDesc, description]);
     }
-    setDescription('');
+    // setDescription('');
   };
 
   const moveToLeft = async () => {
@@ -117,7 +120,6 @@ const ProductCategory = () => {
 
     setUploadedCategories([p, ...uploadedCategories]);
     setCategoriesValue('');
-    setDescription('');
   };
 
   const handleSearch = (query, type) => {
@@ -139,56 +141,148 @@ const ProductCategory = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axiosInstance.get(
-          '/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products'
-        );
-        // console.log(res);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(
+  //         '/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products'
+  //       );
+  //       // console.log(res);
 
-        setMovedCategories(
-          res.data
-            .filter((item) => item.active)
-            .map((item) => ({
-              id: item.categoryId,
-              categoryName: item.supplierCategoryName,
-            }))
-        );
-      } catch (e) {
-        console.log(e);
-      }
+  //       setMovedCategories(
+  //         res.data
+  //           .filter((item) => item.active)
+  //           .map((item) => ({
+  //             id: item.categoryId,
+  //             categoryName: item.supplierCategoryName,
+  //           }))
+  //       );
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [bussiness.id, description]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(
+  //         `productsearchsupplier/getCategoryDetails?type=products&businessDescription=${d}`
+  //       );
+  //       console.log(res.data);
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
+  const handleInputChange = async (inputValue) => {
+    if (!inputValue.trim()) {
+      setDescription([]);
+      return;
+    }
+
+    try {
+      const res = await axiosInstance.get(
+        `/proxy/productsearchsupplier/getAllBusinessDescription?description=${inputValue}`
+      );
+      // const res2 = await axiosInstance.get(
+      //   `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${d}`
+      // );
+
+      // setUploadedCategories(res2.data);
+
+      // const res = await axiosInstance.post(
+      //   '/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription',
+      //   {
+      //     supplierBusinessId: bussiness.id,
+      //     supplierBusinessDescription: inputValue,
+      //   }
+      // );
+      const data = Array.isArray(res.data) ? res.data : [];
+      setDescription(
+        data.map((desc) => ({
+          value: desc.id,
+          label: desc.description,
+        }))
+      );
+    } catch (error) {
+      console.error('Error fetching business descriptions:', error);
+    }
+  };
+
+  // Update `onInputChange` to handle only the string and debounce the API calls
+  const debounceFetch = (func, delay) => {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
     };
-    fetchData();
-  }, [bussiness.id, description]);
+  };
 
-  useEffect(() => {
-    if (bussiness) {
-      setDescription(bussiness.businessDescription);
+  const debouncedInputChange = debounceFetch(handleInputChange, 500);
+
+  const handleCreate = async (value) => {
+    if (value) {
+      try {
+        await axiosInstance.post(
+          '/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription',
+          {
+            supplierBusinessId: bussiness.id,
+            supplierBusinessDescription: value,
+          }
+        );
+        setDescription([...description, { label: value, value }]);
+        // setD(value);
+        console.log('Business description added successfully');
+      } catch (error) {
+        console.error('Error adding business description:', error);
+      }
     }
-    if (categoryList?.length) {
-      setUploadedCategories(categoryList);
-    }
-  }, []);
+  };
 
   return (
     <div className='container'>
       <>
         <div className='row mb-2'>
           <div className='col-10'>
+            <div className='mb-2'>
+              <CreatableSelect
+                isClearable
+                options={description}
+                classNamePrefix='react-select'
+                onChange={async (value) => {
+                  console.log('value', value);
+                  if (value) {
+                    // Handle the value selection logic
+                    const res2 = await axiosInstance.get(
+                      `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
+                    );
+                    setUploadedCategories(res2.data);
+                  }
+                }}
+                onInputChange={(inputValue) => {
+                  if (inputValue.length > 2) debouncedInputChange(inputValue);
+                  return inputValue;
+                }}
+                onCreateOption={handleCreate}
+              />
+            </div>
+            {/* <input
+              type='text'
+              value={description}
+              className='form-control mb-2'
+              placeholder='Enter bussiness description'
+              onChange={(e) => setDescription(e.target.value)}
+            /> */}
             <input
               type='text'
               value={categoriesValue}
               className='form-control'
               placeholder='Enter category name'
               onChange={(e) => setCategoriesValue(e.target.value)}
-            />
-            <input
-              type='text'
-              value={description}
-              className='form-control mt-2'
-              placeholder='Enter bussiness description'
-              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
           <div className='col-2'>

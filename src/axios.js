@@ -41,7 +41,7 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem('user');
       localStorage.removeItem('authAccessToken');
       console.warn('Unauthorized! Redirecting to login...');
-      window.location.href = '/signin';
+      // window.location.href = '/signin';
     }
     return Promise.reject(error);
   }

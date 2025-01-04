@@ -183,6 +183,26 @@ const ProductList = () => {
               />
             </div>
           </div>
+          <div className='col-10'>
+            <div className='mb-2'>
+              <input
+                type='text'
+                value={productValue}
+                className={`form-control`}
+                onChange={(e) => setProductValue(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className='col-10'>
+            <div className='mb-2'>
+              <input
+                type='text'
+                value={productValue}
+                className={`form-control`}
+                onChange={(e) => setProductValue(e.target.value)}
+              />
+            </div>
+          </div>
           <div className='col-2'>
             <button className=' btn btn-primary ' onClick={handleAddProduct}>
               Add
