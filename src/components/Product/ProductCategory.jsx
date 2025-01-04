@@ -122,11 +122,11 @@ const ProductCategory = () => {
       setUploadedSearch(query);
       setFilteredUploadedCategories(
         uploadedCategories.filter((category) =>
-          category.categoryName.toLowerCase().includes(query.toLowerCase())
+          category.categoryName?.toLowerCase().includes(query.toLowerCase())
         )
       );
     } else {
-      console.log(query, type, movedCategories);
+      // console.log(query, type, movedCategories);
       setMovedSearch(query);
       setFilteredMovedCategories(
         movedCategories.filter((category) =>

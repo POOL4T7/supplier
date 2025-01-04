@@ -135,10 +135,10 @@ const ProductSubCategory = () => {
 
   // Filtered lists for search
   const filteredUploadedSubCategories = uploadedSubCategories.filter((item) =>
-    item.subCategoryName.toLowerCase().includes(searchUploaded.toLowerCase())
+    item.subCategoryName?.toLowerCase().includes(searchUploaded?.toLowerCase())
   );
   const filteredMovedSubCategories = movedSubCategories.filter((item) =>
-    item.subCategoryName.toLowerCase().includes(searchMoved.toLowerCase())
+    item.subCategoryName?.toLowerCase().includes(searchMoved?.toLowerCase())
   );
 
   const changeCategory = async (e) => {
