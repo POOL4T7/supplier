@@ -105,6 +105,7 @@ const ProductCategory = () => {
         productsServices: 'products',
         supplierBusinessId: bussiness.id,
         categoryDescription: d,
+        supplierBusinessDescription: d,
       }
     );
     const p = {
@@ -143,8 +144,11 @@ const ProductCategory = () => {
       );
       let desc = [];
       const categories = res.data.map((item) => {
-        if (!desc.includes(item.supplierCategoryDescription))
-          desc.push(item.supplierCategoryDescription);
+        if (
+          !desc.includes(item.supplierBusinessDescription) &&
+          item.supplierBusinessDescription
+        )
+          desc.push(item.supplierBusinessDescription);
         return {
           id: item.id,
           categoryName: item.supplierCategoryName,
@@ -160,7 +164,6 @@ const ProductCategory = () => {
           label: temp[0],
         });
       }
-     
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -244,6 +247,7 @@ const ProductCategory = () => {
               return inputValue;
             }}
             onCreateOption={handleCreate}
+            placeholder='bussiness description'
           />
         </div>
         {allDesc.length > 0 && (
