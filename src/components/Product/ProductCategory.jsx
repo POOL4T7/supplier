@@ -166,8 +166,9 @@ const ProductCategory = () => {
           label: temp[0],
         });
       }
+      console.log('categories', categories)
       setMovedCategories(
-        allMovedcategory?.filter(
+        categories?.filter(
           (item) => item.supplierBusinessDescription === temp[0]
         )
       );
