@@ -41,3 +41,16 @@ h2 {
 .form-label {
   font-weight: 500;
 }
+
+table {
+  word-wrap: break-word;
+  table-layout: fixed; /* Ensures cells have consistent widths */
+}
+
+table th,
+table td {
+  white-space: normal; /* Allows wrapping */
+  overflow-wrap: break-word; /* Breaks long words */
+  text-align: left; /* Aligns text to the left */
+  vertical-align: middle; /* Centers text vertically */
+}

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Header from './components/layout/Header.jsx';
-import { Outlet } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 import { bussinessProfile, userDetailsAtom, roles } from './storges/user.js';
 import { useAtom } from 'jotai';
 import axiosInstance from './axios.js';
@@ -11,6 +11,7 @@ const Layout = () => {
 
   const [, setRoles] = useAtom(roles);
 
+  const navigate = useNavigate();
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     const token = localStorage.getItem('authAccessToken');
@@ -61,9 +62,13 @@ const Layout = () => {
       }
     }
 
-    if (user?.supplierId) {
-      fetchProfileData();
-      fetchBussinessProfile();
+    if (user) {
+      if (user.supplierId) {
+        fetchProfileData();
+        fetchBussinessProfile();
+      } else {
+        navigate('/admin');
+      }
     }
     fetchRolesData();
   }, []);
