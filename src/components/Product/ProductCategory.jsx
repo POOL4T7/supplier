@@ -166,14 +166,19 @@ const ProductCategory = () => {
           label: temp[0],
         });
       }
+      setMovedCategories(
+        allMovedcategory?.filter(
+          (item) => item.supplierBusinessDescription === temp[0]
+        )
+      );
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  }, [bussiness.id]);
+  }, [allMovedcategory, bussiness.id]);
 
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+  }, []);
 
   const handleInputChange = async (inputValue) => {
     if (!inputValue.trim()) {
