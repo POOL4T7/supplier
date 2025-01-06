@@ -24,7 +24,7 @@ const ProductCategory = () => {
   const [bussiness] = useAtom(bussinessProfile);
   const [allDesc, setAllDesc] = useState([]);
   const [d, setD] = useState("");
-  const [allMovedcategory, setAllMovedCatgeory] = useState(false);
+  const [allMovedcategory, setAllMovedCatgeory] = useState([]);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -243,7 +243,7 @@ const ProductCategory = () => {
                 );
                 setUploadedCategories(res2.data);
                 setMovedCategories(
-                  allMovedcategory.filter(
+                  allMovedcategory?.filter(
                     (item) => item.supplierBusinessDescription === value.value
                   )
                 );
