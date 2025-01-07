@@ -1,28 +1,41 @@
-// import axiosInstance from '../../axios';
-import { useEffect, useState } from 'react';
-import axiosInstance from '../../axios';
-import { useAtom } from 'jotai';
-import { bussinessProfile, userDetailsAtom } from '../../storges/user';
-// import { userDetailsAtom } from '../../storges/user';
-// import { useAtom } from 'jotai';
-// import { toast } from 'react-toastify';
+import { useCallback, useEffect, useRef, useState } from "react";
+import axiosInstance from "../../axios";
+import { useAtom } from "jotai";
+import { bussinessProfile, userDetailsAtom } from "../../storges/user";
+import CreatableSelect from "react-select/creatable";
 
 const ServiceCategory = () => {
+  const selectRef = useRef(null);
   const [uploadedCategories, setUploadedCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [filteredUploadedCategories, setFilteredUploadedCategories] = useState(
+    []
+  );
   const [movedCategories, setMovedCategories] = useState([]);
+  const [filteredMovedCategories, setFilteredMovedCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
-
-  const [categoriesValue, setCategoriesValue] = useState('');
-  const [description, setDescription] = useState('');
-  const [allDesc, setAllDesc] = useState([]);
+  const [categoriesValue, setCategoriesValue] = useState("");
+  const [description, setDescription] = useState([]);
+  const [uploadedSearch, setUploadedSearch] = useState("");
+  const [movedSearch, setMovedSearch] = useState("");
   // eslint-disable-next-line no-unused-vars
   const [supplier] = useAtom(userDetailsAtom);
   const [bussiness] = useAtom(bussinessProfile);
+  const [allDesc, setAllDesc] = useState([]);
+  const [d, setD] = useState("");
+  // const [allMovedcategory, setAllMovedCatgeory] = useState([]);
 
-  const toggleSelectProduct = (service, type) => {
-    if (type === 'left') {
+  useEffect(() => {
+    setFilteredUploadedCategories(uploadedCategories);
+  }, [uploadedCategories]);
+
+  useEffect(() => {
+    setFilteredMovedCategories(movedCategories);
+  }, [movedCategories]);
+
+  const toggleSelectProduct = (product, type) => {
+    if (type === "left") {
       setIsLeftSelected(false);
       setIsRightSelected(true);
     } else {
@@ -30,9 +43,9 @@ const ServiceCategory = () => {
       setIsRightSelected(false);
     }
     setSelectedCategories((prevSelected) => {
-      const newTemp = prevSelected.includes(service)
-        ? prevSelected.filter((p) => p !== service)
-        : [...prevSelected, service];
+      const newTemp = prevSelected.includes(product)
+        ? prevSelected.filter((p) => p !== product)
+        : [...prevSelected, product];
       if (newTemp.length == 0) {
         setIsLeftSelected(false);
         setIsRightSelected(false);
@@ -43,14 +56,14 @@ const ServiceCategory = () => {
 
   const moveToRight = async () => {
     await axiosInstance.post(
-      '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
+      "/proxy/productsearchsupplier/supplierCategoryDetailsStatus",
       {
         supplierBusinessId: bussiness.id,
         categoryIds: [...movedCategories, ...selectedCategories].map(
           (item) => item.id
         ),
         status: true,
-        supplierBusinessDescription: description,
+        supplierBusinessDescription: d,
       }
     );
     setMovedCategories((prev) => [...prev, ...selectedCategories]);
@@ -59,15 +72,14 @@ const ServiceCategory = () => {
     );
     setSelectedCategories([]);
     setIsRightSelected(false);
-    if (!allDesc.includes(description)) {
-      setAllDesc([...allDesc, description]);
+    if (!allDesc.includes(d)) {
+      setAllDesc([...allDesc, d]);
     }
-    setDescription('');
   };
 
   const moveToLeft = async () => {
     await axiosInstance.post(
-      '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
+      "/proxy/productsearchsupplier/supplierCategoryDetailsStatus",
       {
         supplierBusinessId: bussiness.id,
         categoryIds: [...uploadedCategories, ...selectedCategories].map(
@@ -87,19 +99,14 @@ const ServiceCategory = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
-    // const list = categoriesValue.split(',').map((item, idx) => {
-    //   return {
-    //     id: idx,
-    //     name: item,
-    //   };
-    // });
     const res = await axiosInstance.post(
-      '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
+      "/proxy/productsearchsupplier/saveSupplierCategoryDetails",
       {
         categoryName: categoriesValue,
-        productsServices: 'services',
+        productsServices: "services",
         supplierBusinessId: bussiness.id,
-        categoryDescription: description,
+        categoryDescription: d,
+        supplierBusinessDescription: d,
       }
     );
     const p = {
@@ -108,112 +115,212 @@ const ServiceCategory = () => {
     };
 
     setUploadedCategories([p, ...uploadedCategories]);
-    setCategoriesValue('');
+    setCategoriesValue("");
   };
 
-  // const submit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const data = {
-  //       supplierBusinessId: supplier.id,
-  //       productId: movedCategories.map((item) => item.id),
-  //       status: true,
-  //     };
-  //     const res = await axiosInstance.post(
-  //       '/proxyproductsearchsupplier/api/supplier/file/productservicestatus',
-  //       data
-  //     );
-  //     console.log(res);
-  //     toast.success(res.data.message);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axiosInstance.get(
-          '/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services'
-        );
-
-        setMovedCategories(
-          res.data
-            .filter((item) => item.active)
-            .map((item) => ({
-              id: item.categoryId,
-              categoryName: item.supplierCategoryName,
-            }))
-        );
-        // setMovedCategories(
-        //   res.data
-        //     .filter((item) => item.active)
-        //     .map((item) => {
-        //       return {
-        //         id: item.categoryId,
-        //         name: item.categoryName,
-        //       };
-        //     })
-        // );
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchData();
-  }, [bussiness.id, description]);
-
-  useEffect(() => {
-    if (bussiness) {
-      setDescription(bussiness.businessDescription);
+  const handleSearch = (query, type) => {
+    if (type === "uploaded") {
+      setUploadedSearch(query);
+      setFilteredUploadedCategories(
+        uploadedCategories.filter((category) =>
+          category.categoryName?.toLowerCase().includes(query.toLowerCase())
+        )
+      );
+    } else {
+      // console.log(query, type, movedCategories);
+      setMovedSearch(query);
+      setFilteredMovedCategories(
+        movedCategories.filter((category) =>
+          category.categoryName?.toLowerCase().includes(query.toLowerCase())
+        )
+      );
     }
-    // if (categoryList?.length) {
-    //   setUploadedCategories(categoryList);
-    // }
+  };
+
+  // Fetch categories
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await axiosInstance.get(
+        `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
+      );
+      let desc = [];
+       res.data.map((item) => {
+        if (
+          !desc.includes(item.supplierBusinessDescription) &&
+          item.supplierBusinessDescription
+        )
+          desc.push(item.supplierBusinessDescription);
+        return {
+          id: item.id,
+          categoryName: item.supplierCategoryName,
+          categoryDescription: item.supplierCategoryDescription,
+          supplierBusinessDescription: item.supplierBusinessDescription,
+        };
+      });
+      // setAllMovedCatgeory(categories);
+      const temp = desc.splice(-4);
+      setAllDesc(temp);
+      if (selectRef.current && temp.length) {
+        selectRef.current.setValue({
+          value: temp[0],
+          label: temp[0],
+        });
+      }
+      // console.log("categories", categories);
+      // setMovedCategories(
+      //   categories?.filter(
+      //     (item) => item.supplierBusinessDescription === temp[0]
+      //   )
+      // );
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  }, [bussiness.id]);
+
+  useEffect(() => {
+    fetchCategories();
   }, []);
 
+  const handleInputChange = async (inputValue) => {
+    if (!inputValue.trim()) {
+      setDescription([]);
+      return;
+    }
+    try {
+      const res = await axiosInstance.get(
+        `/proxy/productsearchsupplier/getAllBusinessDescription?description=${inputValue}`
+      );
+      const data = Array.isArray(res.data) ? res.data : [];
+      setDescription(
+        data.map((desc) => ({
+          value: desc.description,
+          label: desc.description,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching business descriptions:", error);
+    }
+  };
+
+  // Update `onInputChange` to handle only the string and debounce the API calls
+  const debounceFetch = (func, delay) => {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  const debouncedInputChange = debounceFetch(handleInputChange, 500);
+
+  const handleCreate = async (value) => {
+    if (value) {
+      try {
+        await axiosInstance.post(
+          "/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription",
+          {
+            supplierBusinessId: bussiness.id,
+            supplierBusinessDescription: value,
+          }
+        );
+        setDescription([...description, { label: value, value }]);
+        setD(value);
+        console.log("Business description added successfully");
+      } catch (error) {
+        console.error("Error adding business description:", error);
+      }
+    }
+  };
+
   return (
-    <div className='container'>
-      <div className='mb-3'>
-        <div className='row'>
-          <div className='col-10'>
-            <h3>Add Service Category</h3>
-          </div>
-          {/* <div className='col-2'>
-            <button
-              className='btn btn-primary'
-              // onClick={submit}
-              disabled={!movedCategories.length}
-            >
-              Update
-            </button>
-          </div> */}
+    <div className="container">
+      <>
+        <div className="mb-2">
+          <CreatableSelect
+            ref={selectRef}
+            isClearable
+            options={description}
+            classNamePrefix="react-select"
+            onChange={async (value) => {
+              setD(value?.value);
+              // console.log("here", value, allMovedcategory)
+              if (value) {
+                const res2 = await axiosInstance.get(
+                  `/proxy/productsearchsupplier/getCategoryDetails?type=services&businessDescription=${value.value}`
+                );
+                const res = await axiosInstance.get(
+                  `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
+                );
+                let desc = [];
+                const categories = res.data.map((item) => {
+                  if (
+                    !desc.includes(item.supplierBusinessDescription) &&
+                    item.supplierBusinessDescription
+                  )
+                    desc.push(item.supplierBusinessDescription);
+                  return {
+                    id: item.id,
+                    categoryName: item.supplierCategoryName,
+                    categoryDescription: item.supplierCategoryDescription,
+                    supplierBusinessDescription: item.supplierBusinessDescription,
+                  };
+                });
+                setUploadedCategories(res2.data);
+                setMovedCategories(
+                  categories?.filter(
+                    (item) => item.supplierBusinessDescription === value.value
+                  )
+                );
+              } else {
+                setUploadedCategories([]);
+                setMovedCategories([]);
+              }
+            }}
+            onInputChange={(inputValue) => {
+              if (inputValue.length > 2) debouncedInputChange(inputValue);
+              return inputValue;
+            }}
+            onCreateOption={handleCreate}
+            placeholder="bussiness description"
+            // onMenuClose={()=>{
+            //   alert("hey")
+            // }}
+          />
         </div>
-      </div>
-      <form>
-        <div className='row'>
-          <div className='col-10'>
-            <div className='mb-2'>
-              <input
-                type='text'
-                value={categoriesValue}
-                className={`form-control`}
-                placeholder='enter category name'
-                onChange={(e) => setCategoriesValue(e.target.value)}
-              />
-            </div>
-            <div className='mb-2'>
-              <input
-                type='text'
-                value={description}
-                className={`form-control`}
-                placeholder='enter category description'
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
+        {allDesc.length > 0 && (
+          <div className="mb-4 d-flex flex-wrap gap-2">
+            {allDesc.map((item, index) => (
+              <span
+                key={index}
+                className="badge rounded-pill bg-primary px-3 py-2 text-white"
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  if (selectRef.current) {
+                    selectRef.current.setValue({
+                      value: item,
+                      label: item,
+                    });
+                  }
+                }}
+              >
+                {item}
+              </span>
+            ))}
           </div>
-          <div className='col-2'>
+        )}
+        <div className="row mb-2">
+          <div className="col-10">
+            <input
+              type="text"
+              value={categoriesValue}
+              className="form-control"
+              placeholder="Enter category name"
+              onChange={(e) => setCategoriesValue(e.target.value)}
+            />
+          </div>
+          <div className="col-2">
             <button
-              className=' btn btn-primary '
+              className="btn btn-primary"
               onClick={handleAddProduct}
               disabled={!categoriesValue}
             >
@@ -221,61 +328,47 @@ const ServiceCategory = () => {
             </button>
           </div>
         </div>
-      </form>
-      <div className='mb-4 d-flex flex-wrap gap-2'>
-        {allDesc.map((item, index) => (
-          <span
-            key={index}
-            className='badge rounded-pill bg-primary px-3 py-2 text-white'
-            style={{ cursor: 'pointer' }}
+      </>
+      <div className="row">
+        <div className="col-md-5">
+          <input
+            type="text"
+            value={uploadedSearch}
+            className="form-control mb-3"
+            placeholder="Search uploaded categories"
+            onChange={(e) => handleSearch(e.target.value, "uploaded")}
+          />
+          <div
+            className="border p-3"
+            style={{ height: "60vh", overflowY: "scroll" }}
           >
-            {item}
-          </span>
-        ))}
-      </div>
-      <div
-        className='row align-items-center justify-content-between'
-        style={{ maxHeight: '80vh', height: '100%' }}
-      >
-        <div
-          className='col-md-5 border p-3'
-          style={{ height: '60vh', overflow: 'scroll' }}
-        >
-          <h5 className='mb-3'>Service Category</h5>
-
-          {uploadedCategories.length > 0 ? (
-            uploadedCategories.map((service) => (
-              <div key={service.id} className='form-check mb-2'>
+            <h5>Uploaded Categories</h5>
+            {filteredUploadedCategories.map((product) => (
+              <div key={product.id} className="form-check mb-2">
                 <input
-                  type='checkbox'
-                  className='form-check-input'
-                  id={`uploaded-${service.id}`}
-                  checked={selectedCategories.includes(service)}
-                  onChange={() => toggleSelectProduct(service, 'left')}
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={selectedCategories.includes(product)}
+                  onChange={() => toggleSelectProduct(product, "left")}
                 />
-                <label
-                  className='form-check-label'
-                  htmlFor={`uploaded-${service.id}`}
-                >
-                  {service.categoryName}
+                <label className="form-check-label">
+                  {product.categoryName}
                 </label>
               </div>
-            ))
-          ) : (
-            <p className='text-muted'>No service category added.</p>
-          )}
+            ))}
+          </div>
         </div>
 
-        <div className='col-md-2 d-flex flex-column align-items-center'>
+        <div className="col-md-2 d-flex flex-column justify-content-center align-items-center">
           <button
-            className='btn btn-primary mb-2'
+            className="btn btn-primary mb-2"
             onClick={moveToRight}
             disabled={!isRightSelected}
           >
             &gt;&gt;
           </button>
           <button
-            className='btn btn-primary'
+            className="btn btn-primary"
             onClick={moveToLeft}
             disabled={!isLeftSelected}
           >
@@ -283,32 +376,33 @@ const ServiceCategory = () => {
           </button>
         </div>
 
-        <div
-          className='col-md-5 border pt-3'
-          style={{ height: '60vh', overflow: 'scroll' }}
-        >
-          <h5 className='mb-3'>Selected Service Category</h5>
-          {movedCategories.length > 0 ? (
-            movedCategories.map((service) => (
-              <div key={service.id} className='form-check mb-2'>
+        <div className="col-md-5">
+          <input
+            type="text"
+            value={movedSearch}
+            className="form-control mb-3"
+            placeholder="Search moved categories"
+            onChange={(e) => handleSearch(e.target.value, "moved")}
+          />
+          <div
+            className="border p-3"
+            style={{ height: "60vh", overflowY: "scroll" }}
+          >
+            <h5>Moved Categories</h5>
+            {filteredMovedCategories.map((product) => (
+              <div key={product.id} className="form-check mb-2">
                 <input
-                  type='checkbox'
-                  className='form-check-input'
-                  id={`moved-${service.id}`}
-                  checked={selectedCategories.includes(service)}
-                  onChange={() => toggleSelectProduct(service, 'right')}
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={selectedCategories.includes(product)}
+                  onChange={() => toggleSelectProduct(product, "right")}
                 />
-                <label
-                  className='form-check-label'
-                  htmlFor={`moved-${service.id}`}
-                >
-                  {service.categoryName}
+                <label className="form-check-label">
+                  {product.categoryName}
                 </label>
               </div>
-            ))
-          ) : (
-            <p className='text-muted'>No service category selected.</p>
-          )}
+            ))}
+          </div>
         </div>
       </div>
     </div>

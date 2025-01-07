@@ -166,16 +166,16 @@ const ProductCategory = () => {
           label: temp[0],
         });
       }
-      console.log('categories', categories)
-      setMovedCategories(
-        categories?.filter(
-          (item) => item.supplierBusinessDescription === temp[0]
-        )
-      );
+      // console.log("categories", categories);
+      // setMovedCategories(
+      //   categories?.filter(
+      //     (item) => item.supplierBusinessDescription === temp[0]
+      //   )
+      // );
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  }, [allMovedcategory, bussiness.id]);
+  }, [bussiness.id]);
 
   useEffect(() => {
     fetchCategories();
@@ -243,13 +243,31 @@ const ProductCategory = () => {
             classNamePrefix="react-select"
             onChange={async (value) => {
               setD(value?.value);
+              console.log("here", value, allMovedcategory)
               if (value) {
                 const res2 = await axiosInstance.get(
                   `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
                 );
+                const res = await axiosInstance.get(
+                  `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
+                );
+                let desc = [];
+                const categories = res.data.map((item) => {
+                  if (
+                    !desc.includes(item.supplierBusinessDescription) &&
+                    item.supplierBusinessDescription
+                  )
+                    desc.push(item.supplierBusinessDescription);
+                  return {
+                    id: item.id,
+                    categoryName: item.supplierCategoryName,
+                    categoryDescription: item.supplierCategoryDescription,
+                    supplierBusinessDescription: item.supplierBusinessDescription,
+                  };
+                });
                 setUploadedCategories(res2.data);
                 setMovedCategories(
-                  allMovedcategory?.filter(
+                  categories?.filter(
                     (item) => item.supplierBusinessDescription === value.value
                   )
                 );
