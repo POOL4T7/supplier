@@ -11,13 +11,28 @@ const ServiceSubCategory = () => {
   const [isRightSelected, setIsRightSelected] = useState(false);
 
   const [subCategoriesValue, setSubCategoriesValue] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState({});
   const [bussiness] = useAtom(bussinessProfile);
-  const [categoryList, setCategoryList] = useState([]);
 
-  // Search states
+  const [allCategoryList, setAllCategoryList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
   const [searchUploaded, setSearchUploaded] = useState("");
   const [searchMoved, setSearchMoved] = useState("");
+  const [descriptionList, setDescriptionList] = useState([]);
+  const [d, setD] = useState("");
+  const [filteredUploadedCategories, setFilteredUploadedCategories] = useState(
+    []
+  );
+
+  const [filteredMovedCategories, setFilteredMovedCategories] = useState([]);
+
+  useEffect(() => {
+    setFilteredUploadedCategories(uploadedSubCategories);
+  }, [uploadedSubCategories]);
+
+  useEffect(() => {
+    setFilteredMovedCategories(movedSubCategories);
+  }, [movedSubCategories]);
 
   const toggleSelectProduct = (product, type) => {
     if (type === "left") {
@@ -49,7 +64,7 @@ const ServiceSubCategory = () => {
         ),
         status: true,
         categoryId: category.id,
-        supplierBusinessDescription: bussiness.businessDescription,
+        supplierBusinessDescription: d,
       }
     );
 
@@ -93,6 +108,7 @@ const ServiceSubCategory = () => {
         productsServices: "services",
         categoryId: category.id,
         supplierBusinessId: bussiness.id,
+        supplierBusinessDescription: d,
       }
     );
 
@@ -107,24 +123,28 @@ const ServiceSubCategory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axiosInstance.post(
-          "/proxy/productsearchsupplier/getCategoryAndSubCategoryDetails",
-          {
-            supplierBusinessId: bussiness.id,
-            businessDescription: bussiness.businessDescription,
-            productsServices: "services",
-          }
+        const res = await axiosInstance.get(
+          `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
         );
 
-        setCategoryList(
+        setAllCategoryList(
           res.data
-            .filter((item) => item.active)
+            // .filter((item) => item.active)
             .map((item) => ({
               id: item.categoryId,
-              name: item.categoryName,
-              subCategories: item.subCategories,
+              categoryName: item.supplierCategoryName,
+              supplierCategoryDescription: item.supplierCategoryDescription,
+              supplierBusinessDescription: item.supplierBusinessDescription,
             }))
         );
+        // Assuming res.data is an array of objects
+        const uniqueDescriptions = Array.from(
+          new Set(res.data.map((item) => item.supplierBusinessDescription))
+        );
+
+        // return uniqueDescriptions;
+
+        setDescriptionList(uniqueDescriptions);
       } catch (e) {
         console.log(e);
       }
@@ -133,14 +153,6 @@ const ServiceSubCategory = () => {
     fetchData();
   }, []);
 
-  // Filtered lists for search
-  const filteredUploadedSubCategories = uploadedSubCategories.filter((item) =>
-    item.subCategoryName.toLowerCase().includes(searchUploaded.toLowerCase())
-  );
-  const filteredMovedSubCategories = movedSubCategories.filter((item) =>
-    item.subCategoryName.toLowerCase().includes(searchMoved.toLowerCase())
-  );
-
   const changeCategory = async (e) => {
     const cate = JSON.parse(e.target.value);
     setCategory(cate);
@@ -148,9 +160,29 @@ const ServiceSubCategory = () => {
     const res = await axiosInstance.get(
       `/proxy/productsearchsupplier/getSubCategoryDetails?categoryId=${cate.id}&type=services`
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierSubCategoryDetails?supplierCategoryId=${cate.id}&type=services`
+    );
+    setMovedSubCategories(
+      res2.data.map((item) => ({
+        id: item.id,
+        subCategoryName: item.supplierSubCategoryName,
+        supplierBusinessDescription: item.supplierBusinessDescription,
+        subCategoryDescription: item.supplierCategoryDescription,
+      }))
+    );
 
     setUploadedSubCategories(res.data);
+  };
 
+  const bussinessDescription = async (e) => {
+    const cateList = allCategoryList.filter(
+      (item) => item.supplierBusinessDescription === e.target.value
+    );
+    // console.log(allCategoryList,cateList, e.target.value);
+    setCategoryList(cateList);
+    setD(e.target.value);
+    setCategory(null);
   };
 
   return (
@@ -161,6 +193,20 @@ const ServiceSubCategory = () => {
             <h3>Add Service Sub Category</h3>
           </div>
         </div>
+        <div className="mb-2">
+          <select
+            className="form-select"
+            id="categoryName"
+            onChange={bussinessDescription}
+          >
+            <option value="">Select bussiness description</option>
+            {descriptionList.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <select
             className="form-select"
@@ -170,7 +216,7 @@ const ServiceSubCategory = () => {
             <option value="">Select Category</option>
             {categoryList.map((item) => (
               <option key={item.id} value={JSON.stringify(item)}>
-                {item.name}
+                {item.categoryName}
               </option>
             ))}
           </select>
@@ -216,7 +262,7 @@ const ServiceSubCategory = () => {
                 style={{ height: "60vh", overflowY: "scroll" }}
               >
                 <h5>Uploaded Categories</h5>
-                {filteredUploadedSubCategories?.map((product) => (
+                {filteredUploadedCategories?.map((product) => (
                   <div key={product.id} className="form-check mb-2">
                     <input
                       type="checkbox"
@@ -224,7 +270,9 @@ const ServiceSubCategory = () => {
                       checked={selectedSubCategories.includes(product)}
                       onChange={() => toggleSelectProduct(product, "left")}
                     />
-                    <label className="form-check-label">{product.subCategoryName}</label>
+                    <label className="form-check-label">
+                      {product.subCategoryName}
+                    </label>
                   </div>
                 ))}
               </div>
@@ -260,7 +308,8 @@ const ServiceSubCategory = () => {
                 style={{ height: "60vh", overflowY: "scroll" }}
               >
                 <h5>Moved Categories</h5>
-                {filteredMovedSubCategories.map((product) => (
+
+                {filteredMovedCategories.map((product) => (
                   <div key={product.id} className="form-check mb-2">
                     <input
                       type="checkbox"
@@ -268,7 +317,9 @@ const ServiceSubCategory = () => {
                       checked={selectedSubCategories.includes(product)}
                       onChange={() => toggleSelectProduct(product, "right")}
                     />
-                    <label className="form-check-label">{product.subCategoryName}</label>
+                    <label className="form-check-label">
+                      {product.subCategoryName}
+                    </label>
                   </div>
                 ))}
               </div>

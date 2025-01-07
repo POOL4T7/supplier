@@ -12,6 +12,9 @@ const ServiceList = () => {
   const [isRightSelected, setIsRightSelected] = useState(false);
   const [supplier] = useAtom(userDetailsAtom);
   const [productValue, setProductValue] = useState('');
+
+  const [productDescription, setProductDescription] = useState('');
+
   const [bussiness] = useAtom(bussinessProfile);
 
   const handleFileUpload = async (event) => {
@@ -36,7 +39,7 @@ const ServiceList = () => {
         toast.success(res.data.message);
         setUploadedProducts([
           ...uploadedProducts,
-          ...(res.data?.serviceDetailsList || []),
+          ...(res.data?.productDetailsList || []),
         ]);
       }
     } catch (e) {
@@ -45,7 +48,7 @@ const ServiceList = () => {
     }
   };
 
-  const toggleSelectProduct = (service, type) => {
+  const toggleSelectProduct = (product, type) => {
     if (type === 'left') {
       setIsLeftSelected(false);
       setIsRightSelected(true);
@@ -54,9 +57,9 @@ const ServiceList = () => {
       setIsRightSelected(false);
     }
     setSelectedProducts((prevSelected) => {
-      const newTemp = prevSelected.includes(service)
-        ? prevSelected.filter((p) => p !== service)
-        : [...prevSelected, service];
+      const newTemp = prevSelected.includes(product)
+        ? prevSelected.filter((p) => p !== product)
+        : [...prevSelected, product];
       if (newTemp.length == 0) {
         setIsLeftSelected(false);
         setIsRightSelected(false);
@@ -83,48 +86,51 @@ const ServiceList = () => {
     setIsLeftSelected(false);
   };
 
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!productValue) return;
-    const [brand, serviceName, serviceDescription] = productValue.split(',');
-    if (!serviceName || !serviceDescription || !brand) {
-      toast.error('Please upload service in correct format');
-      return;
-    }
-    setUploadedProducts([
-      ...uploadedProducts,
-      { id: 1, serviceName, serviceDescription },
-    ]);
-    const res = axiosInstance.post(
+
+    const res = await axiosInstance.post(
       'proxy/productsearchsupplier/api/supplier/file/addProductsOrServices',
       {
         fileRowDataList: [
           {
-            name: serviceName,
-            brand,
-            serviceDescription,
+            name: productValue,
+            
+            description: productDescription,
           },
         ],
         supplierBusinessId: bussiness.id,
-        type: 'PRODUCT',
+        type: 'SERVICE',
         supplierId: supplier.id,
       }
     );
-    console.log('res', res);
+
+    setUploadedProducts([
+      ...uploadedProducts,
+      {
+        id: res.data.productDetailsList[0].id,
+        brand: res.data.productDetailsList[0],
+        productName: productValue,
+        description: productDescription,
+      },
+    ]);
     setProductValue('');
+    // setBrand('');
+    setProductDescription('');
   };
 
   const submit = async (e) => {
     e.preventDefault();
     try {
       const data = {
-        supplierBusinessId: supplier.id,
+        supplierBusinessId: bussiness.id,
         serviceId: movedProducts.map((item) => item.id),
         status: true,
         supplierId: supplier.id,
       };
       const res = await axiosInstance.post(
-        '/proxyproductsearchsupplier/api/supplier/file/productservicestatus',
+        '/proxy/productsearchsupplier/api/supplier/file/productservicestatus',
         data
       );
       console.log(res);
@@ -171,13 +177,40 @@ const ServiceList = () => {
       <form>
         <div className='row'>
           <div className='col-10'>
-            <div className='mb-2'>
-              <input
-                type='text'
-                value={productValue}
-                className={`form-control`}
-                onChange={(e) => setProductValue(e.target.value)}
-              />
+            <div className='row'>
+              {/* <div className='col-3'>
+                <div className='mb-2'>
+                  <input
+                    type='text'
+                    value={brand}
+                    className={`form-control`}
+                    onChange={(e) => setBrand(e.target.value)}
+                    placeholder='brand name'
+                  />
+                </div>
+              </div> */}
+              <div className='col-5'>
+                <div className='mb-2'>
+                  <input
+                    type='text'
+                    value={productValue}
+                    className={`form-control`}
+                    onChange={(e) => setProductValue(e.target.value)}
+                    placeholder='service name'
+                  />
+                </div>
+              </div>
+              <div className='col-7'>
+                <div className='mb-2'>
+                  <input
+                    type='text'
+                    value={productDescription}
+                    className={`form-control`}
+                    onChange={(e) => setProductDescription(e.target.value)}
+                    placeholder='service description'
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div className='col-2'>
@@ -195,28 +228,28 @@ const ServiceList = () => {
           className='col-md-5 border p-3'
           style={{ height: '60vh', overflow: 'scroll' }}
         >
-          <h5 className='mb-3'>Uploaded Service</h5>
+          <h5 className='mb-3'>Uploaded Services</h5>
 
           {uploadedProducts.length > 0 ? (
-            uploadedProducts.map((service) => (
-              <div key={service.id} className='form-check mb-2'>
+            uploadedProducts.map((product) => (
+              <div key={product.id} className='form-check mb-2'>
                 <input
                   type='checkbox'
                   className='form-check-input'
-                  id={`uploaded-${service.id}`}
-                  checked={selectedProducts.includes(service)}
-                  onChange={() => toggleSelectProduct(service, 'left')}
+                  id={`uploaded-${product.id}`}
+                  checked={selectedProducts.includes(product)}
+                  onChange={() => toggleSelectProduct(product, 'left')}
                 />
                 <label
                   className='form-check-label'
-                  htmlFor={`uploaded-${service.id}`}
+                  htmlFor={`uploaded-${product.id}`}
                 >
-                  {service.serviceName}
+                  {product.productName}
                 </label>
               </div>
             ))
           ) : (
-            <p className='text-muted'>No products uploaded.</p>
+            <p className='text-muted'>No services uploaded.</p>
           )}
         </div>
 
@@ -241,27 +274,27 @@ const ServiceList = () => {
           className='col-md-5 border pt-3'
           style={{ height: '60vh', overflow: 'scroll' }}
         >
-          <h5 className='mb-3'>Selected Service</h5>
+          <h5 className='mb-3'>Selected Services</h5>
           {movedProducts.length > 0 ? (
-            movedProducts.map((service) => (
-              <div key={service.id} className='form-check mb-2'>
+            movedProducts.map((product) => (
+              <div key={product.id} className='form-check mb-2'>
                 <input
                   type='checkbox'
                   className='form-check-input'
-                  id={`moved-${service.id}`}
-                  checked={selectedProducts.includes(service)}
-                  onChange={() => toggleSelectProduct(service, 'right')}
+                  id={`moved-${product.id}`}
+                  checked={selectedProducts.includes(product)}
+                  onChange={() => toggleSelectProduct(product, 'right')}
                 />
                 <label
                   className='form-check-label'
-                  htmlFor={`moved-${service.id}`}
+                  htmlFor={`moved-${product.id}`}
                 >
-                  {service.serviceName}
+                  {product.productName}
                 </label>
               </div>
             ))
           ) : (
-            <p className='text-muted'>No products selected.</p>
+            <p className='text-muted'>No services selected.</p>
           )}
         </div>
       </div>
