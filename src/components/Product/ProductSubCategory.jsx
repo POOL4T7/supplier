@@ -11,7 +11,7 @@ const ProductSubCategory = () => {
   const [isRightSelected, setIsRightSelected] = useState(false);
 
   const [subCategoriesValue, setSubCategoriesValue] = useState("");
-  const [category, setCategory] = useState({});
+  const [category, setCategory] = useState(null);
   const [bussiness] = useAtom(bussinessProfile);
 
   const [allCategoryList, setAllCategoryList] = useState([]);
@@ -156,6 +156,9 @@ const ProductSubCategory = () => {
   const changeCategory = async (e) => {
     const cate = JSON.parse(e.target.value);
     setCategory(cate);
+    if(!cate){
+      return;
+    }
 
     const res = await axiosInstance.get(
       `/proxy/productsearchsupplier/getSubCategoryDetails?categoryId=${cate.id}&type=products`
@@ -213,7 +216,7 @@ const ProductSubCategory = () => {
             id="categoryName"
             onChange={changeCategory}
           >
-            <option value="">Select Category</option>
+            <option value="null">Select Category</option>
             {categoryList.map((item) => (
               <option key={item.id} value={JSON.stringify(item)}>
                 {item.categoryName}
@@ -222,7 +225,7 @@ const ProductSubCategory = () => {
           </select>
         </div>
       </div>
-      {category != "" && (
+      {category && (
         <>
           <form>
             <div className="row">

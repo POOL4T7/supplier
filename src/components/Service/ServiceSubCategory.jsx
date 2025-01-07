@@ -11,7 +11,7 @@ const ServiceSubCategory = () => {
   const [isRightSelected, setIsRightSelected] = useState(false);
 
   const [subCategoriesValue, setSubCategoriesValue] = useState("");
-  const [category, setCategory] = useState({});
+  const [category, setCategory] = useState(null);
   const [bussiness] = useAtom(bussinessProfile);
 
   const [allCategoryList, setAllCategoryList] = useState([]);
@@ -156,6 +156,9 @@ const ServiceSubCategory = () => {
   const changeCategory = async (e) => {
     const cate = JSON.parse(e.target.value);
     setCategory(cate);
+    if(!cate){
+      return;
+    }
 
     const res = await axiosInstance.get(
       `/proxy/productsearchsupplier/getSubCategoryDetails?categoryId=${cate.id}&type=services`
@@ -213,7 +216,7 @@ const ServiceSubCategory = () => {
             id="categoryName"
             onChange={changeCategory}
           >
-            <option value="">Select Category</option>
+            <option value="null">Select Category</option>
             {categoryList.map((item) => (
               <option key={item.id} value={JSON.stringify(item)}>
                 {item.categoryName}
