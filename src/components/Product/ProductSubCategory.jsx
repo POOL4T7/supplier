@@ -108,6 +108,7 @@ const ProductSubCategory = () => {
         productsServices: 'products',
         categoryId: category.id,
         supplierBusinessId: bussiness.id,
+        supplierBusinessDescription: d,
       }
     );
 
