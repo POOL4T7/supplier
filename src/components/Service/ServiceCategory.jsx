@@ -253,13 +253,16 @@ const ServiceCategory = () => {
                 const res = await axiosInstance.get(
                   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
                 );
+                console.log('svdch', res2.data, res.data);
                 let desc = [];
+                let leftCategory = [];
                 const categories = res.data.map((item) => {
                   if (
                     !desc.includes(item.supplierBusinessDescription) &&
                     item.supplierBusinessDescription
                   )
                     desc.push(item.supplierBusinessDescription);
+
                   return {
                     id: item.id,
                     categoryName: item.supplierCategoryName,
@@ -268,7 +271,17 @@ const ServiceCategory = () => {
                       item.supplierBusinessDescription,
                   };
                 });
-                setUploadedCategories(res2.data);
+                res2.data.map((item) => {
+                  if (res.data.findIndex((c) => c.categoryId == item.id)) {
+                    leftCategory.push({
+                      id: item.id,
+                      categoryName: item.categoryName,
+                      categoryDescription: item.categoryDescription,
+                      supplierBusinessDescription: value.value,
+                    });
+                  }
+                });
+                setUploadedCategories(leftCategory);
                 setMovedCategories(
                   categories?.filter(
                     (item) => item.supplierBusinessDescription === value.value
