@@ -196,7 +196,7 @@ const ProductCategory = () => {
     }
     try {
       const res = await axiosInstance.get(
-        `/proxy/productsearchsupplier/getAllBusinessDescription?description=${inputValue}`
+        `/proxy/productsearchsupplier/getAllBusinessDescription?description=${inputValue}&type=products`
       );
       const data = Array.isArray(res.data) ? res.data : [];
       setDescription(
@@ -229,6 +229,7 @@ const ProductCategory = () => {
           {
             supplierBusinessId: bussiness.id,
             supplierBusinessDescription: value,
+            productsOrServices: 'products',
           }
         );
         setDescription([...description, { label: value, value }]);
