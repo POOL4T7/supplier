@@ -229,7 +229,7 @@ const ProductCategory = () => {
           {
             supplierBusinessId: bussiness.id,
             supplierBusinessDescription: value,
-            productsOrServices: 'products',
+            type: 'products',
           }
         );
         setDescription([...description, { label: value, value }]);

@@ -222,7 +222,7 @@ const ServiceCategory = () => {
           {
             supplierBusinessId: bussiness.id,
             supplierBusinessDescription: value,
-            productsOrServices: 'services',
+            type: 'services',
           }
         );
         setDescription([...description, { label: value, value }]);
