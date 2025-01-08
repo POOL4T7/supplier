@@ -59,7 +59,7 @@ const ProductCategory = () => {
       '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
       {
         supplierBusinessId: bussiness.id,
-        categoryIds: [...movedCategories, ...selectedCategories].map(
+        categoryIds: [...filteredMovedCategories, ...selectedCategories].map(
           (item) => item.id
         ),
         status: true,
