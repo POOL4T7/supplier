@@ -126,7 +126,10 @@ const ProductSubCategory = () => {
         const res = await axiosInstance.get(
           `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
         );
-
+        const res2 = await axiosInstance.get(
+          `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=products`
+        );
+        console.log('res2', res2);
         setAllCategoryList(
           res.data
             // .filter((item) => item.active)

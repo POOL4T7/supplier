@@ -7,19 +7,19 @@ import { useState } from 'react';
 import Spinner from '../components/common/Spinner';
 import LocationIcon from '../components/common/LocationIcon';
 
-const formSchema = yup
-  .object()
-  .shape({
-    country: yup.string().optional(),
-    locationName: yup.string().optional(),
-    zipcode: yup.string().optional(),
-    name: yup.string().optional(),
-    premises: yup.string().optional(),
-    shop: yup.string().optional(),
-  })
-  .test('at-least-one', 'At least one field is required', (values) =>
-    Object.values(values).some((value) => value && value.trim().length > 0)
-  );
+const formSchema = yup.object().shape({
+  country: yup.string().optional(),
+  locationName: yup.string().required('please enter location or zipcode'),
+  name: yup.string().optional(),
+});
+
+const formSchema2 = yup.object().shape({
+  country: yup.string().optional(),
+  locationName: yup.string().required('please enter location or zipcode'),
+  name: yup.string().optional(),
+  premises: yup.string().required('please enter your favorite premises'),
+  shop: yup.string().optional(),
+});
 
 const LandingPage = () => {
   const [productList, setProductList] = useState([]);
@@ -30,9 +30,9 @@ const LandingPage = () => {
     resolver: yupResolver(formSchema),
   });
   const form2 = useForm({
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchema2),
   });
-
+  console.log(form1.formState);
   const onSubmitForm1 = async (data) => {
     try {
       setLoading(true);
@@ -62,38 +62,64 @@ const LandingPage = () => {
     <div className=' m-5'>
       <form onSubmit={form1.handleSubmit(onSubmitForm1)}>
         <div className='row mb-3 justify-content-center'>
+          {/* Country Field */}
           <div className='col-12 col-md-1 mb-2'>
             <input
               type='text'
-              className='form-control'
+              className={`form-control ${
+                form1.formState.errors.country ? 'is-invalid' : ''
+              }`}
               placeholder='Country'
-              {...form1.register('country')}
+              {...form1.register('country', {
+                required: 'Country is required',
+              })}
             />
+            {form1.formState.errors.country && (
+              <div className='invalid-feedback'>
+                {form1.formState.errors.country.message}
+              </div>
+            )}
           </div>
-          <div className='col-12 col-md-2 mb-2'>
-            <input
-              type='text'
-              className='form-control'
-              placeholder='Location Name'
-              {...form1.register('locationName')}
-            />
-          </div>
-          <div className='col-12 col-md-2 mb-2'>
-            <input
-              type='text'
-              className='form-control'
-              placeholder='Zipcode'
-              {...form1.register('zipcode')}
-            />
-          </div>
+
+          {/* Location Name Field */}
           <div className='col-12 col-md-4 mb-2'>
             <input
               type='text'
-              className='form-control'
-              placeholder='product / service name'
-              {...form1.register('name')}
+              className={`form-control ${
+                form1.formState.errors.locationName ? 'is-invalid' : ''
+              }`}
+              placeholder='Location Name'
+              {...form1.register('locationName', {
+                required: 'Location Name is required',
+              })}
             />
+            {form1.formState.errors.locationName && (
+              <div className='invalid-feedback'>
+                {form1.formState.errors.locationName.message}
+              </div>
+            )}
           </div>
+
+          {/* Product/Service Name Field */}
+          <div className='col-12 col-md-4 mb-2'>
+            <input
+              type='text'
+              className={`form-control ${
+                form1.formState.errors.name ? 'is-invalid' : ''
+              }`}
+              placeholder='Product / Service Name'
+              {...form1.register('name', {
+                required: 'Product/Service name is required',
+              })}
+            />
+            {form1.formState.errors.name && (
+              <div className='invalid-feedback'>
+                {form1.formState.errors.name.message}
+              </div>
+            )}
+          </div>
+
+          {/* Submit Button */}
           <div className='col-12 col-md-2'>
             <button type='submit' className='btn btn-outline-success w-100'>
               Search
@@ -101,75 +127,113 @@ const LandingPage = () => {
           </div>
         </div>
       </form>
-
-      <>
-        {Object.keys(form1.formState.errors).length != 0 && (
-          <div className='text-danger'>Please select at least one value</div>
-        )}
-      </>
 
       <form onSubmit={form2.handleSubmit(onSubmitForm2)}>
         <div className='row mb-3 justify-content-center'>
+          {/* Country Field */}
           <div className='col-12 col-md-1 mb-2'>
             <input
               type='text'
-              className='form-control'
+              className={`form-control ${
+                form2.formState.errors.country ? 'is-invalid' : ''
+              }`}
               placeholder='Country'
-              {...form2.register('country')}
+              {...form2.register('country', {
+                required: 'Country is required',
+              })}
             />
+            {form2.formState.errors.country && (
+              <div className='invalid-feedback'>
+                {form2.formState.errors.country.message}
+              </div>
+            )}
           </div>
+
+          {/* Location Name Field */}
           <div className='col-12 col-md-2 mb-2'>
             <input
               type='text'
-              className='form-control'
-              placeholder='Location Name'
-              {...form2.register('locationName')}
+              className={`form-control ${
+                form2.formState.errors.locationName ? 'is-invalid' : ''
+              }`}
+              placeholder='Location'
+              {...form2.register('locationName', {
+                required: 'Location Name is required',
+              })}
             />
+            {form2.formState.errors.locationName && (
+              <div className='invalid-feedback'>
+                {form2.formState.errors.locationName.message}
+              </div>
+            )}
           </div>
-          <div className='col-12 col-md-1 mb-2'>
+
+          {/* Premises Field */}
+          <div className='col-12 col-md-3 mb-2'>
             <input
               type='text'
-              className='form-control'
-              placeholder='Zipcode'
-              {...form2.register('zipcode')}
+              className={`form-control ${
+                form2.formState.errors.premises ? 'is-invalid' : ''
+              }`}
+              placeholder='premises name'
+              {...form2.register('premises', {
+                required: 'Premises is required',
+              })}
             />
+            {form2.formState.errors.premises && (
+              <div className='invalid-feedback'>
+                {form2.formState.errors.premises.message}
+              </div>
+            )}
           </div>
+
+          {/* Shop Field */}
           <div className='col-12 col-md-2 mb-2'>
             <input
               type='text'
-              className='form-control'
-              placeholder='Select your fav premises'
-              {...form2.register('premises')}
+              className={`form-control ${
+                form2.formState.errors.shop ? 'is-invalid' : ''
+              }`}
+              placeholder='Search for shop'
+              {...form2.register('shop', {
+                required: 'Shop name is required',
+              })}
             />
+            {form2.formState.errors.shop && (
+              <div className='invalid-feedback'>
+                {form2.formState.errors.shop.message}
+              </div>
+            )}
           </div>
-          <div className='col-12 col-md-2 mb-2'>
+
+          {/* Product/Service Name Field */}
+          <div className='col-12 col-md-3 mb-2'>
             <input
               type='text'
-              className='form-control'
-              placeholder='search for shop'
-              {...form2.register('shop')}
+              className={`form-control ${
+                form2.formState.errors.name ? 'is-invalid' : ''
+              }`}
+              placeholder='Product / Service Name'
+              {...form2.register('name', {
+                required: 'Product/Service name is required',
+              })}
             />
+            {form2.formState.errors.name && (
+              <div className='invalid-feedback'>
+                {form2.formState.errors.name.message}
+              </div>
+            )}
           </div>
-          <div className='col-12 col-md-2 mb-2'>
-            <input
-              type='text'
-              className='form-control'
-              placeholder='product / service name'
-              {...form2.register('name')}
-            />
-          </div>
-          <div className='col-12 col-md-2'>
+
+          {/* Submit Button */}
+          <div className='col-12 col-md-1'>
             <button type='submit' className='btn btn-outline-success w-100'>
               Search
             </button>
           </div>
         </div>
       </form>
-      <>
-        {Object.keys(form2.formState.errors).length != 0 && (
-          <p className='text-danger'>Please select at least one value</p>
-        )}
-      </>
+
       {/* <LocationIcon /> */}
       <div className='container my-4'>
         <div className='row g-4'>

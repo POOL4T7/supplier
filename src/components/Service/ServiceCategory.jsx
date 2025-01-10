@@ -24,7 +24,7 @@ const ServiceCategory = () => {
   const [bussiness] = useAtom(bussinessProfile);
   const [allDesc, setAllDesc] = useState([]);
   const [d, setD] = useState('');
-  // const [allMovedcategory, setAllMovedCatgeory] = useState([]);
+  const [allMovedcategory, setAllMovedCatgeory] = useState([]);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -144,7 +144,7 @@ const ServiceCategory = () => {
         `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
       );
       let desc = [];
-      res.data.map((item) => {
+      const categories = res.data.map((item) => {
         if (
           !desc.includes(item.supplierBusinessDescription) &&
           item.supplierBusinessDescription
@@ -166,6 +166,15 @@ const ServiceCategory = () => {
           label: temp[0],
         });
       }
+      const groupedData = categories.reduce((acc, item) => {
+        const key = item.supplierBusinessDescription || 'Unknown';
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(item);
+        return acc;
+      }, {});
+      setAllMovedCatgeory(groupedData);
       // console.log("categories", categories);
       // setMovedCategories(
       //   categories?.filter(
@@ -419,6 +428,47 @@ const ServiceCategory = () => {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+      <div className=' mt-5 mb-5'>
+        <h4>Your Categories by bussiness description</h4>
+        <div className='accordion' id='categoryAccordion'>
+          {Object.entries(allMovedcategory).map((item, idx) => (
+            <div className='accordion-item' key={item[0]}>
+              <h2 className='accordion-header' id='headingOne'>
+                <button
+                  className='accordion-button'
+                  type='button'
+                  data-bs-toggle='collapse'
+                  data-bs-target={`#collapseOne${idx}`}
+                  aria-expanded='true'
+                  aria-controls={'collapseOne' + idx}
+                >
+                  {item[0]}
+                </button>
+              </h2>
+              <div
+                id={'collapseOne' + idx}
+                className='accordion-collapse collapse show'
+                aria-labelledby='headingOne'
+                data-bs-parent='#categoryAccordion'
+              >
+                <div className='accordion-body'>
+                  <ul className=' d-flex flex-wrap gap-2'>
+                    {item[1].map((x) => (
+                      <span
+                        key={x.id}
+                        className='badge rounded-pill bg-primary px-3 py-2 text-white'
+                        // style={{ cursor: 'pointer' }}
+                      >
+                        {x.categoryName}
+                      </span>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
