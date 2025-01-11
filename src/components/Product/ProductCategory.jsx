@@ -279,9 +279,7 @@ const ProductCategory = () => {
                   };
                 });
                 res2.data.map((item) => {
-                  if (
-                    res.data.findIndex((c) => c.categoryId == item.id)
-                  ) {
+                  if (res.data.findIndex((c) => c.categoryId == item.id)) {
                     leftCategory.push({
                       id: item.id,
                       categoryName: item.categoryName,
@@ -449,7 +447,7 @@ const ProductCategory = () => {
               </h2>
               <div
                 id={'collapseOne' + idx}
-                className='accordion-collapse collapse show'
+                className='accordion-collapse collapse'
                 aria-labelledby='headingOne'
                 data-bs-parent='#categoryAccordion'
               >

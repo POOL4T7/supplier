@@ -357,7 +357,7 @@ const ServiceSubCategory = () => {
               </h2>
               <div
                 id={`collapse${idx}`}
-                className='accordion-collapse collapse show'
+                className='accordion-collapse collapse'
                 aria-labelledby={`heading${idx}`}
                 data-bs-parent='#categoryAccordion'
               >
