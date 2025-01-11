@@ -25,6 +25,7 @@ const ProductSubCategory = () => {
   );
 
   const [filteredMovedCategories, setFilteredMovedCategories] = useState([]);
+  const [structure, setStructure] = useState([]);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedSubCategories);
@@ -129,7 +130,7 @@ const ProductSubCategory = () => {
         const res2 = await axiosInstance.get(
           `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=products`
         );
-        console.log('res2', res2);
+        setStructure(res2.data);
         setAllCategoryList(
           res.data
             // .filter((item) => item.active)
@@ -338,6 +339,56 @@ const ProductSubCategory = () => {
           </div>
         </>
       )}
+      <div className=' mt-5 mb-5'>
+        <h4>Your Sub Categories</h4>
+        <div className='accordion' id='categoryAccordion'>
+          {structure.map((desc, idx) => (
+            <div className='accordion-item' key={desc.businessDescription}>
+              <h2 className='accordion-header' id={`heading${idx}`}>
+                <button
+                  className='accordion-button'
+                  type='button'
+                  data-bs-toggle='collapse'
+                  data-bs-target={`#collapse${idx}`}
+                  aria-expanded='true'
+                  aria-controls={`collapse${idx}`}
+                >
+                  {desc.businessDescription}
+                </button>
+              </h2>
+              <div
+                id={`collapse${idx}`}
+                className='accordion-collapse collapse show'
+                aria-labelledby={`heading${idx}`}
+                data-bs-parent='#categoryAccordion'
+              >
+                <div className='accordion-body'>
+                  {desc.categories.map((cate) => (
+                    <div key={cate.categoryName}>
+                      <div className='row'>
+                        <div className='col-4'>
+                          <strong>{cate.categoryName}</strong>
+                        </div>
+                        <div className='col-8'>
+                          {cate.subCategories.length > 0 ? (
+                            <ul>
+                              {cate.subCategories.map((subCate, subIdx) => (
+                                <li key={subIdx}>{subCate.subCategoryName}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p>No Subcategories Available</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
