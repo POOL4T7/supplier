@@ -85,6 +85,7 @@ const BussinessProfile = () => {
   const onSubmit = async (data) => {
     try {
       delete data.businessDescription;
+      // console.log('data', data);
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         { ...data, supplierId: supplier.id, supplierBusinessId: bussiness.id }

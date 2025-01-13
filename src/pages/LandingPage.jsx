@@ -6,18 +6,19 @@ import { toast } from 'react-toastify';
 import { useState } from 'react';
 import Spinner from '../components/common/Spinner';
 import LocationIcon from '../components/common/LocationIcon';
+import Select from 'react-select';
 
 const formSchema = yup.object().shape({
-  country: yup.string().optional(),
-  locationName: yup.string().required('please enter location or zipcode'),
-  name: yup.string().optional(),
+  country: yup.string().required('country is required'),
+  // address: yup.string().required('please enter location or zipcode'),
+  searchTerm: yup.string().optional(),
 });
 
 const formSchema2 = yup.object().shape({
   country: yup.string().optional(),
-  locationName: yup.string().required('please enter location or zipcode'),
-  name: yup.string().optional(),
-  premises: yup.string().required('please enter your favorite premises'),
+  // address: yup.string().required('please enter location or zipcode'),
+  searchTerm: yup.string().optional(),
+  premises: yup.string(),
   shop: yup.string().optional(),
 });
 
@@ -25,6 +26,28 @@ const LandingPage = () => {
   const [productList, setProductList] = useState([]);
   // const [serviceList, setServiceList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [locationSuggestion, setLocationSuggestion] = useState([
+    // { label: '110091', value: '110091' },
+  ]);
+  const [premisesSuggestion, setPremisesSuggestion] = useState([
+    // { label: '110091', value: '110091' },
+  ]);
+  const [shopSuggestion, setShopSuggestion] = useState([
+    // { label: '110091', value: '110091' },
+  ]);
+
+  const [formData, setFormData] = useState({
+    address: {
+      addressLine1: '',
+      addressLine2: '',
+      zipcode: '',
+      city: '',
+    },
+    country: '',
+    searchTerm: '',
+    premises: '',
+    shop: '',
+  });
 
   const form1 = useForm({
     resolver: yupResolver(formSchema),
@@ -36,6 +59,7 @@ const LandingPage = () => {
   const onSubmitForm1 = async (data) => {
     try {
       setLoading(true);
+      data.address = formData.address;
       const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
 
       setProductList(res.data);
@@ -57,6 +81,72 @@ const LandingPage = () => {
       toast.error(e.response?.data?.message || 'Something went wrong');
     }
   };
+
+  const handleInputChange = async (inputValue) => {
+    if (!inputValue.trim()) {
+      // setDescription([]);
+      return;
+    }
+    try {
+      const res = await axios.get(
+        `/proxy/productsearchsupplier/getLocationSuggestions?location=${inputValue}`
+      );
+
+      setLocationSuggestion(
+        res.data.map((item) => ({
+          label: [item.addressLine1, item.city, item.zipcode].join(' '),
+          value: item,
+        }))
+      );
+    } catch (error) {
+      console.error('Error fetching business descriptions:', error);
+    }
+  };
+  const handlePremisesAndShopInputChange = async (inputValue, type) => {
+    if (!inputValue.trim()) {
+      // setDescription([]);
+      return;
+    }
+    try {
+      const res = await axios.post(
+        `/proxy/productsearchsupplier/getPremisesOrShopSuggestions`,
+        {
+          premisesOrShopName: inputValue,
+          type: type,
+          location: formData.address,
+        }
+      );
+
+      if (type === 'shop') setShopSuggestion([]);
+      if (type == 'premises') setPremisesSuggestion([]);
+
+      console.log(res);
+      // setPremisesSuggestion(
+      //   res.data.map((item) => ({
+      //     label: item.addressLine1,
+      //     value: item.addressLine1,
+      //   }))
+      // );
+    } catch (error) {
+      console.error('Error fetching business descriptions:', error);
+    }
+  };
+
+  // Update `onInputChange` to handle only the string and debounce the API calls
+  const debounceFetch = (func, delay) => {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  const debouncedInputChange = debounceFetch(handleInputChange, 500);
+
+  const debouncedPremisesInputChange = debounceFetch(
+    handlePremisesAndShopInputChange,
+    500
+  );
 
   return (
     <div className='m-5'>
@@ -124,21 +214,40 @@ const LandingPage = () => {
 
               {/* Location Name Field */}
               <div className='col-12 col-md-4 mb-2'>
-                <input
+                {/* <input
                   type='text'
                   className={`form-control ${
-                    form1.formState.errors.locationName ? 'is-invalid' : ''
+                    form1.formState.errors.location ? 'is-invalid' : ''
                   }`}
                   placeholder='Location Name'
-                  {...form1.register('locationName', {
+                  {...form1.register('location', {
                     required: 'Location Name is required',
                   })}
                 />
-                {form1.formState.errors.locationName && (
+                {form1.formState.errors.location && (
                   <div className='invalid-feedback'>
-                    {form1.formState.errors.locationName.message}
+                    {form1.formState.errors.location.message}
                   </div>
-                )}
+                )} */}
+                <Select
+                  className='basic-single'
+                  classNamePrefix='select'
+                  placeholder='Location Name'
+                  // defaultValue={colourOptions[0]}
+                  // isDisabled={isDisabled}
+                  // isLoading={isLoading}
+                  isClearable
+                  isSearchable
+                  name='color'
+                  options={locationSuggestion}
+                  onChange={(value) =>
+                    setFormData({ ...formData, address: value.value })
+                  }
+                  onInputChange={(inputValue) => {
+                    if (inputValue.length > 2) debouncedInputChange(inputValue);
+                    return inputValue;
+                  }}
+                />
               </div>
 
               {/* Product/Service Name Field */}
@@ -146,16 +255,16 @@ const LandingPage = () => {
                 <input
                   type='text'
                   className={`form-control ${
-                    form1.formState.errors.name ? 'is-invalid' : ''
+                    form1.formState.errors.searchTerm ? 'is-invalid' : ''
                   }`}
                   placeholder='Product / Service Name'
-                  {...form1.register('name', {
+                  {...form1.register('searchTerm', {
                     required: 'Product/Service name is required',
                   })}
                 />
-                {form1.formState.errors.name && (
+                {form1.formState.errors.searchTerm && (
                   <div className='invalid-feedback'>
-                    {form1.formState.errors.name.message}
+                    {form1.formState.errors.searchTerm.message}
                   </div>
                 )}
               </div>
@@ -200,26 +309,45 @@ const LandingPage = () => {
 
               {/* Location Name Field */}
               <div className='col-12 col-md-2 mb-2'>
-                <input
+                {/* <input
                   type='text'
                   className={`form-control ${
-                    form2.formState.errors.locationName ? 'is-invalid' : ''
+                    form2.formState.errors.location ? 'is-invalid' : ''
                   }`}
                   placeholder='Location'
-                  {...form2.register('locationName', {
+                  {...form2.register('location', {
                     required: 'Location Name is required',
                   })}
                 />
-                {form2.formState.errors.locationName && (
+                {form2.formState.errors.location && (
                   <div className='invalid-feedback'>
-                    {form2.formState.errors.locationName.message}
+                    {form2.formState.errors.location.message}
                   </div>
-                )}
+                )} */}
+                <Select
+                  className='basic-single'
+                  classNamePrefix='select'
+                  placeholder='Location'
+                  // defaultValue={colourOptions[0]}
+                  // isDisabled={isDisabled}
+                  // isLoading={isLoading}
+                  isClearable
+                  isSearchable
+                  name='color'
+                  options={locationSuggestion}
+                  onChange={(value) =>
+                    setFormData({ ...formData, address: value.value })
+                  }
+                  onInputChange={(inputValue) => {
+                    if (inputValue.length > 2) debouncedInputChange(inputValue);
+                    return inputValue;
+                  }}
+                />
               </div>
 
               {/* Premises Field */}
               <div className='col-12 col-md-3 mb-2'>
-                <input
+                {/* <input
                   type='text'
                   className={`form-control ${
                     form2.formState.errors.premises ? 'is-invalid' : ''
@@ -233,12 +361,29 @@ const LandingPage = () => {
                   <div className='invalid-feedback'>
                     {form2.formState.errors.premises.message}
                   </div>
-                )}
+                )} */}
+                <Select
+                  className='basic-single'
+                  classNamePrefix='select'
+                  placeholder='Premises Name'
+                  isClearable
+                  isSearchable
+                  name='color'
+                  options={premisesSuggestion}
+                  onChange={(value) =>
+                    setFormData({ ...formData, premises: value.value })
+                  }
+                  onInputChange={(inputValue) => {
+                    if (inputValue.length > 2)
+                      debouncedPremisesInputChange(inputValue, 'premises');
+                    return inputValue;
+                  }}
+                />
               </div>
 
               {/* Shop Field */}
               <div className='col-12 col-md-2 mb-2'>
-                <input
+                {/* <input
                   type='text'
                   className={`form-control ${
                     form2.formState.errors.shop ? 'is-invalid' : ''
@@ -252,7 +397,27 @@ const LandingPage = () => {
                   <div className='invalid-feedback'>
                     {form2.formState.errors.shop.message}
                   </div>
-                )}
+                )} */}
+                <Select
+                  className='basic-single'
+                  classNamePrefix='select'
+                  // defaultValue={colourOptions[0]}
+                  // isDisabled={isDisabled}
+                  // isLoading={isLoading}
+                  isClearable
+                  isSearchable
+                  name='color'
+                  options={shopSuggestion}
+                  onChange={(value) =>
+                    setFormData({ ...formData, shop: value.value })
+                  }
+                  onInputChange={(inputValue) => {
+                    if (inputValue.length > 2)
+                      debouncedPremisesInputChange(inputValue, 'shop');
+                    return inputValue;
+                  }}
+                  placeholder='Search for Shop'
+                />
               </div>
 
               {/* Product/Service Name Field */}
@@ -260,16 +425,16 @@ const LandingPage = () => {
                 <input
                   type='text'
                   className={`form-control ${
-                    form2.formState.errors.name ? 'is-invalid' : ''
+                    form2.formState.errors.searchTerm ? 'is-invalid' : ''
                   }`}
                   placeholder='Product / Service Name'
-                  {...form2.register('name', {
+                  {...form2.register('searchTerm', {
                     required: 'Product/Service name is required',
                   })}
                 />
-                {form2.formState.errors.name && (
+                {form2.formState.errors.searchTerm && (
                   <div className='invalid-feedback'>
-                    {form2.formState.errors.name.message}
+                    {form2.formState.errors.searchTerm.message}
                   </div>
                 )}
               </div>
