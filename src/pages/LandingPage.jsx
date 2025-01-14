@@ -74,6 +74,7 @@ const LandingPage = () => {
   const onSubmitForm2 = async (data) => {
     try {
       setLoading(true);
+      data.address = formData.address;
       const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
       setProductList(res.data);
       setLoading(false);
@@ -117,8 +118,14 @@ const LandingPage = () => {
         }
       );
 
-      if (type === 'shop') setShopSuggestion([]);
-      if (type == 'premises') setPremisesSuggestion([]);
+      if (type === 'shop')
+        setShopSuggestion(
+          res.data.map((item) => ({ label: item, value: item }))
+        );
+      if (type == 'premises')
+        setPremisesSuggestion(
+          res.data.map((item) => ({ label: item, value: item }))
+        );
 
       console.log(res);
       // setPremisesSuggestion(
@@ -238,11 +245,11 @@ const LandingPage = () => {
                   // isLoading={isLoading}
                   isClearable
                   isSearchable
-                  name='color'
+                  name='location'
                   options={locationSuggestion}
-                  onChange={(value) =>
-                    setFormData({ ...formData, address: value.value })
-                  }
+                  onChange={(value) => {
+                    setFormData({ ...formData, address: value.value });
+                  }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2) debouncedInputChange(inputValue);
                     return inputValue;
@@ -333,11 +340,12 @@ const LandingPage = () => {
                   // isLoading={isLoading}
                   isClearable
                   isSearchable
-                  name='color'
+                  name='location-form2'
                   options={locationSuggestion}
-                  onChange={(value) =>
-                    setFormData({ ...formData, address: value.value })
-                  }
+                  onChange={(value) => {
+                    setFormData({ ...formData, address: value.value });
+                    // form2.setValue('location', )
+                  }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2) debouncedInputChange(inputValue);
                     return inputValue;
@@ -368,11 +376,12 @@ const LandingPage = () => {
                   placeholder='Premises Name'
                   isClearable
                   isSearchable
-                  name='color'
+                  name='premises'
                   options={premisesSuggestion}
-                  onChange={(value) =>
-                    setFormData({ ...formData, premises: value.value })
-                  }
+                  onChange={(value) => {
+                    setFormData({ ...formData, premises: value.value });
+                    form2.setValue('premises', value.value);
+                  }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2)
                       debouncedPremisesInputChange(inputValue, 'premises');
@@ -401,16 +410,14 @@ const LandingPage = () => {
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
-                  // defaultValue={colourOptions[0]}
-                  // isDisabled={isDisabled}
-                  // isLoading={isLoading}
                   isClearable
                   isSearchable
-                  name='color'
+                  name='shop'
                   options={shopSuggestion}
-                  onChange={(value) =>
-                    setFormData({ ...formData, shop: value.value })
-                  }
+                  onChange={(value) => {
+                    setFormData({ ...formData, shop: value.value });
+                    form2.setValue('shop', value.value);
+                  }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2)
                       debouncedPremisesInputChange(inputValue, 'shop');
