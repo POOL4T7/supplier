@@ -10,14 +10,16 @@ import Select from 'react-select';
 
 const formSchema = yup.object().shape({
   country: yup.string().required('country is required'),
+  address: yup.object().required('address is required'),
   searchTerm: yup.string().optional(),
 });
 
 const formSchema2 = yup.object().shape({
-  country: yup.string().optional(),
+  country: yup.string().required('country is required'),
+  address: yup.object().required('address is required'),
   searchTerm: yup.string().optional(),
-  premises: yup.string(),
-  shop: yup.string().optional(),
+  premises: yup.string().required('premises is required'),
+  shop: yup.string().required('shop is required'),
 });
 
 const LandingPage = () => {
@@ -62,7 +64,7 @@ const LandingPage = () => {
   const onSubmitForm1 = async (data) => {
     try {
       setLoading(true);
-      data.address = formData.address;
+      // data.address = formData.address;
       const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
 
       setProductList(res.data);
@@ -139,7 +141,6 @@ const LandingPage = () => {
   };
   const handleShopInputChange = async (inputValue, type) => {
     if (!inputValue.trim()) {
-      // setDescription([]);
       return;
     }
     try {
@@ -177,13 +178,6 @@ const LandingPage = () => {
   );
   const debouncedShopInputChange = debounceFetch(handleShopInputChange, 500);
 
-  // useEffect(() => {
-  //   if (shopSuggestion.length > 0) {
-  //     // Trigger a re-render when the shopSuggestion state updates
-  //     setShopSuggestion([...shopSuggestion]);
-  //   }
-  // }, [shopSuggestion]);
-
   return (
     <div className='m-5'>
       {/* Tabs Navigation */}
@@ -198,6 +192,10 @@ const LandingPage = () => {
             role='tab'
             aria-controls='location'
             aria-selected='true'
+            onClick={() => {
+              setProductList([]);
+              setFormData({ ...formData, address: null });
+            }}
           >
             Location
           </button>
@@ -212,6 +210,9 @@ const LandingPage = () => {
             role='tab'
             aria-controls='premises'
             aria-selected='false'
+            onClick={() => {
+              setProductList([]);
+            }}
           >
             Premises
           </button>
@@ -237,10 +238,7 @@ const LandingPage = () => {
                     form1.formState.errors.country ? 'is-invalid' : ''
                   }`}
                   placeholder='Country'
-                  {...form1.register('country', {
-                    required: 'Country is required',
-                  })}
-                  onChange={(e) => setCountry(e.target.value)}
+                  {...form1.register('country')}
                 />
                 {form1.formState.errors.country && (
                   <div className='invalid-feedback'>
@@ -251,40 +249,29 @@ const LandingPage = () => {
 
               {/* Location Name Field */}
               <div className='col-12 col-md-4 mb-2'>
-                {/* <input
-                  type='text'
-                  className={`form-control ${
-                    form1.formState.errors.location ? 'is-invalid' : ''
-                  }`}
-                  placeholder='Location Name'
-                  {...form1.register('location', {
-                    required: 'Location Name is required',
-                  })}
-                />
-                {form1.formState.errors.location && (
-                  <div className='invalid-feedback'>
-                    {form1.formState.errors.location.message}
-                  </div>
-                )} */}
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
                   placeholder='Location Name'
-                  // defaultValue={colourOptions[0]}
-                  // isDisabled={isDisabled}
-                  // isLoading={isLoading}
                   isClearable
                   isSearchable
-                  name='location'
+                  name='address'
                   options={locationSuggestion}
-                  onChange={(value) => {
-                    setFormData({ ...formData, address: value.value });
+                  onChange={(selectedOption) => {
+                    form1.setValue('address', selectedOption || null);
+                    setFormData({ ...formData, address: selectedOption.value });
+                    form1.trigger('address');
                   }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2) debouncedInputChange(inputValue);
                     return inputValue;
                   }}
                 />
+                {form1.formState.errors.address && (
+                  <div style={{ color: '#d9534f' }}>
+                    {form1.formState.errors.address.message}
+                  </div>
+                )}
               </div>
 
               {/* Product/Service Name Field */}
@@ -295,9 +282,7 @@ const LandingPage = () => {
                     form1.formState.errors.searchTerm ? 'is-invalid' : ''
                   }`}
                   placeholder='Product / Service Name'
-                  {...form1.register('searchTerm', {
-                    required: 'Product/Service name is required',
-                  })}
+                  {...form1.register('searchTerm')}
                 />
                 {form1.formState.errors.searchTerm && (
                   <div className='invalid-feedback'>
@@ -350,19 +335,26 @@ const LandingPage = () => {
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
-                  placeholder='Location'
+                  placeholder='Location Name'
                   isClearable
                   isSearchable
-                  name='location-form2'
+                  name='address'
                   options={locationSuggestion}
-                  onChange={(value) => {
-                    setFormData({ ...formData, address: value.value });
+                  onChange={(selectedOption) => {
+                    form2.setValue('address', selectedOption || null);
+                    setFormData({ ...formData, address: selectedOption.value });
+                    form2.trigger('address');
                   }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2) debouncedInputChange(inputValue);
                     return inputValue;
                   }}
                 />
+                {form2.formState.errors.address && (
+                  <div style={{ color: '#d9534f' }}>
+                    {form2.formState.errors.address.message}
+                  </div>
+                )}
               </div>
 
               {/* Premises Field */}
@@ -384,6 +376,7 @@ const LandingPage = () => {
                       setFormData({ ...formData, premises: '' });
                       form2.setValue('premises', '');
                     }
+                    form2.trigger('premises');
                   }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2)
@@ -391,7 +384,13 @@ const LandingPage = () => {
                     return inputValue;
                   }}
                 />
+                {form2.formState.errors.premises && (
+                  <div style={{ color: '#d9534f' }}>
+                    {form2.formState.errors.premises.message}
+                  </div>
+                )}
               </div>
+
               <div className='col-12 col-md-2 mb-2'>
                 <Select
                   className='basic-shop-single'
@@ -410,6 +409,7 @@ const LandingPage = () => {
                       setFormData({ ...formData, shop: '' });
                       form2.setValue('shop', '');
                     }
+                    form2.trigger('shop');
                   }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2)
@@ -417,6 +417,11 @@ const LandingPage = () => {
                     return inputValue;
                   }}
                 />
+                {form2.formState.errors.shop && (
+                  <div style={{ color: '#d9534f' }}>
+                    {form2.formState.errors.shop.message}
+                  </div>
+                )}
               </div>
 
               {/* Product/Service Name Field */}
