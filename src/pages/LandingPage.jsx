@@ -90,7 +90,6 @@ const LandingPage = () => {
 
   const handleInputChange = async (inputValue) => {
     if (!inputValue.trim()) {
-      // setDescription([]);
       return;
     }
     try {
@@ -108,9 +107,8 @@ const LandingPage = () => {
       console.error('Error fetching business descriptions:', error);
     }
   };
-  const handlePremisesAndShopInputChange = async (inputValue, type) => {
+  const handlePremisesAndShopInputChange = async (inputValue) => {
     if (!inputValue.trim()) {
-      // setDescription([]);
       return;
     }
     try {
@@ -119,27 +117,19 @@ const LandingPage = () => {
         `/proxy/productsearchsupplier/getPremisesOrShopSuggestions`,
         {
           premisesOrShopName: inputValue,
-          type: type,
+          type: 'premises',
           location: formData.address,
         }
       );
-
-      if (type === 'shop') {
-        console.log(res);
-        setShopSuggestion(
-          res.data.map((item) => ({ label: item, value: item }))
-        );
-      } else if (type == 'premises') {
-        setPremisesSuggestion(
-          res.data.map((item) => ({ label: item, value: item }))
-        );
-      }
+      setPremisesSuggestion(
+        res.data.map((item) => ({ label: item, value: item }))
+      );
       setShowPremisesLoading(false);
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
   };
-  const handleShopInputChange = async (inputValue, type) => {
+  const handleShopInputChange = async (inputValue) => {
     if (!inputValue.trim()) {
       return;
     }
@@ -149,11 +139,11 @@ const LandingPage = () => {
         `/proxy/productsearchsupplier/getPremisesOrShopSuggestions`,
         {
           premisesOrShopName: inputValue,
-          type: type,
+          type: 'shop',
           location: formData.address,
         }
       );
-
+      console.log('API Response:', res.data);
       setShopSuggestion(res.data.map((item) => ({ label: item, value: item })));
       setShowShopLoading(false);
     } catch (error) {
@@ -161,7 +151,6 @@ const LandingPage = () => {
     }
   };
 
-  // Update `onInputChange` to handle only the string and debounce the API calls
   const debounceFetch = (func, delay) => {
     let timer;
     return function (...args) {
@@ -176,7 +165,6 @@ const LandingPage = () => {
     handlePremisesAndShopInputChange,
     500
   );
-  const debouncedShopInputChange = debounceFetch(handleShopInputChange, 500);
 
   return (
     <div className='m-5'>
@@ -413,7 +401,7 @@ const LandingPage = () => {
                   }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2)
-                      debouncedShopInputChange(inputValue, 'shop');
+                      handleShopInputChange(inputValue);
                     return inputValue;
                   }}
                 />
