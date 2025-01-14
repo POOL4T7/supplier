@@ -10,13 +10,11 @@ import Select from 'react-select';
 
 const formSchema = yup.object().shape({
   country: yup.string().required('country is required'),
-  // address: yup.string().required('please enter location or zipcode'),
   searchTerm: yup.string().optional(),
 });
 
 const formSchema2 = yup.object().shape({
   country: yup.string().optional(),
-  // address: yup.string().required('please enter location or zipcode'),
   searchTerm: yup.string().optional(),
   premises: yup.string(),
   shop: yup.string().optional(),
@@ -35,6 +33,10 @@ const LandingPage = () => {
   const [shopSuggestion, setShopSuggestion] = useState([
     // { label: '110091', value: '110091' },
   ]);
+
+  const [showShopLoading, setShowShopLoading] = useState(false);
+  const [showPremisesLoading, setShowPremisesLoading] = useState(false);
+
   const [country, setCountry] = useState('');
 
   const [formData, setFormData] = useState({
@@ -110,6 +112,7 @@ const LandingPage = () => {
       return;
     }
     try {
+      setShowPremisesLoading(true);
       const res = await axios.post(
         `/proxy/productsearchsupplier/getPremisesOrShopSuggestions`,
         {
@@ -129,6 +132,7 @@ const LandingPage = () => {
           res.data.map((item) => ({ label: item, value: item }))
         );
       }
+      setShowPremisesLoading(false);
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
@@ -139,6 +143,7 @@ const LandingPage = () => {
       return;
     }
     try {
+      setShowShopLoading(true);
       const res = await axios.post(
         `/proxy/productsearchsupplier/getPremisesOrShopSuggestions`,
         {
@@ -149,6 +154,7 @@ const LandingPage = () => {
       );
 
       setShopSuggestion(res.data.map((item) => ({ label: item, value: item })));
+      setShowShopLoading(false);
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
@@ -368,6 +374,7 @@ const LandingPage = () => {
                   isClearable
                   isSearchable
                   name='premises'
+                  isLoading={showPremisesLoading}
                   options={premisesSuggestion}
                   onChange={(value, { action }) => {
                     if (action == 'select-option') {
@@ -387,12 +394,13 @@ const LandingPage = () => {
               </div>
               <div className='col-12 col-md-2 mb-2'>
                 <Select
-                  className='basic-single'
+                  className='basic-shop-single'
                   classNamePrefix='select'
                   placeholder='Search for Shop'
                   isClearable
                   isSearchable
-                  name='premises'
+                  name='shop-form2'
+                  isLoading={showShopLoading}
                   options={shopSuggestion}
                   onChange={(value, { action }) => {
                     if (action == 'select-option') {
