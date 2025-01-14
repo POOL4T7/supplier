@@ -35,6 +35,7 @@ const LandingPage = () => {
   const [shopSuggestion, setShopSuggestion] = useState([
     // { label: '110091', value: '110091' },
   ]);
+  const [country, setCountry] = useState('');
 
   const [formData, setFormData] = useState({
     address: {
@@ -90,7 +91,7 @@ const LandingPage = () => {
     }
     try {
       const res = await axios.get(
-        `/proxy/productsearchsupplier/getLocationSuggestions?location=${inputValue}`
+        `/proxy/productsearchsupplier/getLocationSuggestions?location=${inputValue}&country=${country}`
       );
 
       setLocationSuggestion(
@@ -118,22 +119,36 @@ const LandingPage = () => {
         }
       );
 
-      if (type === 'shop')
+      if (type === 'shop') {
+        console.log(res);
         setShopSuggestion(
           res.data.map((item) => ({ label: item, value: item }))
         );
-      if (type == 'premises')
+      } else if (type == 'premises') {
         setPremisesSuggestion(
           res.data.map((item) => ({ label: item, value: item }))
         );
+      }
+    } catch (error) {
+      console.error('Error fetching business descriptions:', error);
+    }
+  };
+  const handleShopInputChange = async (inputValue, type) => {
+    if (!inputValue.trim()) {
+      // setDescription([]);
+      return;
+    }
+    try {
+      const res = await axios.post(
+        `/proxy/productsearchsupplier/getPremisesOrShopSuggestions`,
+        {
+          premisesOrShopName: inputValue,
+          type: type,
+          location: formData.address,
+        }
+      );
 
-      console.log(res);
-      // setPremisesSuggestion(
-      //   res.data.map((item) => ({
-      //     label: item.addressLine1,
-      //     value: item.addressLine1,
-      //   }))
-      // );
+      setShopSuggestion(res.data.map((item) => ({ label: item, value: item })));
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
@@ -154,6 +169,14 @@ const LandingPage = () => {
     handlePremisesAndShopInputChange,
     500
   );
+  const debouncedShopInputChange = debounceFetch(handleShopInputChange, 500);
+
+  // useEffect(() => {
+  //   if (shopSuggestion.length > 0) {
+  //     // Trigger a re-render when the shopSuggestion state updates
+  //     setShopSuggestion([...shopSuggestion]);
+  //   }
+  // }, [shopSuggestion]);
 
   return (
     <div className='m-5'>
@@ -211,6 +234,7 @@ const LandingPage = () => {
                   {...form1.register('country', {
                     required: 'Country is required',
                   })}
+                  onChange={(e) => setCountry(e.target.value)}
                 />
                 {form1.formState.errors.country && (
                   <div className='invalid-feedback'>
@@ -306,6 +330,7 @@ const LandingPage = () => {
                   {...form2.register('country', {
                     required: 'Country is required',
                   })}
+                  onChange={(e) => setCountry(e.target.value)}
                 />
                 {form2.formState.errors.country && (
                   <div className='invalid-feedback'>
@@ -316,35 +341,16 @@ const LandingPage = () => {
 
               {/* Location Name Field */}
               <div className='col-12 col-md-2 mb-2'>
-                {/* <input
-                  type='text'
-                  className={`form-control ${
-                    form2.formState.errors.location ? 'is-invalid' : ''
-                  }`}
-                  placeholder='Location'
-                  {...form2.register('location', {
-                    required: 'Location Name is required',
-                  })}
-                />
-                {form2.formState.errors.location && (
-                  <div className='invalid-feedback'>
-                    {form2.formState.errors.location.message}
-                  </div>
-                )} */}
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
                   placeholder='Location'
-                  // defaultValue={colourOptions[0]}
-                  // isDisabled={isDisabled}
-                  // isLoading={isLoading}
                   isClearable
                   isSearchable
                   name='location-form2'
                   options={locationSuggestion}
                   onChange={(value) => {
                     setFormData({ ...formData, address: value.value });
-                    // form2.setValue('location', )
                   }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2) debouncedInputChange(inputValue);
@@ -355,21 +361,6 @@ const LandingPage = () => {
 
               {/* Premises Field */}
               <div className='col-12 col-md-3 mb-2'>
-                {/* <input
-                  type='text'
-                  className={`form-control ${
-                    form2.formState.errors.premises ? 'is-invalid' : ''
-                  }`}
-                  placeholder='Premises Name'
-                  {...form2.register('premises', {
-                    required: 'Premises is required',
-                  })}
-                />
-                {form2.formState.errors.premises && (
-                  <div className='invalid-feedback'>
-                    {form2.formState.errors.premises.message}
-                  </div>
-                )} */}
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
@@ -378,9 +369,14 @@ const LandingPage = () => {
                   isSearchable
                   name='premises'
                   options={premisesSuggestion}
-                  onChange={(value) => {
-                    setFormData({ ...formData, premises: value.value });
-                    form2.setValue('premises', value.value);
+                  onChange={(value, { action }) => {
+                    if (action == 'select-option') {
+                      setFormData({ ...formData, premises: value.value });
+                      form2.setValue('premises', value.value);
+                    } else {
+                      setFormData({ ...formData, premises: '' });
+                      form2.setValue('premises', '');
+                    }
                   }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2)
@@ -389,41 +385,29 @@ const LandingPage = () => {
                   }}
                 />
               </div>
-
-              {/* Shop Field */}
               <div className='col-12 col-md-2 mb-2'>
-                {/* <input
-                  type='text'
-                  className={`form-control ${
-                    form2.formState.errors.shop ? 'is-invalid' : ''
-                  }`}
-                  placeholder='Search for Shop'
-                  {...form2.register('shop', {
-                    required: 'Shop name is required',
-                  })}
-                />
-                {form2.formState.errors.shop && (
-                  <div className='invalid-feedback'>
-                    {form2.formState.errors.shop.message}
-                  </div>
-                )} */}
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
+                  placeholder='Search for Shop'
                   isClearable
                   isSearchable
-                  name='shop'
+                  name='premises'
                   options={shopSuggestion}
-                  onChange={(value) => {
-                    setFormData({ ...formData, shop: value.value });
-                    form2.setValue('shop', value.value);
+                  onChange={(value, { action }) => {
+                    if (action == 'select-option') {
+                      setFormData({ ...formData, shop: value.value });
+                      form2.setValue('shop', value.value);
+                    } else {
+                      setFormData({ ...formData, shop: '' });
+                      form2.setValue('shop', '');
+                    }
                   }}
                   onInputChange={(inputValue) => {
                     if (inputValue.length > 2)
-                      debouncedPremisesInputChange(inputValue, 'shop');
+                      debouncedShopInputChange(inputValue, 'shop');
                     return inputValue;
                   }}
-                  placeholder='Search for Shop'
                 />
               </div>
 
