@@ -52,13 +52,26 @@ const LandingPage = () => {
   const onSubmitForm1 = async (data) => {
     try {
       setLoading(true);
+      let loc = {};
       try {
         const x = JSON.parse(data.address);
-        data.address = x;
+        loc = x;
       } catch (e) {
         console.log(e);
+        loc = {
+          houseNo: '',
+          area: null,
+          streetName: data.address,
+          zipcode: null,
+          city: null,
+        };
       }
-      const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
+      const newData = JSON.parse(JSON.stringify(data));
+      newData.address = loc;
+      const res = await axios.post(
+        `/proxy/productsearchsupplier/search`,
+        newData
+      );
 
       setProductList(res.data);
       setLoading(false);
@@ -85,8 +98,12 @@ const LandingPage = () => {
           city: null,
         };
       }
-      data.address = loc;
-      const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
+      const newData = JSON.parse(JSON.stringify(data));
+      newData.address = loc;
+      const res = await axios.post(
+        `/proxy/productsearchsupplier/search`,
+        newData
+      );
       setProductList(res.data);
       setLoading(false);
     } catch (e) {
@@ -209,7 +226,7 @@ const LandingPage = () => {
     500
   );
 
-  console.log(locationSuggestion);
+  console.log('address', form1.watch('address'), form1.formState.errors);
 
   return (
     <div className='m-5'>
@@ -296,15 +313,15 @@ const LandingPage = () => {
                         typeof option === 'string' ? option : option.label
                       }
                       onInputChange={(event, value) => {
-                        console.log(value);
-                        field.onChange(value || '');
+                        console.log(value); // For debugging
+                        field.onChange(value || ''); // Ensure value is always a string
                         if (value.length > 2) {
-                          debouncedInputChange(value);
+                          debouncedInputChange(value); // Fetch suggestions
                         }
                       }}
                       onChange={(event, value) => {
-                        console.log('changed', value);
-                        field.onChange(value.value || '');
+                        console.log('changed', value); // For debugging
+                        field.onChange(value?.value || ''); // Store only the `value` string
                       }}
                       size='small'
                       fullWidth
@@ -324,7 +341,7 @@ const LandingPage = () => {
                         />
                       )}
                       renderOption={(props, option) => (
-                        <li key={props} {...props}>
+                        <li key={option.value} {...props}>
                           {option.label}
                         </li>
                       )}
