@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axios from 'axios';
@@ -6,17 +6,18 @@ import { toast } from 'react-toastify';
 import { useState } from 'react';
 import Spinner from '../components/common/Spinner';
 import LocationIcon from '../components/common/LocationIcon';
-import Select from 'react-select';
+// import Select from 'react-select';
+import { Autocomplete, TextField } from '@mui/material';
 
 const formSchema = yup.object().shape({
   country: yup.string().required('country is required'),
-  address: yup.object().required('address is required'),
+  address: yup.string().required('location is required'),
   searchTerm: yup.string().optional(),
 });
 
 const formSchema2 = yup.object().shape({
   country: yup.string().required('country is required'),
-  address: yup.object().required('address is required'),
+  address: yup.string().required('address is required'),
   searchTerm: yup.string().optional(),
   premises: yup.string().required('premises is required'),
   shop: yup.string().required('shop is required'),
@@ -26,32 +27,19 @@ const LandingPage = () => {
   const [productList, setProductList] = useState([]);
   // const [serviceList, setServiceList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [locationSuggestion, setLocationSuggestion] = useState([
-    // { label: '110091', value: '110091' },
-  ]);
-  const [premisesSuggestion, setPremisesSuggestion] = useState([
-    // { label: '110091', value: '110091' },
-  ]);
-  const [shopSuggestion, setShopSuggestion] = useState([
-    // { label: '110091', value: '110091' },
-  ]);
-
-  const [showShopLoading, setShowShopLoading] = useState(false);
-  const [showPremisesLoading, setShowPremisesLoading] = useState(false);
+  const [locationSuggestion, setLocationSuggestion] = useState([]);
+  const [premisesSuggestion, setPremisesSuggestion] = useState([]);
+  const [shopSuggestion, setShopSuggestion] = useState([]);
 
   const [country, setCountry] = useState('');
 
   const [formData, setFormData] = useState({
-    address: {
-      addressLine1: '',
-      addressLine2: '',
-      zipcode: '',
-      city: '',
-    },
+    address: '',
     country: '',
     searchTerm: '',
     premises: '',
     shop: '',
+    location: '',
   });
 
   const form1 = useForm({
@@ -64,14 +52,18 @@ const LandingPage = () => {
   const onSubmitForm1 = async (data) => {
     try {
       setLoading(true);
-      // data.address = formData.address;
+      try {
+        const x = JSON.parse(data.address);
+        data.address = x;
+      } catch (e) {
+        console.log(e);
+      }
       const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
 
       setProductList(res.data);
       setLoading(false);
-      // setUserDetails(res.data?.supplierProfile);
-      // localStorage.setItem('user', JSON.stringify(res.data?.supplierProfile));
     } catch (e) {
+      console.log(e);
       toast.error(e.response?.data?.message || 'Something went wrong');
     }
   };
@@ -79,11 +71,26 @@ const LandingPage = () => {
   const onSubmitForm2 = async (data) => {
     try {
       setLoading(true);
-      data.address = formData.address;
+      let loc = {};
+      try {
+        const x = JSON.parse(data.address);
+        loc = x;
+      } catch (e) {
+        console.log(e);
+        loc = {
+          houseNo: '',
+          area: null,
+          streetName: data.address,
+          zipcode: null,
+          city: null,
+        };
+      }
+      data.address = loc;
       const res = await axios.post(`/proxy/productsearchsupplier/search`, data);
       setProductList(res.data);
       setLoading(false);
     } catch (e) {
+      console.log(e);
       toast.error(e.response?.data?.message || 'Something went wrong');
     }
   };
@@ -93,38 +100,61 @@ const LandingPage = () => {
       return;
     }
     try {
-      const res = await axios.get(
-        `/proxy/productsearchsupplier/getLocationSuggestions?location=${inputValue}&country=${country}`
+      const res = await axios.post(
+        `/proxy/productsearchsupplier/locationSuggestions`,
+        {
+          country: country,
+          location: inputValue,
+        }
       );
 
       setLocationSuggestion(
         res.data.map((item) => ({
-          label: [item.addressLine1, item.city, item.zipcode].join(' '),
-          value: item,
+          label: Object.values(item)
+            .filter((x) => x != null)
+            .join(', '),
+          value: JSON.stringify(item),
         }))
       );
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
   };
+
   const handlePremisesAndShopInputChange = async (inputValue) => {
     if (!inputValue.trim()) {
       return;
     }
+    let loc = {};
     try {
-      setShowPremisesLoading(true);
+      try {
+        const x = JSON.parse(form2.watch('address'));
+
+        loc = x;
+      } catch (e) {
+        console.log(e);
+        loc = {
+          houseNo: '',
+          area: null,
+          streetName: form2.watch('address'),
+          zipcode: null,
+          city: null,
+        };
+      }
+
       const res = await axios.post(
-        `/proxy/productsearchsupplier/getPremisesOrShopSuggestions`,
+        `/proxy/productsearchsupplier/premisesOrShopSuggestions`,
         {
           premisesOrShopName: inputValue,
           type: 'premises',
-          location: formData.address,
+          location: loc,
         }
       );
+
       setPremisesSuggestion(
         res.data.map((item) => ({ label: item, value: item }))
       );
-      setShowPremisesLoading(false);
+      // setShowPremisesLoading(false);
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
@@ -133,19 +163,32 @@ const LandingPage = () => {
     if (!inputValue.trim()) {
       return;
     }
+    let loc = {};
     try {
-      setShowShopLoading(true);
+      try {
+        const x = JSON.parse(form2.watch('address'));
+        loc = x;
+      } catch (e) {
+        console.log(e);
+        loc = {
+          houseNo: '',
+          area: null,
+          streetName: form2.watch('address'),
+          zipcode: null,
+          city: null,
+        };
+      }
+
       const res = await axios.post(
-        `/proxy/productsearchsupplier/getPremisesOrShopSuggestions`,
+        `/proxy/productsearchsupplier/premisesOrShopSuggestions`,
         {
           premisesOrShopName: inputValue,
           type: 'shop',
-          location: formData.address,
+          location: loc,
         }
       );
       console.log('API Response:', res.data);
       setShopSuggestion(res.data.map((item) => ({ label: item, value: item })));
-      setShowShopLoading(false);
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
@@ -165,6 +208,8 @@ const LandingPage = () => {
     handlePremisesAndShopInputChange,
     500
   );
+
+  console.log(locationSuggestion);
 
   return (
     <div className='m-5'>
@@ -218,65 +263,87 @@ const LandingPage = () => {
         >
           <form onSubmit={form1.handleSubmit(onSubmitForm1)} className='mt-4'>
             <div className='row mb-3 justify-content-center'>
-              {/* Country Field */}
               <div className='col-12 col-md-1 mb-2'>
-                <input
-                  type='text'
-                  className={`form-control ${
-                    form1.formState.errors.country ? 'is-invalid' : ''
-                  }`}
-                  placeholder='Country'
+                <TextField
+                  id='outlined-basic'
+                  label='Country'
+                  variant='outlined'
                   {...form1.register('country')}
+                  // placeholder='Country'
+                  error={!!form1.formState.errors.country}
+                  helperText={form1.formState.errors.country?.message}
+                  size='small'
+                  fullWidth
+                  onChange={(e) => setCountry(e.target.value)}
                 />
-                {form1.formState.errors.country && (
-                  <div className='invalid-feedback'>
-                    {form1.formState.errors.country.message}
-                  </div>
-                )}
               </div>
 
               {/* Location Name Field */}
               <div className='col-12 col-md-4 mb-2'>
-                <Select
-                  className='basic-single'
-                  classNamePrefix='select'
-                  placeholder='Location Name'
-                  isClearable
-                  isSearchable
+                <Controller
                   name='address'
-                  options={locationSuggestion}
-                  onChange={(selectedOption) => {
-                    form1.setValue('address', selectedOption || null);
-                    setFormData({ ...formData, address: selectedOption.value });
-                    form1.trigger('address');
+                  control={form1.control}
+                  defaultValue=''
+                  rules={{
+                    required: 'Location is required',
                   }}
-                  onInputChange={(inputValue) => {
-                    if (inputValue.length > 2) debouncedInputChange(inputValue);
-                    return inputValue;
-                  }}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      freeSolo
+                      options={locationSuggestion} // Array of objects with label and value
+                      getOptionLabel={(option) =>
+                        typeof option === 'string' ? option : option.label
+                      }
+                      onInputChange={(event, value) => {
+                        console.log(value);
+                        field.onChange(value || '');
+                        if (value.length > 2) {
+                          debouncedInputChange(value);
+                        }
+                      }}
+                      onChange={(event, value) => {
+                        console.log('changed', value);
+                        field.onChange(value.value || '');
+                      }}
+                      size='small'
+                      fullWidth
+                      value={
+                        locationSuggestion.find(
+                          (option) => option.value === field.value
+                        ) || null
+                      } // Map `field.value` back to the selected option
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label='Type a location'
+                          variant='outlined'
+                          fullWidth
+                          error={!!form1.formState.errors.address} // Show error if validation fails
+                          helperText={form1.formState.errors.address?.message} // Display error message
+                        />
+                      )}
+                      renderOption={(props, option) => (
+                        <li key={props} {...props}>
+                          {option.label}
+                        </li>
+                      )}
+                    />
+                  )}
                 />
-                {form1.formState.errors.address && (
-                  <div style={{ color: '#d9534f' }}>
-                    {form1.formState.errors.address.message}
-                  </div>
-                )}
               </div>
 
-              {/* Product/Service Name Field */}
               <div className='col-12 col-md-4 mb-2'>
-                <input
-                  type='text'
-                  className={`form-control ${
-                    form1.formState.errors.searchTerm ? 'is-invalid' : ''
-                  }`}
-                  placeholder='Product / Service Name'
+                <TextField
+                  id='outlined-basic'
+                  label='Product / Service Name'
+                  variant='outlined'
                   {...form1.register('searchTerm')}
+                  error={!!form1.formState.errors.searchTerm}
+                  helperText={form1.formState.errors.searchTerm?.message}
+                  size='small'
+                  fullWidth
                 />
-                {form1.formState.errors.searchTerm && (
-                  <div className='invalid-feedback'>
-                    {form1.formState.errors.searchTerm.message}
-                  </div>
-                )}
               </div>
 
               {/* Submit Button */}
@@ -300,135 +367,170 @@ const LandingPage = () => {
             <div className='row mb-3 justify-content-center'>
               {/* Country Field */}
               <div className='col-12 col-md-1 mb-2'>
-                <input
-                  type='text'
-                  className={`form-control ${
-                    form2.formState.errors.country ? 'is-invalid' : ''
-                  }`}
-                  placeholder='Country'
-                  {...form2.register('country', {
-                    required: 'Country is required',
-                  })}
+                <TextField
+                  id='outlined-basic'
+                  label='Country'
+                  variant='outlined'
+                  {...form2.register('country')}
+                  // placeholder='Country'
+                  error={!!form1.formState.errors.country}
+                  helperText={form1.formState.errors.country?.message}
+                  size='small'
+                  fullWidth
                   onChange={(e) => setCountry(e.target.value)}
                 />
-                {form2.formState.errors.country && (
-                  <div className='invalid-feedback'>
-                    {form2.formState.errors.country.message}
-                  </div>
-                )}
               </div>
 
               {/* Location Name Field */}
               <div className='col-12 col-md-2 mb-2'>
-                <Select
-                  className='basic-single'
-                  classNamePrefix='select'
-                  placeholder='Location Name'
-                  isClearable
-                  isSearchable
+                <Controller
                   name='address'
-                  options={locationSuggestion}
-                  onChange={(selectedOption) => {
-                    form2.setValue('address', selectedOption || null);
-                    setFormData({ ...formData, address: selectedOption.value });
-                    form2.trigger('address');
+                  control={form2.control}
+                  defaultValue=''
+                  rules={{
+                    required: 'Location is required',
                   }}
-                  onInputChange={(inputValue) => {
-                    if (inputValue.length > 2) debouncedInputChange(inputValue);
-                    return inputValue;
-                  }}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      freeSolo
+                      options={locationSuggestion} // Array of objects with label and value
+                      getOptionLabel={(option) =>
+                        typeof option === 'string' ? option : option.label
+                      }
+                      onInputChange={(event, value) => {
+                        field.onChange(value || '');
+                        if (value.length > 2) {
+                          debouncedInputChange(value);
+                        }
+                      }}
+                      onChange={(event, value) => {
+                        field.onChange(value.value || '');
+                      }}
+                      size='small'
+                      fullWidth
+                      value={
+                        locationSuggestion.find(
+                          (option) => option.value === field.value
+                        ) || null
+                      } // Map `field.value` back to the selected option
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label='Type a location'
+                          variant='outlined'
+                          fullWidth
+                          error={!!form2.formState.errors.address} // Show error if validation fails
+                          helperText={form2.formState.errors.address?.message} // Display error message
+                        />
+                      )}
+                      renderOption={(props, option) => (
+                        <li key={props} {...props}>
+                          {option.label}
+                        </li>
+                      )}
+                    />
+                  )}
                 />
-                {form2.formState.errors.address && (
-                  <div style={{ color: '#d9534f' }}>
-                    {form2.formState.errors.address.message}
-                  </div>
-                )}
               </div>
 
-              {/* Premises Field */}
               <div className='col-12 col-md-3 mb-2'>
-                <Select
-                  className='basic-single'
-                  classNamePrefix='select'
-                  placeholder='Premises Name'
-                  isClearable
-                  isSearchable
+                <Controller
                   name='premises'
-                  isLoading={showPremisesLoading}
-                  options={premisesSuggestion}
-                  onChange={(value, { action }) => {
-                    if (action == 'select-option') {
-                      setFormData({ ...formData, premises: value.value });
-                      form2.setValue('premises', value.value);
-                    } else {
-                      setFormData({ ...formData, premises: '' });
-                      form2.setValue('premises', '');
-                    }
-                    form2.trigger('premises');
+                  control={form2.control}
+                  defaultValue=''
+                  rules={{
+                    required: 'premises is required',
                   }}
-                  onInputChange={(inputValue) => {
-                    if (inputValue.length > 2)
-                      debouncedPremisesInputChange(inputValue, 'premises');
-                    return inputValue;
-                  }}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      freeSolo
+                      fullWidth
+                      size='small'
+                      options={premisesSuggestion.map((item) => item.label)}
+                      getOptionLabel={(option) =>
+                        typeof option === 'string' ? option : ''
+                      }
+                      onInputChange={(event, value) => {
+                        console;
+
+                        field.onChange(value || '');
+                        if (value.length > 2)
+                          debouncedPremisesInputChange(value);
+                      }}
+                      value={field.premises}
+                      onChange={(event, newValue) => {
+                        field.onChange(newValue || '');
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label='Type a premises'
+                          variant='outlined'
+                          fullWidth
+                          error={!!form2.formState.errors.premises}
+                          helperText={form2.formState.errors.premises?.message}
+                        />
+                      )}
+                    />
+                  )}
                 />
-                {form2.formState.errors.premises && (
-                  <div style={{ color: '#d9534f' }}>
-                    {form2.formState.errors.premises.message}
-                  </div>
-                )}
               </div>
 
               <div className='col-12 col-md-2 mb-2'>
-                <Select
-                  className='basic-shop-single'
-                  classNamePrefix='select'
-                  placeholder='Search for Shop'
-                  isClearable
-                  isSearchable
-                  name='shop-form2'
-                  isLoading={showShopLoading}
-                  options={shopSuggestion}
-                  onChange={(value, { action }) => {
-                    if (action == 'select-option') {
-                      setFormData({ ...formData, shop: value.value });
-                      form2.setValue('shop', value.value);
-                    } else {
-                      setFormData({ ...formData, shop: '' });
-                      form2.setValue('shop', '');
-                    }
-                    form2.trigger('shop');
+                <Controller
+                  name='shop'
+                  control={form2.control}
+                  defaultValue=''
+                  rules={{
+                    required: 'shop is required',
                   }}
-                  onInputChange={(inputValue) => {
-                    if (inputValue.length > 2)
-                      handleShopInputChange(inputValue);
-                    return inputValue;
-                  }}
+                  render={({ field }) => (
+                    <Autocomplete
+                      {...field}
+                      freeSolo
+                      fullWidth
+                      size='small'
+                      options={shopSuggestion.map((item) => item.label)}
+                      getOptionLabel={(option) =>
+                        typeof option === 'string' ? option : ''
+                      }
+                      onInputChange={(event, value) => {
+                        field.onChange(value || '');
+                        if (value.length > 2) handleShopInputChange(value);
+                      }}
+                      value={formData.shop}
+                      onChange={(event, newValue) => {
+                        field.onChange(newValue || '');
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label='Type a shop'
+                          variant='outlined'
+                          fullWidth
+                          error={!!form2.formState.errors.shop}
+                          helperText={form2.formState.errors.shop?.message}
+                        />
+                      )}
+                    />
+                  )}
                 />
-                {form2.formState.errors.shop && (
-                  <div style={{ color: '#d9534f' }}>
-                    {form2.formState.errors.shop.message}
-                  </div>
-                )}
               </div>
 
               {/* Product/Service Name Field */}
               <div className='col-12 col-md-3 mb-2'>
-                <input
-                  type='text'
-                  className={`form-control ${
-                    form2.formState.errors.searchTerm ? 'is-invalid' : ''
-                  }`}
-                  placeholder='Product / Service Name'
-                  {...form2.register('searchTerm', {
-                    required: 'Product/Service name is required',
-                  })}
+                <TextField
+                  id='outlined-basic'
+                  label='Product / Service Name'
+                  variant='outlined'
+                  {...form2.register('searchTerm')}
+                  error={!!form1.formState.errors.searchTerm}
+                  helperText={form1.formState.errors.searchTerm?.message}
+                  size='small'
+                  fullWidth
                 />
-                {form2.formState.errors.searchTerm && (
-                  <div className='invalid-feedback'>
-                    {form2.formState.errors.searchTerm.message}
-                  </div>
-                )}
               </div>
 
               {/* Submit Button */}

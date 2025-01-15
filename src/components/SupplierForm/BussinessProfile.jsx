@@ -23,7 +23,9 @@ const bussinessSchema = yup.object().shape({
   //   label: yup.string().required(),
   //   value: yup.string().required(),
   // }),
-  addressLine1: yup.string().required('Address Line 1 is required'),
+  streetName: yup.string().required('streetName is required'),
+  area: yup.string().required('streetName is required'),
+  houseNo: yup.string().required('streetName is required'),
   addressLine2: yup.string().optional(),
   zipcode: yup.string().required('zipcode is required'),
   city: yup.string().required('City is required'),
@@ -75,7 +77,7 @@ const BussinessProfile = () => {
     resolver: yupResolver(bussinessSchema),
     mode: 'onTouched',
   });
-
+  console.log('errors', errors);
   useEffect(() => {
     if (bussiness) {
       reset(bussiness);
@@ -102,20 +104,6 @@ const BussinessProfile = () => {
       );
     }
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await axiosInstance.get(
-  //         '/proxy/productsearchsupplier/getCategoryAndSubCategoryDetailsDetails?type=products'
-  //       );
-  //       console.log(res);
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-  //   if (watch('productsServices')) fetchData();
-  // }, [watch('productsServices')]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -277,28 +265,42 @@ const BussinessProfile = () => {
                   </div>
                 )}
                 <div className='row'>
-                  <div className='mb-2'>
-                    <label className='form-label'>Business Address</label>
+                  <div className='col-6 mb-2'>
+                    <label className='form-label'>Street Name</label>
                     <input
                       type='text'
-                      {...register('addressLine1')}
-                      placeholder='Address Line 1'
+                      {...register('streetName')}
+                      placeholder='Stree Name'
                       className={`form-control ${
-                        errors.addressLine1 ? 'is-invalid' : ''
+                        errors.streetName ? 'is-invalid' : ''
                       }`}
                     />
                     <div className='invalid-feedback'>
-                      {errors.addressLine1?.message}
+                      {errors.streetName?.message}
                     </div>
                   </div>
-                  <div className='mb-2'>
+                  <div className='mb-2 col-6'>
+                    <label className='form-label'>Building no.</label>
                     <input
                       type='text'
-                      {...register('addressLine2')}
-                      placeholder='Address Line 2'
+                      {...register('houseNo')}
+                      placeholder='House no.'
                       className='form-control'
                     />
+                    <div className='invalid-feedback'>
+                      {errors.houseNo?.message}
+                    </div>
                   </div>
+                </div>
+                <div className='mb-2 '>
+                  <label className='form-label'>Area/locality</label>
+                  <input
+                    type='text'
+                    {...register('area')}
+                    placeholder='Address Line 2'
+                    className='form-control'
+                  />
+                  <div className='invalid-feedback'>{errors.area?.message}</div>
                 </div>
 
                 <div className='row'>
