@@ -54,14 +54,14 @@ const LandingPage = () => {
       setLoading(true);
       let loc = {};
       try {
-        const x = JSON.parse(data.address);
+        const x = JSON.parse(form1.watch('address'));
         loc = x;
       } catch (e) {
         console.log(e);
         loc = {
           houseNo: '',
           area: null,
-          streetName: data.address,
+          streetName: form1.watch('address'),
           zipcode: null,
           city: null,
         };
@@ -86,14 +86,14 @@ const LandingPage = () => {
       setLoading(true);
       let loc = {};
       try {
-        const x = JSON.parse(data.address);
+        const x = JSON.parse(form2.watch('address'));
         loc = x;
       } catch (e) {
         console.log(e);
         loc = {
           houseNo: '',
           area: null,
-          streetName: data.address,
+          streetName: form2.watch('address'),
           zipcode: null,
           city: null,
         };
