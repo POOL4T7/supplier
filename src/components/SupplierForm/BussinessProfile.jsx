@@ -23,10 +23,10 @@ const bussinessSchema = yup.object().shape({
   //   label: yup.string().required(),
   //   value: yup.string().required(),
   // }),
-  streetName: yup.string().required('streetName is required'),
-  area: yup.string().required('streetName is required'),
-  houseNo: yup.string().required('streetName is required'),
-  addressLine2: yup.string().optional(),
+  streetName: yup.string().required('Stree tName is required'),
+  area: yup.string().optional(),
+  houseNo: yup.string().required('building no. is required'),
+  // addressLine2: yup.string().optional(),
   zipcode: yup.string().required('zipcode is required'),
   city: yup.string().required('City is required'),
   country: yup.string().required('Country is required'),
@@ -76,11 +76,54 @@ const BussinessProfile = () => {
   } = useForm({
     resolver: yupResolver(bussinessSchema),
     mode: 'onTouched',
+    defaultValues: {
+      businessName: '',
+      streetName: '',
+      area: '',
+      houseNo: '',
+      zipcode: '',
+      city: '',
+      country: '',
+      premisesType: '',
+      premisesName: '',
+      businessTaxId: '',
+      website: '',
+      email: '',
+      sector: '',
+    },
   });
   console.log('errors', errors);
   useEffect(() => {
+    const x = {
+      businessName: '',
+      streetName: '',
+      area: '',
+      houseNo: '',
+      zipcode: '',
+      city: '',
+      country: '',
+      premisesType: '',
+      premisesName: '',
+      businessTaxId: '',
+      website: '',
+      email: '',
+      sector: '',
+    };
     if (bussiness) {
-      reset(bussiness);
+      if (bussiness.businessName) x.businessName = bussiness.businessName;
+      if (bussiness.streetName) x.streetName = bussiness.streetName;
+      if (bussiness.area) x.area = bussiness.area;
+      if (bussiness.houseNo) x.houseNo = bussiness.houseNo;
+      if (bussiness.zipcode) x.zipcode = bussiness.zipcode;
+      if (bussiness.city) x.city = bussiness.city;
+      if (bussiness.country) x.country = bussiness.country;
+      if (bussiness.premisesType) x.premisesType = bussiness.premisesType;
+      if (bussiness.premisesName) x.premisesName = bussiness.premisesName;
+      if (bussiness.businessTaxId) x.businessTaxId = bussiness.businessTaxId;
+      if (bussiness.website) x.website = bussiness.website;
+      if (bussiness.email) x.email = bussiness.email;
+      if (bussiness.sector) x.sector = bussiness.sector;
+      reset(x);
     }
   }, [reset, bussiness]);
 
@@ -104,7 +147,7 @@ const BussinessProfile = () => {
       );
     }
   };
-
+  console.log('Object.keys(errors)', Object.keys(errors));
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className='accordion' id='accordionExample'>
@@ -285,7 +328,9 @@ const BussinessProfile = () => {
                       type='text'
                       {...register('houseNo')}
                       placeholder='House no.'
-                      className='form-control'
+                      className={`form-control ${
+                        errors.houseNo ? 'is-invalid' : ''
+                      }`}
                     />
                     <div className='invalid-feedback'>
                       {errors.houseNo?.message}
@@ -297,8 +342,10 @@ const BussinessProfile = () => {
                   <input
                     type='text'
                     {...register('area')}
-                    placeholder='Address Line 2'
-                    className='form-control'
+                    placeholder='Area or locality'
+                    className={`form-control ${
+                      errors.area ? 'is-invalid' : ''
+                    }`}
                   />
                   <div className='invalid-feedback'>{errors.area?.message}</div>
                 </div>
@@ -428,6 +475,14 @@ const BussinessProfile = () => {
                   <option value='wholesale'>Wholesale</option>
                 </select>
                 <div className='invalid-feedback'>{errors.sector?.message}</div>
+              </div>
+              <div className=''>
+                {Object.keys(errors)?.length > 0 && (
+                  <div style={{ color: '#d9534f' }}>
+                    {' '}
+                    * {Object.keys(errors)[0]} is required
+                  </div>
+                )}
               </div>
               <button
                 type='submit'
