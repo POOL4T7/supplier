@@ -11800,3 +11800,68 @@ body {
   font-size: 0.75rem;
   border-radius: 0.375rem !important;
 }
+/* css new start */
+.search-sec{
+  max-width: 800px;
+  margin: auto;
+}
+.country-box{
+  padding-bottom: 10px;
+}
+.country-box input{
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+.search-row{
+  padding: 50px 0px;
+  position: relative;
+  z-index: 1;
+}
+.search-row::before{
+  content: '';
+  background: #ffe8c2;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  opacity: 0.5;
+  z-index: -1;
+}
+.search-tab{}
+.search-tab .nav-tabs{
+  justify-content: center;
+    border: none;
+    gap: 10px;
+}
+.search-tab .nav-tabs .nav-item{
+  margin: 0px;
+}
+.search-tab .nav-tabs .nav-item .nav-link{
+  background-color: transparent;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  border-bottom: 2px solid #000;
+  border: none;
+}
+.search-tab .nav-tabs .nav-item .nav-link.active{
+  color: green;
+  border-bottom: 2px solid green;
+}
+.serach-form{
+  background: #fff;
+  padding: 15px 15px;
+  border: 1px solid #ffe9c6;
+  margin-top: 15px;
+  border-radius: 10px;
+}
+.search-btn{ 
+  background-color: green;
+  border: none;
+  color: #fff;
+  height: 40px;
+}
+.serach-form input{
+
+}
