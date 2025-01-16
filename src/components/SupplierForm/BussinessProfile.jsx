@@ -9,61 +9,44 @@ import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import Spinner from '../common/Spinner';
 
-// import CreatableSelect from 'react-select/creatable';
-
-// const selectOptions = [
-//   { value: 'chocolate', label: 'Chocolate' },
-//   { value: 'strawberry', label: 'Strawberry' },
-//   { value: 'vanilla', label: 'Vanilla' },
-// ];
-
 const bussinessSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
-  // businessDescription: yup.object().shape({
-  //   label: yup.string().required(),
-  //   value: yup.string().required(),
-  // }),
+  nickName: yup.string().required('Business nick name is required'),
+  keyWord: yup.string().required('Business key word  is required'),
   streetName: yup.string().required('Stree tName is required'),
   area: yup.string().optional(),
   houseNo: yup.string().required('building no. is required'),
-  // addressLine2: yup.string().optional(),
   zipcode: yup.string().required('zipcode is required'),
   city: yup.string().required('City is required'),
   country: yup.string().required('Country is required'),
   premisesType: yup.string().required('Premises type is required'),
   premisesName: yup.string().optional(),
-  businessTaxId: yup.string().required('Business tax ID is required'),
   website: yup
     .string()
     .required('Website is required')
     .matches(/.*\..*/, 'Invalid website'),
   email: yup.string().email('Invalid email').required('Email is required'),
+
+  faxCountryCode: yup.string().required('country code required'),
+  faxNumber: yup.string().required('fax number is required'),
+  mobileCountryCode: yup.string().required('required'),
+  mobileNumber: yup.string().required('mobile number is required'),
+
+  whatsappCountryCode: yup.string().required('required'),
+  whatsappNumber: yup.string().required('whatsapp number is required'),
+
   sector: yup.string().required('Sector is required'),
-  // businessCategory: yup.string().optional(),
-  // businessSubCategory: yup.string().optional(),
-  // serviceCategory: yup.string().optional(),
-  // serviceSubCategory: yup.string().optional(),
+  businessTaxId: yup.string().required('Business tax ID is required'),
 });
 
 const BussinessProfile = () => {
   // const [data, setData] = useState({});
   const [supplier] = useAtom(userDetailsAtom);
   const [bussiness] = useAtom(bussinessProfile);
-  // eslint-disable-next-line no-unused-vars
-  const [category, setCategory] = useState({
-    category: [],
-    subCategory: [],
-  });
 
-  // const [options, setOptions] = useState(['Option 1', 'Option 2', 'Option 3']); // Initial options
-  // const [newOption, setNewOption] = useState('');
-
-  // const handleAddOption = () => {
-  //   if (newOption.trim() && !options.includes(newOption.trim())) {
-  //     setOptions((prevOptions) => [...prevOptions, newOption.trim()]);
-  //     setNewOption(''); // Clear the input field
-  //   }
-  // };
+  const [tab, setTab] = useState(0);
+  // const [keywords, setKeywords] = useState([]);
+  // const [keywordsInput, setKeywordsInput] = useState([]);
 
   const {
     register,
@@ -96,6 +79,8 @@ const BussinessProfile = () => {
   useEffect(() => {
     const x = {
       businessName: '',
+      nickName: '',
+      keyWord: '',
       streetName: '',
       area: '',
       houseNo: '',
@@ -104,13 +89,21 @@ const BussinessProfile = () => {
       country: '',
       premisesType: '',
       premisesName: '',
-      businessTaxId: '',
       website: '',
       email: '',
+      faxCountryCode: '',
+      faxNumber: '',
+      mobileCountryCode: '',
+      mobileNumber: '',
+      whatsappCountryCode: '',
+      whatsappNumber: '',
       sector: '',
+      businessTaxId: '',
     };
     if (bussiness) {
       if (bussiness.businessName) x.businessName = bussiness.businessName;
+      if (bussiness.nickName) x.nickName = bussiness.nickName;
+      if (bussiness.keyWord) x.keyWord = bussiness.keyWord.join(',');
       if (bussiness.streetName) x.streetName = bussiness.streetName;
       if (bussiness.area) x.area = bussiness.area;
       if (bussiness.houseNo) x.houseNo = bussiness.houseNo;
@@ -119,7 +112,16 @@ const BussinessProfile = () => {
       if (bussiness.country) x.country = bussiness.country;
       if (bussiness.premisesType) x.premisesType = bussiness.premisesType;
       if (bussiness.premisesName) x.premisesName = bussiness.premisesName;
-      if (bussiness.businessTaxId) x.businessTaxId = bussiness.businessTaxId;
+      if (bussiness.faxCountryCode) x.faxCountryCode = bussiness.faxCountryCode;
+      if (bussiness.faxNumber) x.faxNumber = bussiness.faxNumber;
+      if (bussiness.mobileCountryCode)
+        x.mobileCountryCode = bussiness.mobileCountryCode;
+      if (bussiness.mobileNumber) x.mobileNumber = bussiness.mobileNumber;
+      if (bussiness.whatsappCountryCode)
+        x.whatsappCountryCode = bussiness.whatsappCountryCode;
+      if (bussiness.whatsappCountryCode)
+        x.whatsappCountryCode = bussiness.whatsappCountryCode;
+      if (bussiness.whatsappNumber) x.whatsappNumber = bussiness.whatsappNumber;
       if (bussiness.website) x.website = bussiness.website;
       if (bussiness.email) x.email = bussiness.email;
       if (bussiness.sector) x.sector = bussiness.sector;
@@ -147,19 +149,20 @@ const BussinessProfile = () => {
       );
     }
   };
-  console.log('Object.keys(errors)', Object.keys(errors));
+  // console.log('Object.keys(errors)', Object.keys(errors));
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className='accordion' id='accordionExample'>
         <div className='accordion-item'>
           <h2 className='accordion-header' id='headingOne'>
             <button
-              className='accordion-button'
+              className={`accordion-button ${tab !== 0 && 'collapsed'}`}
               type='button'
               data-bs-toggle='collapse'
               data-bs-target='#collapseOne'
               aria-expanded='true'
               aria-controls='collapseOne'
+              onClick={() => setTab(0)}
             >
               <span style={{ fontWeight: 'bolder', fontSize: '1.2rem' }}>
                 Bussiness Address
@@ -168,7 +171,7 @@ const BussinessProfile = () => {
           </h2>
           <div
             id='collapseOne'
-            className='accordion-collapse collapse show'
+            className={`accordion-collapse collapse ${tab == 0 && 'show'}`}
             aria-labelledby='headingOne'
             data-bs-parent='#accordionExample'
           >
@@ -187,85 +190,77 @@ const BussinessProfile = () => {
                     {errors.businessName?.message}
                   </div>
                 </div>
-
-                {/* <div className='mb-2'>
-                  <label className='form-label'>Business Description</label>
-                  <Controller
-                    name='businessDescription'
-                    control={control}
-                    defaultValue={null}
-                    rules={{ required: 'Business Description is required' }}
-                    render={({ field }) => (
-                      <CreatableSelect
-                        {...field}
-                        isClearable
-                        options={selectOptions}
-                        className={`form-control ${
-                          errors.businessDescription ? 'is-invalid' : ''
-                        }`}
-                        classNamePrefix='react-select'
-                      />
-                    )}
-                  />
-                  {errors.businessDescription && (
-                    <div className='invalid-feedback'>
-                      {errors.businessDescription.message}
-                    </div>
-                  )}
-                </div> */}
-                {/* <div className='mb-2'>
-                  <CreatableSelect
-                    isClearable
-                    options={selectOptions}
+                <div className='mb-2'>
+                  <label className='form-label'>Bussiness Nick Name</label>
+                  <input
+                    type='text'
+                    {...register('nickName')}
                     className={`form-control ${
-                      errors.businessDescription ? 'is-invalid' : ''
+                      errors.nickName ? 'is-invalid' : ''
                     }`}
-                    classNamePrefix='react-select'
-                    onChange={async (value) => {
-                      await axiosInstance.post(
-                        '/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription',
-                        {
-                          supplierBusinessId: bussiness.id,
-                          supplierBusinessDescription: value.value,
-                        }
-                      );
-                    }}
                   />
-                </div> */}
-                {/* <div className='mb-2'>
-                  <label className='form-label'>Business Description</label>
-                  <select
-                    {...register('businessDescription')}
-                    className={`form-control ${
-                      errors.businessDescription ? 'is-invalid' : ''
-                    }`}
-                  >
-                    {options.map((option, index) => (
-                      <option key={index} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
                   <div className='invalid-feedback'>
-                    {errors.businessDescription?.message}
+                    {errors.nickName?.message}
                   </div>
-                  <div className='mt-2'>
-                    <input
-                      type='text'
-                      className='form-control'
-                      value={newOption}
-                      onChange={(e) => setNewOption(e.target.value)}
-                      placeholder='Add new option'
-                    />
+                </div>
+                <div className='mb-2'>
+                  <label className='form-label'>Bussiness Keywords</label>
+                  <input
+                    type='text'
+                    {...register('keyWord')}
+                    className={`form-control ${
+                      errors.keyWord ? 'is-invalid' : ''
+                    }`}
+                    // value={keywordsInput}
+                    // onChange={(e) => setKeywordsInput(e.target.value)}
+                  />
+                  <small>comma seperated keywords (ex: key1, key2)</small>
+                  <div className='invalid-feedback'>
+                    {errors.keyWord?.message}
+                  </div>
+                </div>
+                {/* <div className='row mb-2'>
+                  <div className='col-10'>
+                    <div className=''>
+                      <label className='form-label'>Bussiness Keywords</label>{' '}
+                      array of string
+                      <input
+                        type='text'
+                        // {...register('keyWord')}
+                        className={`form-control`}
+                        value={keywordsInput}
+                        onChange={(e) => setKeywordsInput(e.target.value)}
+                      />
+                      <div className='invalid-feedback'>
+                        {errors.keyWord?.message}
+                      </div>
+                    </div>
+                  </div>
+                  <div className='col-2'>
                     <button
                       type='button'
-                      className='btn btn-primary mt-2'
-                      onClick={handleAddOption}
+                      className='btn btn-primary mt-4'
+                      onClick={() => {
+                        setKeywords([...keywords, keywordsInput]);
+                        setKeywordsInput('');
+                      }}
                     >
-                      Add Option
+                      Add
                     </button>
                   </div>
+                  <div className='mt-2'>
+                    {keywords.map((item, idx) => (
+                      <span
+                        key={idx}
+                        className='badge rounded-pill bg-primary px-3 py-2 text-white m-1'
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
                 </div> */}
+
                 <div className='mb-2'>
                   <label className='form-label'>Premises Type</label>
                   <div>
@@ -275,7 +270,7 @@ const BussinessProfile = () => {
                         value='individual'
                         {...register('premisesType')}
                       />
-                      Individual Premises
+                      <span className='mr-2'>Individual Premises</span>
                     </label>
                     <label className='form-label m-2'>
                       <input
@@ -338,7 +333,7 @@ const BussinessProfile = () => {
                   </div>
                 </div>
                 <div className='mb-2 '>
-                  <label className='form-label'>Area/locality</label>
+                  <label className='form-label'>Place / locality name</label>
                   <input
                     type='text'
                     {...register('area')}
@@ -367,7 +362,7 @@ const BussinessProfile = () => {
                   </div>
 
                   <div className='col-sm-4 mb-2'>
-                    <label className='form-label'>City</label>
+                    <label className='form-label'>City / Town / Village</label>
                     <input
                       type='text'
                       {...register('city')}
@@ -397,47 +392,43 @@ const BussinessProfile = () => {
                   </div>
                 </div>
               </>
+              <button
+                type='button'
+                className='btn btn-primary mt-3'
+                onClick={() => setTab(1)}
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>
         <div className='accordion-item'>
           <h2 className='accordion-header' id='headingTwo'>
             <button
-              className='accordion-button collapsed'
+              className={`accordion-button ${tab !== 1 && 'collapsed'}`}
               type='button'
               data-bs-toggle='collapse'
               data-bs-target='#collapseTwo'
               aria-expanded='false'
               aria-controls='collapseTwo'
+              onClick={() => setTab(1)}
             >
               <span style={{ fontWeight: 'bolder', fontSize: '1.2rem' }}>
-                Bussiness Details
+                Business Web Address Contact details
               </span>
             </button>
           </h2>
           <div
             id='collapseTwo'
-            className='accordion-collapse collapse'
+            className={`accordion-collapse collapse ${tab == 1 && 'show'}`}
             aria-labelledby='headingTwo'
             data-bs-parent='#accordionExample'
           >
             <div className='accordion-body'>
               <div className='mb-2'>
-                <label className='form-label'>Business Tax ID</label>
-                <input
-                  type='text'
-                  {...register('businessTaxId')}
-                  className={`form-control ${
-                    errors.businessTaxId ? 'is-invalid' : ''
-                  }`}
-                />
-                <div className='invalid-feedback'>
-                  {errors.businessTaxId?.message}
-                </div>
-              </div>
-
-              <div className='mb-2'>
-                <label className='form-label'>Website</label>
+                <label className='form-label'>
+                  Business website address / domain name
+                </label>
                 <input
                   type='text'
                   {...register('website')}
@@ -451,7 +442,7 @@ const BussinessProfile = () => {
               </div>
 
               <div className='mb-2'>
-                <label className='form-label'>Email</label>
+                <label className='form-label'>E-mail address</label>
                 <input
                   type='email'
                   {...register('email')}
@@ -459,9 +450,147 @@ const BussinessProfile = () => {
                 />
                 <div className='invalid-feedback'>{errors.email?.message}</div>
               </div>
+              {/* second part start here */}
+              <p className='mt-4 mb-2 fw-bold fs-4'>
+                Business Contact numbers{' '}
+              </p>
 
+              <div className='row'>
+                <div className='col-3'>
+                  <div className='mb-2'>
+                    <label className='form-label'>Country Code</label>
+                    <input
+                      type='text'
+                      {...register('faxCountryCode')}
+                      className={`form-control ${
+                        errors.faxCountryCode ? 'is-invalid' : ''
+                      }`}
+                    />
+                    <div className='invalid-feedback'>
+                      {errors.faxCountryCode?.message}
+                    </div>
+                  </div>
+                </div>
+                <div className='col-9'>
+                  <div className='mb-2'>
+                    <label className='form-label'>
+                      Fixed Number / Fax Number
+                    </label>
+                    <input
+                      type='text'
+                      {...register('faxNumber')}
+                      className={`form-control ${
+                        errors.faxNumber ? 'is-invalid' : ''
+                      }`}
+                    />
+                    <div className='invalid-feedback'>
+                      {errors.faxNumber?.message}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='row'>
+                <div className='col-3'>
+                  <div className='mb-2'>
+                    <label className='form-label'>Country Code</label>
+                    <input
+                      type='text'
+                      {...register('mobileCountryCode')}
+                      className={`form-control ${
+                        errors.mobileCountryCode ? 'is-invalid' : ''
+                      }`}
+                    />
+                    <div className='invalid-feedback'>
+                      {errors.mobileCountryCode?.message}
+                    </div>
+                  </div>
+                </div>
+                <div className='col-9'>
+                  <div className='mb-2'>
+                    <label className='form-label'>
+                      Mobile / Cell Phone number
+                    </label>
+                    <input
+                      type='text'
+                      {...register('mobileNumber')}
+                      className={`form-control ${
+                        errors.mobileNumber ? 'is-invalid' : ''
+                      }`}
+                    />
+                    <div className='invalid-feedback'>
+                      {errors.mobileNumber?.message}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='row'>
+                <div className='col-3'>
+                  <div className='mb-2'>
+                    <label className='form-label'>Country Code</label>
+                    <input
+                      type='text'
+                      {...register('whatsappCountryCode')}
+                      className={`form-control ${
+                        errors.whatsappCountryCode ? 'is-invalid' : ''
+                      }`}
+                    />
+                    <div className='invalid-feedback'>
+                      {errors.whatsappCountryCode?.message}
+                    </div>
+                  </div>
+                </div>
+                <div className='col-9'>
+                  <div className='mb-2'>
+                    <label className='form-label'>WhatsApp number</label>
+                    <input
+                      type='text'
+                      {...register('whatsappNumber')}
+                      className={`form-control ${
+                        errors.whatsappNumber ? 'is-invalid' : ''
+                      }`}
+                    />
+                    <div className='invalid-feedback'>
+                      {errors.whatsappNumber?.message}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+                type='button'
+                className='btn btn-primary mt-3'
+                onClick={() => setTab(2)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className='accordion-item'>
+          <h2 className='accordion-header' id='headingTwo'>
+            <button
+              className={`accordion-button ${tab !== 2 && 'collapsed'}`}
+              type='button'
+              data-bs-toggle='collapse'
+              data-bs-target='#collapseThree'
+              aria-expanded='false'
+              aria-controls='collapseThree'
+              onClick={() => setTab(2)}
+            >
+              <span style={{ fontWeight: 'bolder', fontSize: '1.2rem' }}>
+                Business Nature & Tax details
+              </span>
+            </button>
+          </h2>
+          <div
+            id='collapseThree'
+            className={`accordion-collapse collapse ${tab == 2 ? 'show' : ''}`}
+            aria-labelledby='headingTwo'
+            data-bs-parent='#accordionExample'
+          >
+            <div className='accordion-body'>
               <div className='mb-2'>
-                <label className='form-label'>Sector</label>
+                <label className='form-label'>Business Sector</label>
                 <select
                   {...register('sector')}
                   className={`form-control ${
@@ -476,7 +605,49 @@ const BussinessProfile = () => {
                 </select>
                 <div className='invalid-feedback'>{errors.sector?.message}</div>
               </div>
-              <div className=''>
+
+              <div className='mb-2'>
+                <label className='form-label'>Business Tax ID</label>
+                <input
+                  type='text'
+                  {...register('businessTaxId')}
+                  className={`form-control ${
+                    errors.businessTaxId ? 'is-invalid' : ''
+                  }`}
+                />
+                <div className='invalid-feedback'>
+                  {errors.businessTaxId?.message}
+                </div>
+              </div>
+
+              <div className='mb-3'>
+                <label htmlFor='certificate' className='form-label'>
+                  Business Certificate
+                </label>
+                <div className='input-group'>
+                  <input
+                    type='file'
+                    className='form-control mx-2'
+                    id='certificateInput'
+                    accept='image/*'
+                  />
+                  <button
+                    type='button'
+                    className='btn btn-primary'
+                    id='uploadButton'
+                  >
+                    Upload
+                  </button>
+                </div>
+              </div>
+
+              <div className='preview-box' id='previewBox'>
+                <span className='preview-placeholder'>
+                  No Certificate Uploaded
+                </span>
+              </div>
+
+              <div>
                 {Object.keys(errors)?.length > 0 && (
                   <div style={{ color: '#d9534f' }}>
                     {' '}
@@ -484,13 +655,15 @@ const BussinessProfile = () => {
                   </div>
                 )}
               </div>
-              <button
-                type='submit'
-                className='btn btn-primary my-2'
-                disabled={isSubmitting}
-              >
-                {isSubmitting && <Spinner width='15px' height='15px' />} Save
-              </button>
+              <div className='div'>
+                <button
+                  type='submit'
+                  className='btn btn-primary my-2'
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting && <Spinner width='15px' height='15px' />} Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
