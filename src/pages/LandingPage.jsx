@@ -226,10 +226,22 @@ const LandingPage = () => {
     500
   );
 
-  console.log('address', form1.watch('address'), form1.formState.errors);
-
   return (
-    <div className='m-5'>
+    <div className='container my-5' style={{ maxWidth: '800px' }}>
+      <div className='mb-2'>
+        <TextField
+          id='outlined-basic'
+          label='Country'
+          variant='outlined'
+          {...form1.register('country')}
+          // placeholder='Country'
+          error={!!form1.formState.errors.country}
+          helperText={form1.formState.errors.country?.message}
+          size='small'
+          fullWidth
+          onChange={(e) => setCountry(e.target.value)}
+        />
+      </div>
       {/* Tabs Navigation */}
       <ul className='nav nav-tabs' id='formTabs' role='tablist'>
         <li className='nav-item' role='presentation'>
@@ -280,7 +292,7 @@ const LandingPage = () => {
         >
           <form onSubmit={form1.handleSubmit(onSubmitForm1)} className='mt-4'>
             <div className='row mb-3 justify-content-center'>
-              <div className='col-12 col-md-1 mb-2'>
+              {/* <div className='col-12 col-md-1 mb-2'>
                 <TextField
                   id='outlined-basic'
                   label='Country'
@@ -293,10 +305,10 @@ const LandingPage = () => {
                   fullWidth
                   onChange={(e) => setCountry(e.target.value)}
                 />
-              </div>
+              </div> */}
 
               {/* Location Name Field */}
-              <div className='col-12 col-md-4 mb-2'>
+              <div className='col-12 col-md-5 mb-2'>
                 <Controller
                   name='address'
                   control={form1.control}
@@ -350,7 +362,7 @@ const LandingPage = () => {
                 />
               </div>
 
-              <div className='col-12 col-md-4 mb-2'>
+              <div className='col-12 col-md-5 mb-2'>
                 <TextField
                   id='outlined-basic'
                   label='Product / Service Name'
@@ -383,7 +395,7 @@ const LandingPage = () => {
           <form onSubmit={form2.handleSubmit(onSubmitForm2)} className='mt-4'>
             <div className='row mb-3 justify-content-center'>
               {/* Country Field */}
-              <div className='col-12 col-md-1 mb-2'>
+              {/* <div className='col-12 col-md-1 mb-2'>
                 <TextField
                   id='outlined-basic'
                   label='Country'
@@ -396,10 +408,10 @@ const LandingPage = () => {
                   fullWidth
                   onChange={(e) => setCountry(e.target.value)}
                 />
-              </div>
+              </div> */}
 
               {/* Location Name Field */}
-              <div className='col-12 col-md-2 mb-2'>
+              <div className='col-12 col-md-3 mb-2'>
                 <Controller
                   name='address'
                   control={form2.control}
@@ -411,7 +423,7 @@ const LandingPage = () => {
                     <Autocomplete
                       {...field}
                       freeSolo
-                      options={locationSuggestion} // Array of objects with label and value
+                      options={locationSuggestion}
                       getOptionLabel={(option) =>
                         typeof option === 'string' ? option : option.label
                       }
