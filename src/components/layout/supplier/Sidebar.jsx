@@ -79,6 +79,59 @@ const Sidebar = () => {
                   </Link>
                 </nav>
               </div>
+              <Link
+                className='nav-link collapsed'
+                href='#'
+                data-bs-toggle='collapse'
+                data-bs-target='#supplierLayout'
+                aria-expanded='false'
+                aria-controls='supplierLayout'
+              >
+                <div className='sb-nav-link-icon'>
+                  <ChartNoAxesGantt />
+                </div>
+                Services
+                <div className='sb-sidenav-collapse-arrow'>
+                  <ChevronDown />
+                </div>
+              </Link>
+              <div
+                className='collapse'
+                id='supplierLayout'
+                aria-labelledby='headingOne'
+                data-bs-parent='#sidenavAccordion'
+              >
+                <nav className='sb-sidenav-menu-nested nav'>
+                  <Link
+                    className={`nav-link ${
+                      location.pathname === '/supplier/service-category'
+                        ? 'active'
+                        : ''
+                    }`}
+                    to='/supplier/service-category'
+                  >
+                    Category
+                  </Link>
+                  <Link
+                    className={`nav-link ${
+                      location.pathname === '/supplier/service-subcategory'
+                        ? 'active'
+                        : ''
+                    }`}
+                    to='/supplier/service-subcategory'
+                  >
+                    Sub Category
+                  </Link>
+                  <Link
+                    className={`nav-link ${
+                      location.pathname === '/supplier/services' ? 'active' : ''
+                    }`}
+                    to='/supplier/services'
+                  >
+                    Service List
+                  </Link>
+                </nav>
+              </div>
 
               {/* <a
                 className='nav-link collapsed'

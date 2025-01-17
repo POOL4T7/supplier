@@ -2,7 +2,7 @@ import ServiceSubCategory from '../../../components/Service/ServiceSubCategory';
 
 const SubCategory = () => {
   return (
-    <div>
+    <div className='mt-5'>
       <ServiceSubCategory />
     </div>
   );
