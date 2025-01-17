@@ -1,48 +1,49 @@
-import PropTypes from "prop-types";
-import { useTheme } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import * as yup from "yup";
-import { useAtom } from "jotai";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
-import axiosInstance from "../../axios";
-import { bussinessProfile, userDetailsAtom } from "../../storges/user";
-import Spinner from "../../components/common/Spinner";
+import PropTypes from 'prop-types';
+import { useTheme } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import * as yup from 'yup';
+import { useAtom } from 'jotai';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { toast } from 'react-toastify';
+import { useEffect, useState } from 'react';
+import axiosInstance from '../../axios';
+import { bussinessProfile, userDetailsAtom } from '../../storges/user';
+import Spinner from '../../components/common/Spinner';
 
 const bussinessSchema = yup.object().shape({
-  businessName: yup.string().required("Business name is required"),
-  businessNickName: yup.string().required("Business nick name is required"),
-  businessKeyWords: yup.string().required("Business key word  is required"),
-  streetName: yup.string().required("Stree tName is required"),
+  businessName: yup.string().required('Business name is required'),
+  businessNickName: yup.string().required('Business nick name is required'),
+  businessKeyWords: yup.string().required('Business key word  is required'),
+  aboutus: yup.string().required('about us is required'),
+  streetName: yup.string().required('Stree tName is required'),
   area: yup.string().optional(),
-  houseNo: yup.string().required("building no. is required"),
-  zipcode: yup.string().required("zipcode is required"),
-  city: yup.string().required("City is required"),
-  country: yup.string().required("Country is required"),
-  premisesType: yup.string().required("Premises type is required"),
+  houseNo: yup.string().required('building no. is required'),
+  zipcode: yup.string().required('zipcode is required'),
+  city: yup.string().required('City is required'),
+  country: yup.string().required('Country is required'),
+  premisesType: yup.string().required('Premises type is required'),
   premisesName: yup.string().optional(),
   website: yup
     .string()
-    .required("Website is required")
-    .matches(/.*\..*/, "Invalid website"),
-  email: yup.string().email("Invalid email").required("Email is required"),
+    .required('Website is required')
+    .matches(/.*\..*/, 'Invalid website'),
+  email: yup.string().email('Invalid email').required('Email is required'),
 
-  faxCountryCode: yup.string().required("country code required"),
-  faxNumber: yup.string().required("fax number is required"),
-  mobileCountryCode: yup.string().required("required"),
-  mobileNumber: yup.string().required("mobile number is required"),
+  faxCountryCode: yup.string().required('country code required'),
+  faxNumber: yup.string().required('fax number is required'),
+  mobileCountryCode: yup.string().required('required'),
+  mobileNumber: yup.string().required('mobile number is required'),
 
-  whatsappCountryCode: yup.string().required("required"),
-  whatsappNumber: yup.string().required("whatsapp number is required"),
+  whatsappCountryCode: yup.string().required('required'),
+  whatsappNumber: yup.string().required('whatsapp number is required'),
 
-  sector: yup.string().required("Sector is required"),
-  businessTaxId: yup.string().required("Business tax ID is required"),
+  sector: yup.string().required('Sector is required'),
+  businessTaxId: yup.string().required('Business tax ID is required'),
 });
 
 function TabPanel(props) {
@@ -50,7 +51,7 @@ function TabPanel(props) {
 
   return (
     <div
-      role="tabpanel"
+      role='tabpanel'
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
@@ -74,7 +75,7 @@ TabPanel.propTypes = {
 function a11yProps(index) {
   return {
     id: `full-width-tab-${index}`,
-    "aria-controls": `full-width-tabpanel-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
   };
 }
 
@@ -87,6 +88,7 @@ export default function BussinessProfile() {
   };
   const [supplier] = useAtom(userDetailsAtom);
   const [bussiness] = useAtom(bussinessProfile);
+  const [certificate, setCertificate] = useState(null);
 
   // const [keywords, setKeywords] = useState([]);
   // const [keywordsInput, setKeywordsInput] = useState([]);
@@ -101,54 +103,54 @@ export default function BussinessProfile() {
     // setValue,
   } = useForm({
     resolver: yupResolver(bussinessSchema),
-    mode: "onTouched",
+    mode: 'onTouched',
     defaultValues: {
-      businessName: "",
-      streetName: "",
-      area: "",
-      houseNo: "",
-      zipcode: "",
-      city: "",
-      country: "",
-      premisesType: "",
-      premisesName: "",
-      businessTaxId: "",
-      website: "",
-      email: "",
-      sector: "",
+      businessName: '',
+      streetName: '',
+      area: '',
+      houseNo: '',
+      zipcode: '',
+      city: '',
+      country: '',
+      premisesType: '',
+      premisesName: '',
+      businessTaxId: '',
+      website: '',
+      email: '',
+      sector: '',
     },
   });
-  console.log("errors", errors);
+  console.log('errors', errors);
   useEffect(() => {
     const x = {
-      businessName: "",
-      businessNickName: "",
-      businessKeyWords: "",
-      streetName: "",
-      area: "",
-      houseNo: "",
-      zipcode: "",
-      city: "",
-      country: "",
-      premisesType: "",
-      premisesName: "",
-      website: "",
-      email: "",
-      faxCountryCode: "",
-      faxNumber: "",
-      mobileCountryCode: "",
-      mobileNumber: "",
-      whatsappCountryCode: "",
-      whatsappNumber: "",
-      sector: "",
-      businessTaxId: "",
+      businessName: '',
+      businessNickName: '',
+      businessKeyWords: '',
+      streetName: '',
+      area: '',
+      houseNo: '',
+      zipcode: '',
+      city: '',
+      country: '',
+      premisesType: '',
+      premisesName: '',
+      website: '',
+      email: '',
+      faxCountryCode: '',
+      faxNumber: '',
+      mobileCountryCode: '',
+      mobileNumber: '',
+      whatsappCountryCode: '',
+      whatsappNumber: '',
+      sector: '',
+      businessTaxId: '',
     };
     if (bussiness) {
       if (bussiness.businessName) x.businessName = bussiness.businessName;
       if (bussiness.businessNickName)
         x.businessNickName = bussiness.businessNickName;
       if (bussiness.businessKeyWords)
-        x.businessKeyWords = bussiness.businessKeyWords.join(",");
+        x.businessKeyWords = bussiness.businessKeyWords.join(',');
       if (bussiness.streetName) x.streetName = bussiness.streetName;
       if (bussiness.area) x.area = bussiness.area;
       if (bussiness.houseNo) x.houseNo = bussiness.houseNo;
@@ -179,7 +181,7 @@ export default function BussinessProfile() {
     try {
       delete data.businessDescription;
       // console.log('data', data);
-      data.businessKeyWords = data.businessKeyWords.split(",");
+      data.businessKeyWords = data.businessKeyWords.split(',');
       // productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
@@ -187,98 +189,139 @@ export default function BussinessProfile() {
       );
 
       toast.success(
-        res.data?.data?.message || "Supplier bussiness profile updated"
+        res.data?.data?.message || 'Supplier bussiness profile updated'
       );
       // saveData(data); // Save step data before moving on
     } catch (e) {
       console.log(e);
       toast.error(
-        e.response?.data?.error || "failed: Supplier profile updated"
+        e.response?.data?.error || 'failed: Supplier profile updated'
       );
+    }
+  };
+
+  const uplaodCertificate = async (e) => {
+    e.preventDefault();
+    console.log(certificate[0]);
+    console.log(bussiness);
+
+    const formData = new FormData();
+    formData.append('file', certificate[0]);
+    formData.append('supplierBusinessId', bussiness.id);
+    try {
+      const res = await axiosInstance.post(
+        '/proxy/productsearchsupplier/api/supplier/file/uploadBusinessCertificatePreview',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      console.log(res);
+    } catch (e) {
+      console.log(e);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <Box
           sx={{
-            bgcolor: "background.paper",
-            marginTop: "2rem",
-            width: "700px",
+            bgcolor: 'background.paper',
+            marginTop: '2rem',
+            width: '700px',
           }}
         >
-          <AppBar position="static">
+          <AppBar position='static'>
             <Tabs
               value={value}
               onChange={handleChange}
-              indicatorColor="secondary"
-              textColor="inherit"
-              variant="fullWidth"
-              aria-label="full width tabs example"
+              indicatorColor='secondary'
+              textColor='inherit'
+              variant='fullWidth'
+              aria-label='full width tabs example'
               centered
               sx={{
-                bgcolor: "primary.light",
+                bgcolor: 'primary.light',
               }}
             >
+              <Tab label='Bussiness Address' {...a11yProps(0)} />
               <Tab
-                label="Business Web Address Contact details"
-                {...a11yProps(0)}
-              />
-              <Tab
-                label="Business Web Address Contact details"
+                label='Business Web Address Contact details'
                 {...a11yProps(1)}
               />
-              <Tab label="Business Nature & Tax details" {...a11yProps(2)} />
+              <Tab label='Business Nature & Tax details' {...a11yProps(2)} />
             </Tabs>
           </AppBar>
           <TabPanel
             value={value}
             index={0}
             dir={theme.direction}
-            sx={{ color: "primary-light" }}
+            sx={{ color: 'primary-light' }}
           >
             <>
-              <div className="mb-2">
-                <label className="form-label">Business Name</label>
-                <input
-                  type="text"
-                  {...register("businessName")}
-                  className={`form-control ${
-                    errors.businessName ? "is-invalid" : ""
-                  }`}
-                />
-                <div className="invalid-feedback">
-                  {errors.businessName?.message}
+              <div className='row'>
+                <div className='col-6'>
+                  <div className='mb-2'>
+                    <label className='form-label'>Business Name</label>
+                    <input
+                      type='text'
+                      {...register('businessName')}
+                      className={`form-control ${
+                        errors.businessName ? 'is-invalid' : ''
+                      }`}
+                    />
+                    <div className='invalid-feedback'>
+                      {errors.businessName?.message}
+                    </div>
+                  </div>
+                </div>
+                <div className='col-6'>
+                  <div className='mb-2'>
+                    <label className='form-label'>Bussiness Nick Name</label>
+                    <input
+                      type='text'
+                      {...register('businessNickName')}
+                      className={`form-control ${
+                        errors.businessNickName ? 'is-invalid' : ''
+                      }`}
+                    />
+                    <div className='invalid-feedback'>
+                      {errors.businessNickName?.message}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="mb-2">
-                <label className="form-label">Bussiness Nick Name</label>
+              <div className='mb-2'>
+                <label className='form-label'>Bussiness Keywords</label>
                 <input
-                  type="text"
-                  {...register("businessNickName")}
+                  type='text'
+                  {...register('businessKeyWords')}
                   className={`form-control ${
-                    errors.businessNickName ? "is-invalid" : ""
-                  }`}
-                />
-                <div className="invalid-feedback">
-                  {errors.businessNickName?.message}
-                </div>
-              </div>
-              <div className="mb-2">
-                <label className="form-label">Bussiness Keywords</label>
-                <input
-                  type="text"
-                  {...register("businessKeyWords")}
-                  className={`form-control ${
-                    errors.businessKeyWords ? "is-invalid" : ""
+                    errors.businessKeyWords ? 'is-invalid' : ''
                   }`}
                   // value={keywordsInput}
                   // onChange={(e) => setKeywordsInput(e.target.value)}
                 />
                 <small>comma seperated keywords (ex: key1, key2)</small>
-                <div className="invalid-feedback">
+                <div className='invalid-feedback'>
                   {errors.businessKeyWords?.message}
+                </div>
+              </div>
+              <div className='mb-2'>
+                <label className='form-label'>About Us</label>
+                <textarea
+                  type='text'
+                  {...register('aboutus')}
+                  className={`form-control ${
+                    errors.aboutus ? 'is-invalid' : ''
+                  }`}
+                />
+
+                <div className='invalid-feedback'>
+                  {errors.aboutus?.message}
                 </div>
               </div>
               {/* <div className='row mb-2'>
@@ -323,136 +366,136 @@ export default function BussinessProfile() {
                   </div>
                 </div> */}
 
-              <div className="mb-2">
-                <label className="form-label">Premises Type</label>
+              <div className='mb-2'>
+                <label className='form-label'>Premises Type</label>
                 <div>
-                  <label className="form-label">
+                  <label className='form-label'>
                     <input
-                      type="radio"
-                      value="individual"
-                      {...register("premisesType")}
+                      type='radio'
+                      value='individual'
+                      {...register('premisesType')}
                     />
-                    <span className="mr-2">Individual Premises</span>
+                    <span className='mr-2'>Individual Premises</span>
                   </label>
-                  <label className="form-label m-2">
+                  <label className='form-label m-2'>
                     <input
-                      type="radio"
-                      value="group"
-                      {...register("premisesType")}
+                      type='radio'
+                      value='group'
+                      {...register('premisesType')}
                     />
                     Group of Bussiness Premises (Malls)
                   </label>
                 </div>
-                <div className="invalid-feedback">
+                <div className='invalid-feedback'>
                   {errors.premisesType?.message}
                 </div>
               </div>
 
-              {watch("premisesType") == "group" && (
-                <div className="mb-2">
-                  <label className="form-label">Premises name</label>
+              {watch('premisesType') == 'group' && (
+                <div className='mb-2'>
+                  <label className='form-label'>Premises name</label>
                   <input
-                    type="text"
-                    {...register("premisesName")}
-                    placeholder="Premises name"
+                    type='text'
+                    {...register('premisesName')}
+                    placeholder='Premises name'
                     className={`form-control ${
-                      errors.premisesName ? "is-invalid" : ""
+                      errors.premisesName ? 'is-invalid' : ''
                     }`}
                   />
-                  <div className="invalid-feedback">
+                  <div className='invalid-feedback'>
                     {errors.premisesName?.message}
                   </div>
                 </div>
               )}
-              <div className="row">
-                <div className="col-6 mb-2">
-                  <label className="form-label">Street Name</label>
+              <div className='row'>
+                <div className='col-6 mb-2'>
+                  <label className='form-label'>Street Name</label>
                   <input
-                    type="text"
-                    {...register("streetName")}
-                    placeholder="Stree Name"
+                    type='text'
+                    {...register('streetName')}
+                    placeholder='Stree Name'
                     className={`form-control ${
-                      errors.streetName ? "is-invalid" : ""
+                      errors.streetName ? 'is-invalid' : ''
                     }`}
                   />
-                  <div className="invalid-feedback">
+                  <div className='invalid-feedback'>
                     {errors.streetName?.message}
                   </div>
                 </div>
-                <div className="mb-2 col-6">
-                  <label className="form-label">Building no.</label>
+                <div className='mb-2 col-6'>
+                  <label className='form-label'>Building no.</label>
                   <input
-                    type="text"
-                    {...register("houseNo")}
-                    placeholder="House no."
+                    type='text'
+                    {...register('houseNo')}
+                    placeholder='House no.'
                     className={`form-control ${
-                      errors.houseNo ? "is-invalid" : ""
+                      errors.houseNo ? 'is-invalid' : ''
                     }`}
                   />
-                  <div className="invalid-feedback">
+                  <div className='invalid-feedback'>
                     {errors.houseNo?.message}
                   </div>
                 </div>
               </div>
-              <div className="mb-2 ">
-                <label className="form-label">Place / locality name</label>
+              <div className='mb-2 '>
+                <label className='form-label'>Place / locality name</label>
                 <input
-                  type="text"
-                  {...register("area")}
-                  placeholder="Area or locality"
-                  className={`form-control ${errors.area ? "is-invalid" : ""}`}
+                  type='text'
+                  {...register('area')}
+                  placeholder='Area or locality'
+                  className={`form-control ${errors.area ? 'is-invalid' : ''}`}
                 />
-                <div className="invalid-feedback">{errors.area?.message}</div>
+                <div className='invalid-feedback'>{errors.area?.message}</div>
               </div>
 
-              <div className="row">
-                <div className="col-sm-4 mb-2">
-                  <label className="form-label">Zipcode</label>
+              <div className='row'>
+                <div className='col-sm-4 mb-2'>
+                  <label className='form-label'>Zipcode</label>
                   <input
-                    type="text"
-                    {...register("zipcode")}
+                    type='text'
+                    {...register('zipcode')}
                     className={`form-control ${
-                      errors.zipcode ? "is-invalid" : ""
+                      errors.zipcode ? 'is-invalid' : ''
                     }`}
                     // disabled={isUpdating}
                   />
-                  <div className="invalid-feedback">
+                  <div className='invalid-feedback'>
                     {errors.zipcode?.message}
                   </div>
                 </div>
 
-                <div className="col-sm-4 mb-2">
-                  <label className="form-label">City / Town / Village</label>
+                <div className='col-sm-4 mb-2'>
+                  <label className='form-label'>City / Town / Village</label>
                   <input
-                    type="text"
-                    {...register("city")}
+                    type='text'
+                    {...register('city')}
                     className={`form-control ${
-                      errors.city ? "is-invalid" : ""
+                      errors.city ? 'is-invalid' : ''
                     }`}
                     // disabled={isUpdating}
                   />
-                  <div className="invalid-feedback">{errors.city?.message}</div>
+                  <div className='invalid-feedback'>{errors.city?.message}</div>
                 </div>
 
-                <div className="col-sm-4 mb-2">
-                  <label className="form-label">Country</label>
+                <div className='col-sm-4 mb-2'>
+                  <label className='form-label'>Country</label>
                   <input
-                    type="text"
-                    {...register("country")}
+                    type='text'
+                    {...register('country')}
                     className={`form-control ${
-                      errors.country ? "is-invalid" : ""
+                      errors.country ? 'is-invalid' : ''
                     }`}
                     // disabled={isUpdating}
                   />
-                  <div className="invalid-feedback">
+                  <div className='invalid-feedback'>
                     {errors.country?.message}
                   </div>
                 </div>
               </div>
             </>
             <button
-              type="button"
-              className="btn btn-primary mt-3"
+              type='button'
+              className='btn btn-primary mt-3'
               onClick={() => setValue(1)}
             >
               Next
@@ -460,139 +503,139 @@ export default function BussinessProfile() {
           </TabPanel>
           <TabPanel value={value} index={1} dir={theme.direction}>
             <>
-              <div className="mb-2">
-                <label className="form-label">
+              <div className='mb-2'>
+                <label className='form-label'>
                   Business website address / domain name
                 </label>
                 <input
-                  type="text"
-                  {...register("website")}
+                  type='text'
+                  {...register('website')}
                   className={`form-control ${
-                    errors.website ? "is-invalid" : ""
+                    errors.website ? 'is-invalid' : ''
                   }`}
                 />
-                <div className="invalid-feedback">
+                <div className='invalid-feedback'>
                   {errors.website?.message}
                 </div>
               </div>
 
-              <div className="mb-2">
-                <label className="form-label">E-mail address</label>
+              <div className='mb-2'>
+                <label className='form-label'>E-mail address</label>
                 <input
-                  type="email"
-                  {...register("email")}
-                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                  type='email'
+                  {...register('email')}
+                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                 />
-                <div className="invalid-feedback">{errors.email?.message}</div>
+                <div className='invalid-feedback'>{errors.email?.message}</div>
               </div>
               {/* second part start here */}
-              <p className="mt-4 mb-2 fw-bold fs-4">
-                Business Contact numbers{" "}
+              <p className='mt-4 mb-2 fw-bold fs-4'>
+                Business Contact numbers{' '}
               </p>
 
-              <div className="row">
-                <div className="col-3">
-                  <div className="mb-2">
-                    <label className="form-label">Country Code</label>
+              <div className='row'>
+                <div className='col-3'>
+                  <div className='mb-2'>
+                    <label className='form-label'>Country Code</label>
                     <input
-                      type="text"
-                      {...register("faxCountryCode")}
+                      type='text'
+                      {...register('faxCountryCode')}
                       className={`form-control ${
-                        errors.faxCountryCode ? "is-invalid" : ""
+                        errors.faxCountryCode ? 'is-invalid' : ''
                       }`}
                     />
-                    <div className="invalid-feedback">
+                    <div className='invalid-feedback'>
                       {errors.faxCountryCode?.message}
                     </div>
                   </div>
                 </div>
-                <div className="col-9">
-                  <div className="mb-2">
-                    <label className="form-label">
+                <div className='col-9'>
+                  <div className='mb-2'>
+                    <label className='form-label'>
                       Fixed Number / Fax Number
                     </label>
                     <input
-                      type="text"
-                      {...register("faxNumber")}
+                      type='text'
+                      {...register('faxNumber')}
                       className={`form-control ${
-                        errors.faxNumber ? "is-invalid" : ""
+                        errors.faxNumber ? 'is-invalid' : ''
                       }`}
                     />
-                    <div className="invalid-feedback">
+                    <div className='invalid-feedback'>
                       {errors.faxNumber?.message}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-3">
-                  <div className="mb-2">
-                    <label className="form-label">Country Code</label>
+              <div className='row'>
+                <div className='col-3'>
+                  <div className='mb-2'>
+                    <label className='form-label'>Country Code</label>
                     <input
-                      type="text"
-                      {...register("mobileCountryCode")}
+                      type='text'
+                      {...register('mobileCountryCode')}
                       className={`form-control ${
-                        errors.mobileCountryCode ? "is-invalid" : ""
+                        errors.mobileCountryCode ? 'is-invalid' : ''
                       }`}
                     />
-                    <div className="invalid-feedback">
+                    <div className='invalid-feedback'>
                       {errors.mobileCountryCode?.message}
                     </div>
                   </div>
                 </div>
-                <div className="col-9">
-                  <div className="mb-2">
-                    <label className="form-label">
+                <div className='col-9'>
+                  <div className='mb-2'>
+                    <label className='form-label'>
                       Mobile / Cell Phone number
                     </label>
                     <input
-                      type="text"
-                      {...register("mobileNumber")}
+                      type='text'
+                      {...register('mobileNumber')}
                       className={`form-control ${
-                        errors.mobileNumber ? "is-invalid" : ""
+                        errors.mobileNumber ? 'is-invalid' : ''
                       }`}
                     />
-                    <div className="invalid-feedback">
+                    <div className='invalid-feedback'>
                       {errors.mobileNumber?.message}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-3">
-                  <div className="mb-2">
-                    <label className="form-label">Country Code</label>
+              <div className='row'>
+                <div className='col-3'>
+                  <div className='mb-2'>
+                    <label className='form-label'>Country Code</label>
                     <input
-                      type="text"
-                      {...register("whatsappCountryCode")}
+                      type='text'
+                      {...register('whatsappCountryCode')}
                       className={`form-control ${
-                        errors.whatsappCountryCode ? "is-invalid" : ""
+                        errors.whatsappCountryCode ? 'is-invalid' : ''
                       }`}
                     />
-                    <div className="invalid-feedback">
+                    <div className='invalid-feedback'>
                       {errors.whatsappCountryCode?.message}
                     </div>
                   </div>
                 </div>
-                <div className="col-9">
-                  <div className="mb-2">
-                    <label className="form-label">WhatsApp number</label>
+                <div className='col-9'>
+                  <div className='mb-2'>
+                    <label className='form-label'>WhatsApp number</label>
                     <input
-                      type="text"
-                      {...register("whatsappNumber")}
+                      type='text'
+                      {...register('whatsappNumber')}
                       className={`form-control ${
-                        errors.whatsappNumber ? "is-invalid" : ""
+                        errors.whatsappNumber ? 'is-invalid' : ''
                       }`}
                     />
-                    <div className="invalid-feedback">
+                    <div className='invalid-feedback'>
                       {errors.whatsappNumber?.message}
                     </div>
                   </div>
                 </div>
               </div>
               <button
-                type="button"
-                className="btn btn-primary mt-3"
+                type='button'
+                className='btn btn-primary mt-3'
                 onClick={() => setValue(2)}
               >
                 Next
@@ -600,80 +643,95 @@ export default function BussinessProfile() {
             </>
           </TabPanel>
           <TabPanel value={value} index={2} dir={theme.direction}>
-            <div className="accordion-body">
-              <div className="mb-2">
-                <label className="form-label">Business Sector</label>
+            <div className='accordion-body'>
+              <div className='mb-2'>
+                <label className='form-label'>Business Sector</label>
                 <select
-                  {...register("sector")}
+                  {...register('sector')}
                   className={`form-control ${
-                    errors.sector ? "is-invalid" : ""
+                    errors.sector ? 'is-invalid' : ''
                   }`}
                 >
-                  <option value="">Select Sector</option>
-                  <option value="manufacturing">Manufacturing</option>
-                  <option value="service">Service</option>
-                  <option value="retail">Retail</option>
-                  <option value="wholesale">Wholesale</option>
+                  <option value=''>Select Sector</option>
+                  <option value='retail'>Retail</option>
+                  <option value='wholesale traders'>Wholesale traders</option>
+                  <option value='retail and wholesale'>
+                    Retail and wholesale
+                  </option>
+                  <option value='manufacturing'>Manufacturing</option>
+                  <option value='service'>Service</option>
+                  <option value='charity organizations'>
+                    Charity organizations
+                  </option>
+
+                  <option value='wholeGovt organizationssale'>
+                    Govt Organizations
+                  </option>
+                  <option value='Individuals/ freelancers'>
+                    Individuals/ freelancers
+                  </option>
                 </select>
-                <div className="invalid-feedback">{errors.sector?.message}</div>
+                <div className='invalid-feedback'>{errors.sector?.message}</div>
               </div>
 
-              <div className="mb-2">
-                <label className="form-label">Business Tax ID</label>
+              <div className='mb-2'>
+                <label className='form-label'>Business Tax ID</label>
                 <input
-                  type="text"
-                  {...register("businessTaxId")}
+                  type='text'
+                  {...register('businessTaxId')}
                   className={`form-control ${
-                    errors.businessTaxId ? "is-invalid" : ""
+                    errors.businessTaxId ? 'is-invalid' : ''
                   }`}
                 />
-                <div className="invalid-feedback">
+                <div className='invalid-feedback'>
                   {errors.businessTaxId?.message}
                 </div>
               </div>
 
-              <div className="mb-3">
-                <label htmlFor="certificate" className="form-label">
+              <div className='mb-3'>
+                <label htmlFor='certificate' className='form-label'>
                   Business Certificate
                 </label>
-                <div className="input-group">
+                <div className='input-group'>
                   <input
-                    type="file"
-                    className="form-control mx-2"
-                    id="certificateInput"
-                    accept="image/*"
+                    type='file'
+                    className='form-control mx-2'
+                    id='certificateInput'
+                    // accept='image/*'
+                    onChange={(e) => setCertificate(e.target.files)}
                   />
                   <button
-                    type="button"
-                    className="btn btn-primary"
-                    id="uploadButton"
+                    type='button'
+                    className='btn btn-primary'
+                    id='uploadButton'
+                    onClick={uplaodCertificate}
                   >
                     Upload
                   </button>
                 </div>
               </div>
 
-              <div className="preview-box" id="previewBox">
-                <span className="preview-placeholder">
+              <div className='preview-box' id='previewBox'>
+                <span className='preview-placeholder'>
                   No Certificate Uploaded
                 </span>
               </div>
 
               <div>
                 {Object.keys(errors)?.length > 0 && (
-                  <div style={{ color: "#d9534f" }}>
-                    {" "}
+                  <div style={{ color: '#d9534f' }}>
+                    {' '}
                     * {Object.keys(errors)[0]} is required
                   </div>
                 )}
               </div>
-              <div className="div">
+              <div className='div'>
                 <button
-                  type="submit"
-                  className="btn btn-primary my-2"
+                  type='submit'
+                  className='btn btn-primary my-2'
                   disabled={isSubmitting}
                 >
-                  {isSubmitting && <Spinner width="15px" height="15px" />} Save
+                  {isSubmitting && <Spinner width='15px' height='15px' />} Save
                 </button>
               </div>
             </div>
