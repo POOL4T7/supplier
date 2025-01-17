@@ -1,27 +1,31 @@
-import { createBrowserRouter } from 'react-router-dom';
-import Signin from './pages/Signin';
-import Suppiler from './pages/Supplier';
-import Layout from './Layout';
-import LandingPage from './pages/LandingPage';
-import Signup from './pages/Signup';
-import SignupCompletion from './pages/SignupCompletion';
-import Admin from './pages/admin/AdminProfile';
-import SupplierList from './pages/admin/SupplierList';
-import AdminLayout from './components/layout/AdminLayout';
-import SupplierLayout from './components/layout/SupplierLayout';
-import ProductCategory from './pages/supplier/product/Category';
-import ProductSubCategory from './pages/supplier/product/SubCategory';
-import ProductListPage from './pages/supplier/product/ProductListPage';
-// import PropTypes from 'prop-types';
+import { createBrowserRouter } from "react-router-dom";
+import Signin from "./pages/Signin";
+import Layout from "./Layout";
+import LandingPage from "./pages/LandingPage";
+import Signup from "./pages/Signup";
+import SignupCompletion from "./pages/SignupCompletion";
+import Admin from "./pages/admin/AdminProfile";
+import SupplierList from "./pages/admin/SupplierList";
+import AdminLayout from "./components/layout/AdminLayout";
+import SupplierLayout from "./components/layout/SupplierLayout";
+import ProductCategory from "./pages/supplier/product/Category";
+import ProductSubCategory from "./pages/supplier/product/SubCategory";
+import ProductListPage from "./pages/supplier/product/ProductListPage";
+import BussinessProfile from "./pages/supplier/BussinessProfile";
+import SupplierSubCategory from "./pages/supplier/product/SubCategory";
+import SupplierCategory from "./pages/supplier/services/Category";
+import ServiceListPage from "./pages/supplier/services/ServiceListPage";
+import SuppilerProfile from "./pages/supplier/Profile";
+
 
 const router = () => {
   return createBrowserRouter([
     {
-      path: '/',
+      path: "/",
       element: <Layout />,
       children: [
         {
-          path: '/',
+          path: "/",
           element: <LandingPage />,
         },
         // {
@@ -29,52 +33,68 @@ const router = () => {
         //   element: <Suppiler />,
         // },
         {
-          path: '/signin',
+          path: "/signin",
           element: <Signin />,
         },
         {
-          path: '/register',
+          path: "/register",
           element: <Signup />,
         },
         {
-          path: '/register-completion',
+          path: "/register-completion",
           element: <SignupCompletion />,
         },
       ],
     },
     {
-      path: '/admin',
+      path: "/admin",
       element: <AdminLayout />,
       children: [
         {
-          path: 'profile',
+          path: "profile",
           element: <Admin />,
         },
         {
-          path: 'supplier-list',
+          path: "supplier-list",
           element: <SupplierList />,
         },
       ],
     },
     {
-      path: '/supplier',
+      path: "/supplier",
       element: <SupplierLayout />,
       children: [
         {
-          path: 'profile',
-          element: <Suppiler />,
+          path: "profile",
+          element: <SuppilerProfile />,
         },
         {
-          path: 'product-category',
+          path: "product-category",
           element: <ProductCategory />,
         },
         {
-          path: 'product-subcategory',
+          path: "product-subcategory",
           element: <ProductSubCategory />,
         },
         {
-          path: 'products',
+          path: "products",
           element: <ProductListPage />,
+        },
+        {
+          path: "bussiness-profile",
+          element: <BussinessProfile />,
+        },
+        {
+          path: "service-category",
+          element: <SupplierCategory />,
+        },
+        {
+          path: "service-subcategory",
+          element: <SupplierSubCategory />,
+        },
+        {
+          path: "services",
+          element: <ServiceListPage />,
         },
       ],
     },

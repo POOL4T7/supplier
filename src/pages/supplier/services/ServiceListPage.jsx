@@ -2,7 +2,7 @@ import ServiceList from '../../../components/Service/ServiceList';
 
 const ServiceListPage = () => {
   return (
-    <div>
+    <div className='mt-5'>
       <ServiceList />
     </div>
   );
