@@ -428,7 +428,7 @@ const LandingPage = () => {
               </div> */}
 
                   {/* Location Name Field */}
-                  <div className="col-12 col-md-6 mb-2">
+                  <div className="col-12 col-md-3 mb-2">
                     <Controller
                       name="address"
                       control={form2.control}
@@ -482,7 +482,7 @@ const LandingPage = () => {
                     />
                   </div>
 
-                  <div className="col-12 col-md-6 mb-2">
+                  <div className="col-12 col-md-3 mb-2">
                     <Controller
                       name="premises"
                       control={form2.control}
@@ -528,7 +528,7 @@ const LandingPage = () => {
                     />
                   </div>
 
-                  <div className="col-12 col-md-6 mb-2">
+                  <div className="col-12 col-md-3 mb-2">
                     <Controller
                       name="shop"
                       control={form2.control}
@@ -570,7 +570,7 @@ const LandingPage = () => {
                   </div>
 
                   {/* Product/Service Name Field */}
-                  <div className="col-12 col-md-6 mb-2">
+                  <div className="col-12 col-md-3 mb-2">
                     <TextField
                       id="outlined-basic"
                       label="Product / Service Name"
