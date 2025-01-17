@@ -186,8 +186,8 @@ const ProductCategory = () => {
   }, [bussiness.id]);
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    if (bussiness.id) fetchCategories();
+  }, [bussiness.id, fetchCategories]);
 
   const handleInputChange = async (inputValue) => {
     if (!inputValue.trim()) {

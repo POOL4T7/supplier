@@ -63,7 +63,7 @@ const SupplierList = () => {
               <td>{item.supplierProfile?.supplierName}</td>
               <td>{item.supplierBusinessDetails?.businessName}</td>
               <td>
-                {item.supplierBusinessDetails?.businessDescription.join(', ')}
+                {/* {item.supplierBusinessDetails?.businessDescription.join(', ')} */}
               </td>
               <td>{item.supplierBusinessDetails?.addressLine1}</td>
               <td>{item.supplierBusinessDetails?.premisesType}</td>

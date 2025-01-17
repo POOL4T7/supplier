@@ -52,7 +52,7 @@ const LoginForm = () => {
       if (res.data?.userDetails?.userType == 'Admin') {
         window.location.href = '/admin/supplier-list';
       } else {
-        window.location.href = '/profile';
+        window.location.href = '/supplier/profile';
       }
     } catch (e) {
       toast.error(e.response?.data?.errorMessage || 'Something went wrong');

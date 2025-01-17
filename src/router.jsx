@@ -8,6 +8,11 @@ import SignupCompletion from './pages/SignupCompletion';
 import Admin from './pages/admin/AdminProfile';
 import SupplierList from './pages/admin/SupplierList';
 import AdminLayout from './components/layout/AdminLayout';
+import SupplierLayout from './components/layout/SupplierLayout';
+import ProductCategory from './pages/supplier/product/Category';
+import ProductSubCategory from './pages/supplier/product/SubCategory';
+import ProductListPage from './pages/supplier/product/ProductListPage';
+// import PropTypes from 'prop-types';
 
 const router = () => {
   return createBrowserRouter([
@@ -19,10 +24,10 @@ const router = () => {
           path: '/',
           element: <LandingPage />,
         },
-        {
-          path: '/profile',
-          element: <Suppiler />,
-        },
+        // {
+        //   path: '/profile',
+        //   element: <Suppiler />,
+        // },
         {
           path: '/signin',
           element: <Signin />,
@@ -51,7 +56,34 @@ const router = () => {
         },
       ],
     },
+    {
+      path: '/supplier',
+      element: <SupplierLayout />,
+      children: [
+        {
+          path: 'profile',
+          element: <Suppiler />,
+        },
+        {
+          path: 'product-category',
+          element: <ProductCategory />,
+        },
+        {
+          path: 'product-subcategory',
+          element: <ProductSubCategory />,
+        },
+        {
+          path: 'products',
+          element: <ProductListPage />,
+        },
+      ],
+    },
   ]);
 };
 
 export default router;
+
+// router.propTypes = {
+//   isAuth: PropTypes.bool,
+//   status: PropTypes.string,
+// };

@@ -11,8 +11,8 @@ import Spinner from '../common/Spinner';
 
 const bussinessSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
-  nickName: yup.string().required('Business nick name is required'),
-  keyWord: yup.string().required('Business key word  is required'),
+  businessNickName: yup.string().required('Business nick name is required'),
+  businessKeyWords: yup.string().required('Business key word  is required'),
   streetName: yup.string().required('Stree tName is required'),
   area: yup.string().optional(),
   houseNo: yup.string().required('building no. is required'),
@@ -79,8 +79,8 @@ const BussinessProfile = () => {
   useEffect(() => {
     const x = {
       businessName: '',
-      nickName: '',
-      keyWord: '',
+      businessNickName: '',
+      businessKeyWords: '',
       streetName: '',
       area: '',
       houseNo: '',
@@ -102,8 +102,10 @@ const BussinessProfile = () => {
     };
     if (bussiness) {
       if (bussiness.businessName) x.businessName = bussiness.businessName;
-      if (bussiness.nickName) x.nickName = bussiness.nickName;
-      if (bussiness.keyWord) x.keyWord = bussiness.keyWord.join(',');
+      if (bussiness.businessNickName)
+        x.businessNickName = bussiness.businessNickName;
+      if (bussiness.businessKeyWords)
+        x.businessKeyWords = bussiness.businessKeyWords.join(',');
       if (bussiness.streetName) x.streetName = bussiness.streetName;
       if (bussiness.area) x.area = bussiness.area;
       if (bussiness.houseNo) x.houseNo = bussiness.houseNo;
@@ -133,6 +135,8 @@ const BussinessProfile = () => {
     try {
       delete data.businessDescription;
       // console.log('data', data);
+      data.businessKeyWords = data.businessKeyWords.split(',');
+      // productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         { ...data, supplierId: supplier.id, supplierBusinessId: bussiness.id }
@@ -194,29 +198,29 @@ const BussinessProfile = () => {
                   <label className='form-label'>Bussiness Nick Name</label>
                   <input
                     type='text'
-                    {...register('nickName')}
+                    {...register('businessNickName')}
                     className={`form-control ${
-                      errors.nickName ? 'is-invalid' : ''
+                      errors.businessNickName ? 'is-invalid' : ''
                     }`}
                   />
                   <div className='invalid-feedback'>
-                    {errors.nickName?.message}
+                    {errors.businessNickName?.message}
                   </div>
                 </div>
                 <div className='mb-2'>
                   <label className='form-label'>Bussiness Keywords</label>
                   <input
                     type='text'
-                    {...register('keyWord')}
+                    {...register('businessKeyWords')}
                     className={`form-control ${
-                      errors.keyWord ? 'is-invalid' : ''
+                      errors.businessKeyWords ? 'is-invalid' : ''
                     }`}
                     // value={keywordsInput}
                     // onChange={(e) => setKeywordsInput(e.target.value)}
                   />
                   <small>comma seperated keywords (ex: key1, key2)</small>
                   <div className='invalid-feedback'>
-                    {errors.keyWord?.message}
+                    {errors.businessKeyWords?.message}
                   </div>
                 </div>
                 {/* <div className='row mb-2'>

@@ -154,8 +154,8 @@ const ProductSubCategory = () => {
       }
     };
 
-    fetchData();
-  }, []);
+    if (bussiness.id) fetchData();
+  }, [bussiness.id]);
 
   const changeCategory = async (e) => {
     const cate = JSON.parse(e.target.value);
@@ -205,33 +205,39 @@ const ProductSubCategory = () => {
             <h3>Add Product Sub Category</h3>
           </div>
         </div>
-        <div className='mb-2'>
-          <select
-            className='form-select'
-            id='categoryName'
-            onChange={bussinessDescription}
-          >
-            <option value=''>Select bussiness description</option>
-            {descriptionList.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <select
-            className='form-select'
-            id='categoryName'
-            onChange={changeCategory}
-          >
-            <option value='null'>Select Category</option>
-            {categoryList.map((item) => (
-              <option key={item.id} value={JSON.stringify(item)}>
-                {item.categoryName}
-              </option>
-            ))}
-          </select>
+        <div className='row'>
+          <div className='col-6'>
+            <div className='mb-2'>
+              <select
+                className='form-select'
+                id='categoryName'
+                onChange={bussinessDescription}
+              >
+                <option value=''>Select bussiness description</option>
+                {descriptionList.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className='col-6'>
+            <div>
+              <select
+                className='form-select'
+                id='categoryName'
+                onChange={changeCategory}
+              >
+                <option value='null'>Select Category</option>
+                {categoryList.map((item) => (
+                  <option key={item.id} value={JSON.stringify(item)}>
+                    {item.categoryName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
       {category && (

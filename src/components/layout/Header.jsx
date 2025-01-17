@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import { userDetailsAtom } from '../../storges/user';
+
 const Header = () => {
   const [userDetails] = useAtom(userDetailsAtom);
   return (
@@ -48,7 +49,12 @@ const Header = () => {
                       {userDetails.supplierName}
                     </a>
                     <div className='dropdown-menu dropdown-menu-end'>
-                      <Link className='dropdown-item' to='/profile'>
+                      <Link
+                        className='dropdown-item'
+                        to={`${JSON.parse(
+                          localStorage.getItem('user')
+                        )?.userType.toLowerCase()}/profile`}
+                      >
                         Dashboard
                       </Link>
 

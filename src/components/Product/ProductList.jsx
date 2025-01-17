@@ -152,8 +152,8 @@ const ProductList = () => {
         console.log(e);
       }
     };
-    fetchData();
-  }, []);
+    if (bussiness.id) fetchData();
+  }, [bussiness.id]);
 
   return (
     <div className='container'>
