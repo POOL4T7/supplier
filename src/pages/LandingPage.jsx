@@ -408,10 +408,9 @@ const LandingPage = () => {
               aria-labelledby="premises-tab"
             >
               <form
-                onSubmit={form2.handleSubmit(onSubmitForm2)}
-                className="mt-4"
+                onSubmit={form2.handleSubmit(onSubmitForm2)}                
               >
-                <div className="row mb-3 justify-content-center">
+                <div className="row justify-content-center">
                   {/* Country Field */}
                   {/* <div className='col-12 col-md-1 mb-2'>
                 <TextField
@@ -429,7 +428,7 @@ const LandingPage = () => {
               </div> */}
 
                   {/* Location Name Field */}
-                  <div className="col-12 col-md-3 mb-2">
+                  <div className="col-12 col-md-6 mb-2">
                     <Controller
                       name="address"
                       control={form2.control}
@@ -483,7 +482,7 @@ const LandingPage = () => {
                     />
                   </div>
 
-                  <div className="col-12 col-md-3 mb-2">
+                  <div className="col-12 col-md-6 mb-2">
                     <Controller
                       name="premises"
                       control={form2.control}
@@ -529,7 +528,7 @@ const LandingPage = () => {
                     />
                   </div>
 
-                  <div className="col-12 col-md-2 mb-2">
+                  <div className="col-12 col-md-6 mb-2">
                     <Controller
                       name="shop"
                       control={form2.control}
@@ -571,7 +570,7 @@ const LandingPage = () => {
                   </div>
 
                   {/* Product/Service Name Field */}
-                  <div className="col-12 col-md-3 mb-2">
+                  <div className="col-12 col-md-6 mb-2">
                     <TextField
                       id="outlined-basic"
                       label="Product / Service Name"
@@ -585,10 +584,10 @@ const LandingPage = () => {
                   </div>
 
                   {/* Submit Button */}
-                  <div className="col-12 col-md-1">
+                  <div className="col-12 col-md-12">
                     <button
                       type="submit"
-                      className="btn btn-outline-success w-100"
+                      className="search-btn search-btn1"
                     >
                       Search
                     </button>

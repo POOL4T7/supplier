@@ -11807,6 +11807,8 @@ body {
 }
 .country-box{
   padding-bottom: 10px;
+  max-width: 300px;
+  margin: auto;
 }
 .country-box input{
   border: 1px solid #ddd;
@@ -11816,10 +11818,12 @@ body {
   padding: 50px 0px;
   position: relative;
   z-index: 1;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 .search-row::before{
   content: '';
-  background: #ffe8c2;
+  background: #e9e9e9;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -11851,17 +11855,24 @@ body {
 }
 .serach-form{
   background: #fff;
-  padding: 15px 15px;
-  border: 1px solid #ffe9c6;
+  padding: 20px 15px;
+  border: 1px solid #e5e5e5;
   margin-top: 15px;
   border-radius: 10px;
 }
 .search-btn{ 
-  background-color: green;
+  background-color: #343a40;
   border: none;
   color: #fff;
   height: 40px;
+  width: 100%;
+  border-radius: 5px;
 }
 .serach-form input{
 
+}
+.search-btn1{
+  width: 160px !important;
+  margin: 15px auto 0px !important;
+  display: block;
 }
