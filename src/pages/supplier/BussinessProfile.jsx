@@ -14,7 +14,6 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '../../axios';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import Spinner from '../../components/common/Spinner';
-import { Button } from '@mui/material';
 
 const bussinessSchema = yup.object().shape({
   businessName: yup.string().required('Business name is required'),
@@ -264,6 +263,7 @@ export default function BussinessProfile() {
       data.businessNickName = data.businessNickName.split(',');
       data.certificateImagePath = certificateLink;
       data.businessImagePath = shopImageLink;
+
       // productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
@@ -984,18 +984,27 @@ export default function BussinessProfile() {
             justifyContent: 'center',
           }}
         >
-          <Button
-            component='label'
-            variant='outlined'
-            sx={{
-              textTransform: 'none',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-            onClick={() => {}}
+          <button
+            // component='label'
+            // variant='outlined'
+            // sx={{
+            //   textTransform: 'none',
+            //   display: 'flex',
+            //   alignItems: 'center',
+            // }}
+            onClick={handleSubmit(onSubmit)}
+            disabled={shopImageLoading}
+            className='btn btn-primary my-2'
           >
-            {shopImageLoading ? 'Upoading' : 'Save'}
-          </Button>
+            {shopImageLoading ? (
+              <>
+                {' '}
+                <Spinner /> Upoading
+              </>
+            ) : (
+              'Save'
+            )}
+          </button>
         </Box>
       </div>
     </div>
