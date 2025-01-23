@@ -52,7 +52,7 @@ const step1Schema = yup.object().shape({
     .matches(/^\d{6}$/, 'zipcode must be 6 digits'),
   city: yup.string().required('City is required'),
   country: yup.string().required('Country is required'),
-  profileStatus: yup.string().required('status is required'),
+  status: yup.string().required('status is required'),
 });
 
 const SupplierDetails = () => {
@@ -118,7 +118,7 @@ const SupplierDetails = () => {
           }
         );
         console.log(res);
-        userDetails.profileStatus = 'Inactive';
+        userDetails.status = 'Inactive';
         reset(userDetails);
         // setUserDetails(res.data);
       } catch (e) {
@@ -286,17 +286,13 @@ const SupplierDetails = () => {
           <div className='mb-2'>
             <label className='form-label'>Profile Status</label>
             <select
-              {...register('profileStatus')}
-              className={`form-control ${
-                errors.profileStatus ? 'is-invalid' : ''
-              }`}
+              {...register('status')}
+              className={`form-control ${errors.status ? 'is-invalid' : ''}`}
             >
               <option value='Inactive'>Inactive</option>
               <option value='Active'>Active</option>
             </select>
-            <div className='invalid-feedback'>
-              {errors.profileStatus?.message}
-            </div>
+            <div className='invalid-feedback'>{errors.status?.message}</div>
           </div>
         </div>
       </div>

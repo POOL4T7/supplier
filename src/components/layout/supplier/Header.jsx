@@ -3,10 +3,17 @@ import { useAtom } from 'jotai';
 import { userDetailsAtom } from '../../../storges/user';
 import { MenuIcon, User } from 'lucide-react';
 import useSidebarToggle from '../../../hooks/useSidebarToggle';
+import { useState } from 'react';
+import DialogModal from '../../common/DialogModal';
 
 const Header = () => {
   const [userDetails] = useAtom(userDetailsAtom);
+  const [open, setOpen] = useState(false);
   useSidebarToggle('sidebarToggle', 'sidebarToggle');
+
+  const handleClickOpen = () => {
+    setOpen(!open);
+  };
   return (
     <>
       <nav className='sb-topnav navbar navbar-expand navbar-dark bg-dark'>
@@ -62,6 +69,16 @@ const Header = () => {
                     Profile
                   </Link>
                 </li>
+                {/* <li>
+                  <hr className='dropdown-divider' />
+                </li> */}
+                <li
+                  className='dropdown-item '
+                  style={{ cursor: 'pointer', color: 'red' }}
+                  onClick={handleClickOpen}
+                >
+                  Delete
+                </li>
 
                 <li>
                   <hr className='dropdown-divider' />
@@ -86,6 +103,8 @@ const Header = () => {
           )}
         </ul>
       </nav>
+
+      {open && <DialogModal open={open} setOpen={handleClickOpen} />}
     </>
   );
 };

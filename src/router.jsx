@@ -16,6 +16,7 @@ import SupplierSubCategory from "./pages/supplier/product/SubCategory";
 import SupplierCategory from "./pages/supplier/services/Category";
 import ServiceListPage from "./pages/supplier/services/ServiceListPage";
 import SuppilerProfile from "./pages/supplier/Profile";
+import UserSupplierProfile from "./pages/UserSupplierProfile";
 
 
 const router = () => {
@@ -28,10 +29,10 @@ const router = () => {
           path: "/",
           element: <LandingPage />,
         },
-        // {
-        //   path: '/profile',
-        //   element: <Suppiler />,
-        // },
+        {
+          path: '/user-supplier-profile',
+          element: <UserSupplierProfile />,
+        },
         {
           path: "/signin",
           element: <Signin />,

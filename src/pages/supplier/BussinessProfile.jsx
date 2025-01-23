@@ -15,50 +15,83 @@ import axiosInstance from '../../axios';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import Spinner from '../../components/common/Spinner';
 
-const bussinessSchema = yup.object().shape({
-  businessName: yup.string().required('Business name is required'),
-  businessNickName: yup
-    .string()
-    .required('Business nick name is required')
-    .test('nickname-length', 'max 4 nick name are allowed', (value) => {
-      if (!value) return true;
-      const commaCount = value.split(',').length - 1;
-      return commaCount <= 3;
-    }),
-  businessKeyWords: yup
-    .string()
-    .required('Business key word  is required')
-    .test('keyword-length', 'max 20 nick keyword are allowed', (value) => {
-      if (!value) return true;
-      const commaCount = value.split(',').length - 1;
-      return commaCount <= 20;
-    }),
-  aboutUs: yup.string().required('about us is required'),
-  streetName: yup.string().required('Stree tName is required'),
-  area: yup.string().optional(),
-  houseNo: yup.string().required('building no. is required'),
-  zipcode: yup.string().required('zipcode is required'),
-  city: yup.string().required('City is required'),
-  country: yup.string().required('Country is required'),
-  premisesType: yup.string().required('Premises type is required'),
-  premisesName: yup.string().optional(),
-  website: yup
-    .string()
-    .required('Website is required')
-    .matches(/.*\..*/, 'Invalid website'),
-  email: yup.string().email('Invalid email').required('Email is required'),
+const bussinessSchema = yup
+  .object()
+  .shape({
+    businessName: yup.string().required('Business name is required'),
+    businessNickName: yup
+      .string()
+      .required('Business nick name is required')
+      .max(50, 'Nickname must not exceed 50 characters')
+      .test('nickname-count', 'Maximum 4 nicknames are allowed', (value) => {
+        if (!value) return true;
+        const nicknames = value.split(',').map((nickname) => nickname.trim());
+        return nicknames.length <= 4;
+      }),
+    businessKeyWords: yup
+      .string()
+      .required('Business keyword is required')
+      .max(250, 'Business keywords must not exceed 250 characters')
+      .test('keyword-count', 'Maximum 10 keywords are allowed', (value) => {
+        if (!value) return true;
+        const keywords = value.split(',').map((keyword) => keyword.trim());
+        return keywords.length < 10;
+      }),
+    aboutUs: yup.string().required('about us is required'),
+    streetName: yup.string().required('Stree tName is required'),
+    area: yup.string().optional(),
+    houseNo: yup.string().required('building no. is required'),
+    zipcode: yup.string().required('zipcode is required'),
+    city: yup.string().required('City is required'),
+    country: yup.string().required('Country is required'),
+    premisesType: yup.string().required('Premises type is required'),
+    premisesName: yup.string().optional(),
+    website: yup
+      .string()
+      .required('Website is required')
+      .matches(/.*\..*/, 'Invalid website'),
+    email: yup.string().email('Invalid email').required('Email is required'),
 
-  faxCountryCode: yup.string().required('country code required'),
-  faxNumber: yup.string().required('fax number is required'),
-  mobileCountryCode: yup.string().required('required'),
-  mobileNumber: yup.string().required('mobile number is required'),
+    faxCountryCode: yup.string().optional(),
+    faxNumber: yup.string().optional(),
+    mobileCountryCode: yup.string().optional(),
+    mobileNumber: yup.string().optional(),
 
-  whatsappCountryCode: yup.string().required('required'),
-  whatsappNumber: yup.string().required('whatsapp number is required'),
+    whatsappCountryCode: yup.string().optional(),
+    whatsappNumber: yup.string().optional(),
 
-  sector: yup.string().required('Sector is required'),
-  businessTaxId: yup.string().required('Business tax ID is required'),
-});
+    sector: yup.string().required('Sector is required'),
+    businessTaxId: yup.string().required('Business tax ID is required'),
+  })
+  .test(
+    'at-least-one-contact',
+    'At least one contact method is required (Fax, Mobile, or WhatsApp)',
+    function (value) {
+      const { faxNumber, mobileNumber, faxCountryCode, mobileCountryCode } =
+        value;
+
+      if (!faxNumber && !mobileNumber) {
+        return this.createError({
+          path: 'contactDetails', // Attach the error to the "premises" field
+          message:
+            'At least one valid contact method (Fax or Mobile) is required.',
+        });
+      }
+      if (faxNumber && !faxCountryCode) {
+        return this.createError({
+          path: 'contactDetails', // Attach the error to the "premises" field
+          message: 'country code is required for fax number',
+        });
+      }
+      if (mobileNumber && !mobileCountryCode) {
+        return this.createError({
+          path: 'contactDetails', // Attach the error to the "premises" field
+          message: 'country code is required for mobilr number',
+        });
+      }
+      return true;
+    }
+  );
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -96,6 +129,7 @@ function a11yProps(index) {
 export default function BussinessProfile() {
   const theme = useTheme();
   const [value, setValue] = useState(0);
+  const [addressOTP, setAddressOTP] = useState('');
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -128,6 +162,10 @@ export default function BussinessProfile() {
     watch,
     // control,
     // setValue,
+    trigger,
+    getValues,
+    setError,
+    clearErrors,
   } = useForm({
     resolver: yupResolver(bussinessSchema),
     mode: 'onTouched',
@@ -374,9 +412,117 @@ export default function BussinessProfile() {
     }
   };
 
+  const validateFirstForm = async () => {
+    const name = await trigger('businessName');
+    const nickName = await trigger('businessNickName');
+    const keyword = await trigger('businessKeyWords');
+    const aboutUs = await trigger('aboutUs');
+    const streetName = await trigger('streetName');
+    const area = await trigger('area');
+    const houseNo = await trigger('houseNo');
+    const zipcode = await trigger('zipcode');
+    const city = await trigger('city');
+    const country = await trigger('country');
+    if (
+      !name ||
+      !nickName ||
+      !keyword ||
+      !aboutUs ||
+      !streetName ||
+      !area ||
+      !houseNo ||
+      !zipcode ||
+      !city ||
+      !country
+    )
+      return;
+
+    if (!bussiness.verifyAddress && !bussiness.verificationAddressOTP) {
+      const values = getValues();
+      const res = await axiosInstance.post(
+        '/proxy/productsearchsupplier/api/supplier/file/validateBusinessAddressPresentOrNot',
+        {
+          supplierId: supplier.id,
+          businessName: values.businessName,
+          houseNo: values.houseNo,
+          streetName: values.streetName,
+          area: values.area,
+          zipcode: values.zipcode,
+          city: values.city,
+          country: values.country,
+        }
+      );
+      console.log(res);
+    }
+    setValue(1);
+  };
+  const validateSecondForm = async () => {
+    const values = getValues(); // Get all form values
+
+    // Trigger validation for individual fields
+    const premisesType = await trigger('premisesType');
+    const premisesName = await trigger('premisesName');
+    const website = await trigger('website');
+    const email = await trigger('email');
+
+    // Check contact details validation
+    const { faxCountryCode, faxNumber, mobileCountryCode, mobileNumber } =
+      values;
+
+    let contactValidation = false;
+    let contactErrorMessage = '';
+
+    if ((faxCountryCode && faxNumber) || (mobileCountryCode && mobileNumber)) {
+      contactValidation = true;
+    } else {
+      contactErrorMessage =
+        'At least one valid contact method (Fax or Mobile) is required.';
+    }
+
+    // Set custom error for contact details if invalid
+    if (!contactValidation) {
+      setError('contactDetails', {
+        type: 'manual',
+        message: contactErrorMessage,
+      });
+    } else {
+      clearErrors('contactDetails'); // Clear any existing contact details error
+    }
+
+    // If any validation fails, return early
+    if (
+      !premisesType ||
+      !premisesName ||
+      !website ||
+      !email ||
+      !contactValidation
+    ) {
+      return;
+    }
+
+    // If everything is valid, proceed to the next step
+    setValue(2);
+  };
+
+  const verifyAddress = async () => {
+    try {
+      const res = await axiosInstance.post(
+        '/proxy/productsearchsupplier/api/supplier/file/verifyAddress',
+        {
+          supplierBusinessId: bussiness.id,
+          addressOTP: addressOTP,
+        }
+      );
+      console.log(res);
+    } catch (error) {
+      
+      console.log(error);
+    }
+  };
+
   return (
     <div className='row'>
-      <div className='col-8'>
+      <div className='col-9'>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box>
             <Box
@@ -399,7 +545,7 @@ export default function BussinessProfile() {
                     bgcolor: 'primary.light',
                   }}
                 >
-                  <Tab label='Bussiness Address' {...a11yProps(0)} />
+                  {/* <Tab label='Bussiness Address' {...a11yProps(0)} />
                   <Tab
                     label='Business Web Address Contact details'
                     {...a11yProps(1)}
@@ -407,6 +553,21 @@ export default function BussinessProfile() {
                   <Tab
                     label='Business Nature & Tax details'
                     {...a11yProps(2)}
+                  /> */}
+                  <Tab
+                    label='Bussiness Address'
+                    {...a11yProps(0)}
+                    disabled={value !== 0}
+                  />
+                  <Tab
+                    label='Business Web Address Contact details'
+                    {...a11yProps(1)}
+                    disabled={value !== 1}
+                  />
+                  <Tab
+                    label='Business Nature & Tax details'
+                    {...a11yProps(2)}
+                    disabled={value !== 2}
                   />
                 </Tabs>
               </AppBar>
@@ -656,15 +817,53 @@ export default function BussinessProfile() {
                         {errors.country?.message}
                       </div>
                     </div>
+                    {bussiness.verificationAddressOTP && (
+                      <>
+                        <div className='row mt-3'>
+                          <div className='col-10'>
+                            <div className=' mb-2'>
+                              <label className='form-label'>
+                                Address verification OTP
+                              </label>
+                              <input
+                                type='text'
+                                value={addressOTP}
+                                className={`form-control`}
+                                onChange={(e) => setAddressOTP(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className='col-2 '>
+                            <button
+                              type='button'
+                              className='btn btn-primary '
+                              style={{ marginTop: '30px' }}
+                              onClick={verifyAddress}
+                            >
+                              Validate
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </>
-                <button
-                  type='button'
-                  className='btn btn-primary mt-3'
-                  onClick={() => setValue(1)}
-                >
-                  Next
-                </button>
+                <div className='d-flex gap-2'>
+                  {/* <button
+                    type='button'
+                    className='btn btn-primary mt-3 '
+                    onClick={validateFirstForm}
+                  >
+                    Prev
+                  </button> */}
+                  <button
+                    type='button'
+                    className='btn btn-primary mt-3 '
+                    onClick={validateFirstForm}
+                  >
+                    Next
+                  </button>
+                </div>
               </TabPanel>
               <TabPanel value={value} index={1} dir={theme.direction}>
                 <>
@@ -713,9 +912,9 @@ export default function BussinessProfile() {
                             errors.faxCountryCode ? 'is-invalid' : ''
                           }`}
                         />
-                        <div className='invalid-feedback'>
+                        {/* <div className='invalid-feedback'>
                           {errors.faxCountryCode?.message}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                     <div className='col-9'>
@@ -730,9 +929,9 @@ export default function BussinessProfile() {
                             errors.faxNumber ? 'is-invalid' : ''
                           }`}
                         />
-                        <div className='invalid-feedback'>
+                        {/* <div className='invalid-feedback'>
                           {errors.faxNumber?.message}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -747,9 +946,9 @@ export default function BussinessProfile() {
                             errors.mobileCountryCode ? 'is-invalid' : ''
                           }`}
                         />
-                        <div className='invalid-feedback'>
+                        {/* <div className='invalid-feedback'>
                           {errors.mobileCountryCode?.message}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                     <div className='col-9'>
@@ -764,9 +963,9 @@ export default function BussinessProfile() {
                             errors.mobileNumber ? 'is-invalid' : ''
                           }`}
                         />
-                        <div className='invalid-feedback'>
+                        {/* <div className='invalid-feedback'>
                           {errors.mobileNumber?.message}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -781,9 +980,9 @@ export default function BussinessProfile() {
                             errors.whatsappCountryCode ? 'is-invalid' : ''
                           }`}
                         />
-                        <div className='invalid-feedback'>
+                        {/* <div className='invalid-feedback'>
                           {errors.whatsappCountryCode?.message}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                     <div className='col-9'>
@@ -796,19 +995,31 @@ export default function BussinessProfile() {
                             errors.whatsappNumber ? 'is-invalid' : ''
                           }`}
                         />
-                        <div className='invalid-feedback'>
+                        {/* <div className='invalid-feedback'>
                           {errors.whatsappNumber?.message}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
-                  <button
-                    type='button'
-                    className='btn btn-primary mt-3'
-                    onClick={() => setValue(2)}
-                  >
-                    Next
-                  </button>
+                  <div style={{ color: '#d9534f' }}>
+                    {errors.contactDetails?.message}
+                  </div>
+                  <div className='d-flex gap-2'>
+                    <button
+                      type='button'
+                      className='btn btn-primary mt-3 '
+                      onClick={() => setValue(0)}
+                    >
+                      Prev
+                    </button>
+                    <button
+                      type='button'
+                      className='btn btn-primary mt-3 '
+                      onClick={validateSecondForm}
+                    >
+                      Next
+                    </button>
+                  </div>
                 </>
               </TabPanel>
               <TabPanel value={value} index={2} dir={theme.direction}>
@@ -922,10 +1133,17 @@ export default function BussinessProfile() {
                       </div>
                     )}
                   </div>
-                  <div className='div'>
+                  <div className='d-flex gap-2'>
+                    <button
+                      type='button'
+                      className='btn btn-outline-primary mt-3 '
+                      onClick={() => setValue(1)}
+                    >
+                      Prev
+                    </button>
                     <button
                       type='submit'
-                      className='btn btn-primary my-2'
+                      className='btn btn-primary mt-3'
                       disabled={isSubmitting}
                     >
                       {isSubmitting && <Spinner width='15px' height='15px' />}{' '}
@@ -938,7 +1156,7 @@ export default function BussinessProfile() {
           </Box>
         </form>
       </div>
-      <div className='col-4'>
+      <div className='col-3'>
         <label
           htmlFor='image-upload'
           style={{
@@ -950,7 +1168,7 @@ export default function BussinessProfile() {
           <Box
             sx={{
               marginTop: '2rem',
-              height: '300px',
+              height: '200px',
               width: '100%',
               border: '1px dashed gray',
               display: 'flex',
