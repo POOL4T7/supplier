@@ -30,7 +30,7 @@ const SupplierLayout = () => {
             },
           }
         );
-        setUserDetails(res.data);
+        setUserDetails({ ...res.data, status: res?.data?.active });
       } catch (e) {
         console.log(e);
       }

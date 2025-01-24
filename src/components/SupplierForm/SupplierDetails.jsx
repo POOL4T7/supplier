@@ -52,7 +52,7 @@ const step1Schema = yup.object().shape({
     .matches(/^\d{6}$/, 'zipcode must be 6 digits'),
   city: yup.string().required('City is required'),
   country: yup.string().required('Country is required'),
-  status: yup.string().required('status is required'),
+  status: yup.boolean(),
 });
 
 const SupplierDetails = () => {
@@ -81,6 +81,7 @@ const SupplierDetails = () => {
         email: data.email,
         country: data.country,
         supplierId: userDetails.id,
+        status: data.status,
       };
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/profile/addSupplierInfo`,
@@ -117,10 +118,8 @@ const SupplierDetails = () => {
             },
           }
         );
-        console.log(res);
-        userDetails.status = 'Inactive';
-        reset(userDetails);
-        // setUserDetails(res.data);
+
+        reset({ ...userDetails, status: res?.data?.active });
       } catch (e) {
         console.log(e);
       }
@@ -289,8 +288,8 @@ const SupplierDetails = () => {
               {...register('status')}
               className={`form-control ${errors.status ? 'is-invalid' : ''}`}
             >
-              <option value='Inactive'>Inactive</option>
-              <option value='Active'>Active</option>
+              <option value={false}>Inactive</option>
+              <option value={true}>Active</option>
             </select>
             <div className='invalid-feedback'>{errors.status?.message}</div>
           </div>

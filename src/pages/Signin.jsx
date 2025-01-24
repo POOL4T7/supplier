@@ -100,11 +100,16 @@ const LoginForm = () => {
         </button>
       </form>
       <div className='row pt-3'>
-        <div className='col'>
+        <div className='col-6'>
           New Customer?
           <Link className='link-primary' to='/register'>
             {' '}
             Register
+          </Link>
+        </div>
+        <div className='col-6'>
+          <Link className='link-primary' to='/forgot-password'>
+            Forgot password ?
           </Link>
         </div>
       </div>

@@ -72,12 +72,18 @@ const Header = () => {
                 {/* <li>
                   <hr className='dropdown-divider' />
                 </li> */}
-                <li
-                  className='dropdown-item '
-                  style={{ cursor: 'pointer', color: 'red' }}
-                  onClick={handleClickOpen}
-                >
-                  Delete
+                <li>
+                  <div
+                    className='dropdown-item'
+                    style={{
+                      cursor: 'pointer',
+                      color: 'red',
+                      backgroundColor: 'transparent',
+                    }}
+                    onClick={handleClickOpen}
+                  >
+                    Delete
+                  </div>
                 </li>
 
                 <li>

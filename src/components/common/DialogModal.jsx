@@ -53,20 +53,27 @@ export default function DialogModal({ open, setOpen }) {
         toast.success(res.data);
         setFormNumber(1);
       } else {
-        const res = await axiosInstance.post(
+        await axiosInstance.post(
           `/proxy/productsearchsupplier/api/supplier/profile/deleteSupplierConfirmation`,
           {
             supplierProfileId: userDetails.id,
             deleteOTP: otp.join(''),
           }
         );
-        // productsearchsupplier/api/supplier/profile/deleteSupplierConfirmation
-        console.log('res', res);
-        formNumber(1);
+
+        localStorage.removeItem('user');
+        localStorage.removeItem('authAccessToken');
+        window.location.href = '/';
       }
       setLoading(false);
     } catch (e) {
+      toast.error(
+        e?.response?.data ||
+          e?.response?.data?.message ||
+          'Something went wrong, please try again after some time.'
+      );
       console.log(e);
+      setLoading(false);
     }
   };
   return (

@@ -53,7 +53,7 @@ const Header = () => {
                         className='dropdown-item'
                         to={`${JSON.parse(
                           localStorage.getItem('user')
-                        )?.userType.toLowerCase()}/profile`}
+                        )?.userType?.toLowerCase()}/profile`}
                       >
                         Dashboard
                       </Link>

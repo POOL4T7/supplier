@@ -437,22 +437,28 @@ export default function BussinessProfile() {
     )
       return;
 
-    if (!bussiness.verifyAddress && !bussiness.verificationAddressOTP) {
-      const values = getValues();
-      const res = await axiosInstance.post(
-        '/proxy/productsearchsupplier/api/supplier/file/validateBusinessAddressPresentOrNot',
-        {
-          supplierId: supplier.id,
-          businessName: values.businessName,
-          houseNo: values.houseNo,
-          streetName: values.streetName,
-          area: values.area,
-          zipcode: values.zipcode,
-          city: values.city,
-          country: values.country,
-        }
-      );
-      console.log(res);
+    if (!bussiness.verifyAddress) {
+      try {
+        const values = getValues();
+        const res = await axiosInstance.post(
+          '/proxy/productsearchsupplier/api/supplier/file/validateBusinessAddressPresentOrNot',
+          {
+            supplierId: supplier.id,
+            businessName: values.businessName,
+            houseNo: values.houseNo,
+            streetName: values.streetName,
+            area: values.area,
+            zipcode: values.zipcode,
+            city: values.city,
+            country: values.country,
+          }
+        );
+        console.log(res);
+        // toast.success('Address OTP verified');
+      } catch (e) {
+        console.log(e);
+        toast.error(e?.response?.data?.message || 'Something went wrong');
+      }
     }
     setValue(1);
   };
@@ -514,9 +520,10 @@ export default function BussinessProfile() {
         }
       );
       console.log(res);
+      toast.success(res.data.message);
     } catch (error) {
-      
       console.log(error);
+      toast.error(error?.response?.data?.message || 'something went wrong');
     }
   };
 
@@ -817,7 +824,7 @@ export default function BussinessProfile() {
                         {errors.country?.message}
                       </div>
                     </div>
-                    {bussiness.verificationAddressOTP && (
+                    {!bussiness.verifyAddress && (
                       <>
                         <div className='row mt-3'>
                           <div className='col-10'>
