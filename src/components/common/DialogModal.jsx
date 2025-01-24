@@ -16,7 +16,7 @@ import { Box, TextField } from '@mui/material';
 export default function DialogModal({ open, setOpen }) {
   const [userDetails] = useAtom(userDetailsAtom);
   const [loading, setLoading] = useState(false);
-  const [formNumber, setFormNumber] = useState(1);
+  const [formNumber, setFormNumber] = useState(0);
   const [otp, setOtp] = useState(new Array(6).fill(''));
 
   const handleChange = (value, index) => {
