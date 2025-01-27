@@ -20,6 +20,8 @@ import UserSupplierProfile from './pages/UserSupplierProfile';
 import ResetPassword from './pages/supplier/auth/ResetPassword';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ChangePassword from './pages/auth/ChangePassword';
+import UserLayout from './components/layout/UserLayout';
+import UserProfile from './pages/user/Profile';
 
 const router = () => {
   return createBrowserRouter([
@@ -110,6 +112,20 @@ const router = () => {
         {
           path: 'reset-password',
           element: <ResetPassword />,
+        },
+      ],
+    },
+    {
+      path: '/user',
+      element: <UserLayout />,
+      children: [
+        {
+          path: 'user',
+          element: <UserProfile />,
+        },
+        {
+          path: 'profile',
+          element: <UserProfile />,
         },
       ],
     },

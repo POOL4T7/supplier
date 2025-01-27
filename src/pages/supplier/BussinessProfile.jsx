@@ -1224,7 +1224,7 @@ export default function BussinessProfile() {
             {shopImageLoading ? (
               <>
                 {' '}
-                <Spinner /> Upoading
+                <Spinner width='15px' height='15px' /> Upoading
               </>
             ) : (
               'Save'

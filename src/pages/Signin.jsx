@@ -45,14 +45,17 @@ const LoginForm = () => {
         `/proxy/productsearchsupplier/user/login`,
         data
       );
+      console.log(res.data?.userDetails);
       setUserDetails(res.data?.userDetails);
       localStorage.setItem('user', JSON.stringify(res.data?.userDetails));
       localStorage.setItem('authAccessToken', res.data.accessToken);
 
       if (res.data?.userDetails?.userType == 'Admin') {
         window.location.href = '/admin/supplier-list';
-      } else {
+      } else if (res.data?.userDetails?.userType == 'Supplier') {
         window.location.href = '/supplier/profile';
+      } else {
+        window.location.href = '/user/profile';
       }
     } catch (e) {
       toast.error(e.response?.data?.errorMessage || 'Something went wrong');

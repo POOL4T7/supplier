@@ -63,11 +63,19 @@ const Layout = () => {
     }
 
     if (user) {
-      if (user.supplierId) {
+      console.log('user', user);
+      if (user.userType === 'Supplier') {
         fetchProfileData();
         fetchBussinessProfile();
-      } else {
+      } else if (user.userType === 'Admin') {
         navigate('/admin');
+      } else if (user.userType === 'User') {
+        setUserDetails({
+          ...user,
+          id: user.userId,
+          supplierName: user.userName,
+        });
+        // navigate('/user');
       }
     }
     fetchRolesData();

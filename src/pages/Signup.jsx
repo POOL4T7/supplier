@@ -18,7 +18,7 @@ const signupSchema = yup.object().shape({
     .string()
     .min(3, 'fullName must be at least 3 characters')
     .required('fullName is required'),
-  userType: yup.string().oneOf(['Supplier', 'Admin'], 'Select a user type'),
+  userType: yup.string().required(),
 });
 
 const Signup = () => {
@@ -108,7 +108,7 @@ const Signup = () => {
           className='btn btn-primary'
           disabled={isSubmitting}
         >
-          {isSubmitting && <Spinner width="15px" height="15px" />}  Signup
+          {isSubmitting && <Spinner width='15px' height='15px' />} Signup
         </button>
       </form>
       <div className='row pt-3'>

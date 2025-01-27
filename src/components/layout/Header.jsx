@@ -33,9 +33,6 @@ const Header = () => {
           <div className='d-flex'>
             {userDetails?.id ? (
               <>
-                {/* <Link to={'/supplier'} className='nav-link text-white'>
-                  Dashboard
-                </Link> */}
                 <ul className='navbar-nav me-auto'>
                   <li className='nav-item dropdown'>
                     <a
