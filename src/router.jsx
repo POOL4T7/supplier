@@ -12,7 +12,7 @@ import ProductCategory from './pages/supplier/product/Category';
 import ProductSubCategory from './pages/supplier/product/SubCategory';
 import ProductListPage from './pages/supplier/product/ProductListPage';
 import BussinessProfile from './pages/supplier/BussinessProfile';
-import SupplierSubCategory from './pages/supplier/product/SubCategory';
+import SupplierSubCategory from './pages/supplier/services/SubCategory';
 import SupplierCategory from './pages/supplier/services/Category';
 import ServiceListPage from './pages/supplier/services/ServiceListPage';
 import SuppilerProfile from './pages/supplier/Profile';

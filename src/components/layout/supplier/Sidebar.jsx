@@ -1,8 +1,11 @@
+import { useAtom } from 'jotai';
 import { ChartNoAxesGantt, ChevronDown, UserRoundPen } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { bussinessProfile } from '../../../storges/user';
 
 const Sidebar = () => {
   const location = useLocation();
+  const [bussiness] = useAtom(bussinessProfile);
   return (
     <div id='layoutSidenav'>
       <div id='layoutSidenav_nav'>
@@ -79,13 +82,24 @@ const Sidebar = () => {
                   </Link>
                 </nav>
               </div>
-              <Link
-                className='nav-link collapsed'
+              <button
+                className={`nav-link collapsed ${
+                  bussiness.sector === 'services' ||
+                  bussiness.sector === 'products and services'
+                    ? ''
+                    : 'disabled'
+                }`}
                 href='#'
                 data-bs-toggle='collapse'
                 data-bs-target='#supplierLayout'
                 aria-expanded='false'
                 aria-controls='supplierLayout'
+                disabled={
+                  !(
+                    bussiness.sector === 'services' ||
+                    bussiness.sector === 'products and services'
+                  )
+                }
               >
                 <div className='sb-nav-link-icon'>
                   <ChartNoAxesGantt />
@@ -94,7 +108,7 @@ const Sidebar = () => {
                 <div className='sb-sidenav-collapse-arrow'>
                   <ChevronDown />
                 </div>
-              </Link>
+              </button>
               <div
                 className='collapse'
                 id='supplierLayout'

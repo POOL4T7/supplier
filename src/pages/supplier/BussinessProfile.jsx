@@ -135,7 +135,7 @@ export default function BussinessProfile() {
     setValue(newValue);
   };
   const [supplier] = useAtom(userDetailsAtom);
-  const [bussiness] = useAtom(bussinessProfile);
+  const [bussiness, setBussiness] = useAtom(bussinessProfile);
   const [certificate, setCertificate] = useState(null);
   // const [shopImageFile, setShopImageFile] = useState(null);
   const [certificateLink, setCertificateLink] = useState('');
@@ -296,7 +296,7 @@ export default function BussinessProfile() {
   const onSubmit = async (data) => {
     try {
       delete data.businessDescription;
-      // console.log('data', data);
+
       data.businessKeyWords = data.businessKeyWords.split(',');
       data.businessNickName = data.businessNickName.split(',');
       data.certificateImagePath = certificateLink;
@@ -307,6 +307,8 @@ export default function BussinessProfile() {
         `/proxy/productsearchsupplier/api/supplier/file/saveSupplierBusinessDetails`,
         { ...data, supplierId: supplier.id, supplierBusinessId: bussiness.id }
       );
+
+      setBussiness({ ...bussiness, sector: data.sector });
 
       toast.success(
         res.data?.data?.message || 'Supplier bussiness profile updated'
@@ -1040,15 +1042,21 @@ export default function BussinessProfile() {
                       }`}
                     >
                       <option value=''>Select Sector</option>
-                      <option value='retail'>Retail</option>
+                      <option value='product / retail'>
+                        {' '}
+                        Products / Retail{' '}
+                      </option>
                       <option value='wholesale traders'>
                         Wholesale traders
                       </option>
                       <option value='retail and wholesale'>
                         Retail and wholesale
                       </option>
+                      <option value='services'>Services</option>
+                      <option value='products and services'>
+                        Products and Services
+                      </option>
                       <option value='manufacturing'>Manufacturing</option>
-                      <option value='service'>Service</option>
                       <option value='charity organizations'>
                         Charity organizations
                       </option>
