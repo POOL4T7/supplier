@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '../../axios';
 import { useAtom } from 'jotai';
 import { bussinessProfile } from '../../storges/user';
+import Spinner from '../common/Spinner';
 
 const ProductSubCategory = () => {
   const [uploadedSubCategories, setUploadedSubCategories] = useState([]);
@@ -23,6 +24,7 @@ const ProductSubCategory = () => {
   const [filteredUploadedCategories, setFilteredUploadedCategories] = useState(
     []
   );
+  const [laoding, setLaoding] = useState(false);
 
   const [filteredMovedCategories, setFilteredMovedCategories] = useState([]);
   const [structure, setStructure] = useState([]);
@@ -124,6 +126,7 @@ const ProductSubCategory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLaoding(true);
         const res = await axiosInstance.get(
           `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
         );
@@ -149,6 +152,7 @@ const ProductSubCategory = () => {
         // return uniqueDescriptions;
 
         setDescriptionList(uniqueDescriptions);
+        setLaoding(false);
       } catch (e) {
         console.log(e);
       }
@@ -198,204 +202,216 @@ const ProductSubCategory = () => {
   };
 
   return (
-    <div className='container'>
-      <div className='mb-3'>
-        <div className='row'>
-          <div className='col-10'>
-            <h3>Add Product Sub Category</h3>
-          </div>
+    <>
+      {laoding ? (
+        <div className='d-flex'>
+          <Spinner />
         </div>
-        <div className='row'>
-          <div className='col-6'>
-            <div className='mb-2'>
-              <select
-                className='form-select'
-                id='categoryName'
-                onChange={bussinessDescription}
-              >
-                <option value=''>Select bussiness description</option>
-                {descriptionList.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className='col-6'>
-            <div>
-              <select
-                className='form-select'
-                id='categoryName'
-                onChange={changeCategory}
-              >
-                <option value='null'>Select Category</option>
-                {categoryList.map((item) => (
-                  <option key={item.id} value={JSON.stringify(item)}>
-                    {item.categoryName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      {category && (
-        <>
-          <form>
+      ) : (
+        <div className='container'>
+          <div className='mb-3'>
             <div className='row'>
               <div className='col-10'>
+                <h3>Add Product Sub Category</h3>
+              </div>
+            </div>
+            <div className='row'>
+              <div className='col-6'>
                 <div className='mb-2'>
-                  <input
-                    type='text'
-                    value={subCategoriesValue}
-                    className='form-control'
-                    placeholder='Enter sub category name'
-                    onChange={(e) => setSubCategoriesValue(e.target.value)}
-                  />
+                  <select
+                    className='form-select'
+                    id='categoryName'
+                    onChange={bussinessDescription}
+                  >
+                    <option value=''>Select bussiness description</option>
+                    {descriptionList.map((item) => (
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
-              <div className='col-2'>
-                <button
-                  className='btn btn-primary'
-                  onClick={handleAddProduct}
-                  disabled={!subCategoriesValue}
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          </form>
-          <div className='row'>
-            <div className='col-md-5'>
-              <input
-                type='text'
-                value={searchUploaded}
-                className='form-control mb-3'
-                placeholder='Search uploaded sub categories'
-                onChange={(e) => setSearchUploaded(e.target.value, 'uploaded')}
-              />
-              <div
-                className='border p-3'
-                style={{ height: '60vh', overflowY: 'scroll' }}
-              >
-                <h5>Uploaded Categories</h5>
-                {filteredUploadedCategories?.map((product) => (
-                  <div key={product.id} className='form-check mb-2'>
-                    <input
-                      type='checkbox'
-                      className='form-check-input'
-                      checked={selectedSubCategories.includes(product)}
-                      onChange={() => toggleSelectProduct(product, 'left')}
-                    />
-                    <label className='form-check-label'>
-                      {product.subCategoryName}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
-              <button
-                className='btn btn-primary mb-2'
-                onClick={moveToRight}
-                disabled={!isRightSelected}
-              >
-                &gt;&gt;
-              </button>
-              <button
-                className='btn btn-primary'
-                onClick={moveToLeft}
-                disabled={!isLeftSelected}
-              >
-                &lt;&lt;
-              </button>
-            </div>
-
-            <div className='col-md-5'>
-              <input
-                type='text'
-                value={searchMoved}
-                className='form-control mb-3'
-                placeholder='Search moved sub categories'
-                onChange={(e) => setSearchMoved(e.target.value, 'moved')}
-              />
-              <div
-                className='border p-3'
-                style={{ height: '60vh', overflowY: 'scroll' }}
-              >
-                <h5>Moved Categories</h5>
-
-                {filteredMovedCategories.map((product) => (
-                  <div key={product.id} className='form-check mb-2'>
-                    <input
-                      type='checkbox'
-                      className='form-check-input'
-                      checked={selectedSubCategories.includes(product)}
-                      onChange={() => toggleSelectProduct(product, 'right')}
-                    />
-                    <label className='form-check-label'>
-                      {product.subCategoryName}
-                    </label>
-                  </div>
-                ))}
+              <div className='col-6'>
+                <div>
+                  <select
+                    className='form-select'
+                    id='categoryName'
+                    onChange={changeCategory}
+                  >
+                    <option value='null'>Select Category</option>
+                    {categoryList.map((item) => (
+                      <option key={item.id} value={JSON.stringify(item)}>
+                        {item.categoryName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
-        </>
-      )}
-      <div className=' mt-5 mb-5'>
-        <h4>Your Sub Categories</h4>
-        <div className='accordion' id='categoryAccordion'>
-          {structure.map((desc, idx) => (
-            <div className='accordion-item' key={desc.businessDescription}>
-              <h2 className='accordion-header' id={`heading${idx}`}>
-                <button
-                  className='accordion-button'
-                  type='button'
-                  data-bs-toggle='collapse'
-                  data-bs-target={`#collapse${idx}`}
-                  aria-expanded='true'
-                  aria-controls={`collapse${idx}`}
-                >
-                  {desc.businessDescription}
-                </button>
-              </h2>
-              <div
-                id={`collapse${idx}`}
-                className='accordion-collapse collapse'
-                aria-labelledby={`heading${idx}`}
-                data-bs-parent='#categoryAccordion'
-              >
-                <div className='accordion-body'>
-                  {desc.categories.map((cate) => (
-                    <div key={cate.categoryName}>
-                      <div className='row'>
-                        <div className='col-4'>
-                          <strong>{cate.categoryName}</strong>
-                        </div>
-                        <div className='col-8'>
-                          {cate.subCategories.length > 0 ? (
-                            <ul>
-                              {cate.subCategories.map((subCate, subIdx) => (
-                                <li key={subIdx}>{subCate.subCategoryName}</li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p>No Subcategories Available</p>
-                          )}
-                        </div>
-                      </div>
+          {category && (
+            <>
+              <form>
+                <div className='row'>
+                  <div className='col-10'>
+                    <div className='mb-2'>
+                      <input
+                        type='text'
+                        value={subCategoriesValue}
+                        className='form-control'
+                        placeholder='Enter sub category name'
+                        onChange={(e) => setSubCategoriesValue(e.target.value)}
+                      />
                     </div>
-                  ))}
+                  </div>
+                  <div className='col-2'>
+                    <button
+                      className='btn btn-primary'
+                      onClick={handleAddProduct}
+                      disabled={!subCategoriesValue}
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <div className='row'>
+                <div className='col-md-5'>
+                  <input
+                    type='text'
+                    value={searchUploaded}
+                    className='form-control mb-3'
+                    placeholder='Search uploaded sub categories'
+                    onChange={(e) =>
+                      setSearchUploaded(e.target.value, 'uploaded')
+                    }
+                  />
+                  <div
+                    className='border p-3'
+                    style={{ height: '60vh', overflowY: 'scroll' }}
+                  >
+                    <h5>Uploaded Categories</h5>
+                    {filteredUploadedCategories?.map((product) => (
+                      <div key={product.id} className='form-check mb-2'>
+                        <input
+                          type='checkbox'
+                          className='form-check-input'
+                          checked={selectedSubCategories.includes(product)}
+                          onChange={() => toggleSelectProduct(product, 'left')}
+                        />
+                        <label className='form-check-label'>
+                          {product.subCategoryName}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
+                  <button
+                    className='btn btn-primary mb-2'
+                    onClick={moveToRight}
+                    disabled={!isRightSelected}
+                  >
+                    &gt;&gt;
+                  </button>
+                  <button
+                    className='btn btn-primary'
+                    onClick={moveToLeft}
+                    disabled={!isLeftSelected}
+                  >
+                    &lt;&lt;
+                  </button>
+                </div>
+
+                <div className='col-md-5'>
+                  <input
+                    type='text'
+                    value={searchMoved}
+                    className='form-control mb-3'
+                    placeholder='Search moved sub categories'
+                    onChange={(e) => setSearchMoved(e.target.value, 'moved')}
+                  />
+                  <div
+                    className='border p-3'
+                    style={{ height: '60vh', overflowY: 'scroll' }}
+                  >
+                    <h5>Moved Categories</h5>
+
+                    {filteredMovedCategories.map((product) => (
+                      <div key={product.id} className='form-check mb-2'>
+                        <input
+                          type='checkbox'
+                          className='form-check-input'
+                          checked={selectedSubCategories.includes(product)}
+                          onChange={() => toggleSelectProduct(product, 'right')}
+                        />
+                        <label className='form-check-label'>
+                          {product.subCategoryName}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
+            </>
+          )}
+          <div className=' mt-5 mb-5'>
+            <h4>Your Sub Categories</h4>
+            <div className='accordion' id='categoryAccordion'>
+              {structure.map((desc, idx) => (
+                <div className='accordion-item' key={desc.businessDescription}>
+                  <h2 className='accordion-header' id={`heading${idx}`}>
+                    <button
+                      className='accordion-button'
+                      type='button'
+                      data-bs-toggle='collapse'
+                      data-bs-target={`#collapse${idx}`}
+                      aria-expanded='true'
+                      aria-controls={`collapse${idx}`}
+                    >
+                      {desc.businessDescription}
+                    </button>
+                  </h2>
+                  <div
+                    id={`collapse${idx}`}
+                    className='accordion-collapse collapse'
+                    aria-labelledby={`heading${idx}`}
+                    data-bs-parent='#categoryAccordion'
+                  >
+                    <div className='accordion-body'>
+                      {desc.categories.map((cate) => (
+                        <div key={cate.categoryName}>
+                          <div className='row'>
+                            <div className='col-4'>
+                              <strong>{cate.categoryName}</strong>
+                            </div>
+                            <div className='col-8'>
+                              {cate.subCategories.length > 0 ? (
+                                <ul>
+                                  {cate.subCategories.map((subCate, subIdx) => (
+                                    <li key={subIdx}>
+                                      {subCate.subCategoryName}
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p>No Subcategories Available</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

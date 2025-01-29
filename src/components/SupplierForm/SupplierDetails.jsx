@@ -66,7 +66,7 @@ const SupplierDetails = () => {
     resolver: yupResolver(step1Schema),
     mode: 'onTouched',
   });
-
+  console.log('userDetails', userDetails);
   const onSubmit = async (data) => {
     try {
       delete data?.password;
@@ -210,7 +210,7 @@ const SupplierDetails = () => {
           type='email'
           {...register('email')}
           className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-          disabled
+          // disabled
         />
         <div className='invalid-feedback'>{errors.email?.message}</div>
       </div>

@@ -3,6 +3,7 @@ import axiosInstance from '../../axios';
 import { useAtom } from 'jotai';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import CreatableSelect from 'react-select/creatable';
+import Spinner from '../common/Spinner';
 
 const ProductCategory = () => {
   const selectRef = useRef(null);
@@ -25,6 +26,9 @@ const ProductCategory = () => {
   const [allDesc, setAllDesc] = useState([]);
   const [d, setD] = useState('');
   const [allMovedcategory, setAllMovedCatgeory] = useState([]);
+  const [bussinessLoading, setBussinessLoading] = useState(false);
+  const [categoryLoading, setCategoryLoading] = useState(false);
+  // const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -98,6 +102,7 @@ const ProductCategory = () => {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
+    // setCreateCategoryLoading(true);
 
     const res = await axiosInstance.post(
       '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
@@ -116,6 +121,7 @@ const ProductCategory = () => {
 
     setUploadedCategories([p, ...uploadedCategories]);
     setCategoriesValue('');
+    // setCreateCategoryLoading(false);
   };
 
   const handleSearch = (query, type) => {
@@ -194,6 +200,7 @@ const ProductCategory = () => {
       setDescription([]);
       return;
     }
+    setBussinessLoading(true);
     try {
       const res = await axiosInstance.get(
         `/proxy/productsearchsupplier/getAllBusinessDescription?description=${inputValue}&type=products`
@@ -205,6 +212,7 @@ const ProductCategory = () => {
           label: desc.description,
         }))
       );
+      setBussinessLoading(false);
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
@@ -224,6 +232,7 @@ const ProductCategory = () => {
   const handleCreate = async (value) => {
     if (value) {
       try {
+        setBussinessLoading(true);
         await axiosInstance.post(
           '/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription',
           {
@@ -234,6 +243,7 @@ const ProductCategory = () => {
         );
         setDescription([...description, { label: value, value }]);
         setD(value);
+        setBussinessLoading(false);
         console.log('Business description added successfully');
       } catch (error) {
         console.error('Error adding business description:', error);
@@ -250,10 +260,12 @@ const ProductCategory = () => {
             isClearable
             options={description}
             classNamePrefix='react-select'
+            isLoading={bussinessLoading}
             onChange={async (value) => {
               setD(value?.value);
               // console.log('here', value, allMovedcategory);
               if (value) {
+                setCategoryLoading(true);
                 const res2 = await axiosInstance.get(
                   `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
                 );
@@ -294,6 +306,7 @@ const ProductCategory = () => {
                     (item) => item.supplierBusinessDescription === value.value
                   )
                 );
+                setCategoryLoading(false);
               } else {
                 setUploadedCategories([]);
                 setMovedCategories([]);
@@ -366,6 +379,9 @@ const ProductCategory = () => {
             style={{ height: '60vh', overflowY: 'scroll' }}
           >
             <h5>Uploaded Categories</h5>
+            <div className='d-flex'>
+              {categoryLoading && <Spinner width='50px' height='50px' />}
+            </div>
             {filteredUploadedCategories.map((product) => (
               <div key={product.id} className='form-check mb-2'>
                 <input

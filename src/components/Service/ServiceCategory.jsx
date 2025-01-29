@@ -3,6 +3,7 @@ import axiosInstance from '../../axios';
 import { useAtom } from 'jotai';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import CreatableSelect from 'react-select/creatable';
+import Spinner from '../common/Spinner';
 
 const ServiceCategory = () => {
   const selectRef = useRef(null);
@@ -25,6 +26,8 @@ const ServiceCategory = () => {
   const [allDesc, setAllDesc] = useState([]);
   const [d, setD] = useState('');
   const [allMovedcategory, setAllMovedCatgeory] = useState([]);
+  const [bussinessLoading, setBussinessLoading] = useState(false);
+  const [categoryLoading, setCategoryLoading] = useState(false);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -195,6 +198,7 @@ const ServiceCategory = () => {
       setDescription([]);
       return;
     }
+    setBussinessLoading(true);
     try {
       const res = await axiosInstance.get(
         `/proxy/productsearchsupplier/getAllBusinessDescription?description=${inputValue}&type=services`
@@ -207,6 +211,7 @@ const ServiceCategory = () => {
           label: desc.description,
         }))
       );
+      setBussinessLoading(false);
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
@@ -252,10 +257,12 @@ const ServiceCategory = () => {
             isClearable
             options={description}
             classNamePrefix='react-select'
+            isLoading={bussinessLoading}
             onChange={async (value) => {
               setD(value?.value);
               // console.log("here", value, allMovedcategory)
               if (value) {
+                setCategoryLoading(true);
                 const res2 = await axiosInstance.get(
                   `/proxy/productsearchsupplier/getCategoryDetails?type=services&businessDescription=${value.value}`
                 );
@@ -296,6 +303,7 @@ const ServiceCategory = () => {
                     (item) => item.supplierBusinessDescription === value.value
                   )
                 );
+                setCategoryLoading(false);
               } else {
                 setUploadedCategories([]);
                 setMovedCategories([]);
@@ -368,6 +376,9 @@ const ServiceCategory = () => {
             style={{ height: '60vh', overflowY: 'scroll' }}
           >
             <h5>Uploaded Categories</h5>
+            <div className='d-flex'>
+              {categoryLoading && <Spinner width='50px' height='50px' />}
+            </div>
             {filteredUploadedCategories.map((product) => (
               <div key={product.id} className='form-check mb-2'>
                 <input

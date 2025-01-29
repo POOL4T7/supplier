@@ -5,3 +5,5 @@ issues:
 User:- 
 batixaf123@citdaca.com
 121212
+
+show loader on every time

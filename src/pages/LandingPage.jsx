@@ -57,6 +57,8 @@ const LandingPage = () => {
     shop: '',
     location: '',
   });
+  // eslint-disable-next-line no-unused-vars
+  const [setsearchLocation, setSetsearchLocation] = useState(false);
 
   const form1 = useForm({
     resolver: yupResolver(formSchema),
@@ -133,6 +135,7 @@ const LandingPage = () => {
       return;
     }
     try {
+      setSetsearchLocation(true);
       const res = await axios.post(
         `/proxy/productsearchsupplier/locationSuggestions`,
         {
@@ -149,6 +152,7 @@ const LandingPage = () => {
           value: JSON.stringify(item),
         }))
       );
+      setSetsearchLocation(false);
     } catch (error) {
       console.error('Error fetching business descriptions:', error);
     }
@@ -399,6 +403,7 @@ const LandingPage = () => {
                               {option.label}
                             </li>
                           )}
+                          // loading={setsearchLocation}
                         />
                       )}
                     />
