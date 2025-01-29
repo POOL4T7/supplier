@@ -29,7 +29,7 @@ const ProductCategory = () => {
   const [bussinessLoading, setBussinessLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
-  const [movedCategoryLoading, setMovedCategoryLoading] = useState(true);
+  const [movedCategoryLoading, setMovedCategoryLoading] = useState(false);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -366,7 +366,7 @@ const ProductCategory = () => {
           </div>
         </div>
       </>
-      {categoryLoading || movedCategoryLoading ? (
+      {categoryLoading ? (
         <div className='d-flex '>
           <Spinner />
         </div>

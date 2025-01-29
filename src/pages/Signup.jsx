@@ -13,6 +13,14 @@ const signupSchema = yup.object().shape({
   email: yup
     .string()
     .email('Invalid email address')
+    .when('userType', {
+      is: 'Admin',
+      then: (schema) =>
+        schema.matches(
+          /@kucsupply\.com$/,
+          'Admins must use an @kucsupply.com email'
+        ),
+    })
     .required('Email is required'),
   fullName: yup
     .string()
