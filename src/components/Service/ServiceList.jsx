@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import { useAtom } from 'jotai';
 import { toast } from 'react-toastify';
+import Spinner from '../common/Spinner';
 
 const ServiceList = () => {
   const [uploadedProducts, setUploadedProducts] = useState([]);
@@ -14,7 +15,8 @@ const ServiceList = () => {
   const [productValue, setProductValue] = useState('');
 
   const [productDescription, setProductDescription] = useState('');
-
+  const [addProductLoading, setAddProductLoading] = useState(false);
+  const [laoding, setLaoding] = useState(true);
   const [bussiness] = useAtom(bussinessProfile);
 
   const handleFileUpload = async (event) => {
@@ -89,14 +91,14 @@ const ServiceList = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!productValue) return;
-
+    setAddProductLoading(true);
     const res = await axiosInstance.post(
       'proxy/productsearchsupplier/api/supplier/file/addProductsOrServices',
       {
         fileRowDataList: [
           {
             name: productValue,
-            
+
             description: productDescription,
           },
         ],
@@ -118,6 +120,7 @@ const ServiceList = () => {
     setProductValue('');
     // setBrand('');
     setProductDescription('');
+    setAddProductLoading(false);
   };
 
   const submit = async (e) => {
@@ -143,11 +146,13 @@ const ServiceList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLaoding(true);
         const res = await axiosInstance.get(
           `/proxy/productsearchsupplier/services/getAllServiceDetails?supplierBusinessId=${bussiness.id}`
         );
         setUploadedProducts(res.data.filter((item) => !item.active));
         setMovedProducts(res.data.filter((item) => item.active));
+        setLaoding(false);
       } catch (e) {
         console.log(e);
       }
@@ -156,29 +161,36 @@ const ServiceList = () => {
   }, []);
 
   return (
-    <div className='container'>
-      <div className='mb-3'>
-        <div className='d-flex justify-content-between mb-2'>
-          <h3>Upload Service File</h3>
-          <button
-            className='btn btn-primary mt-2'
-            onClick={submit}
-            disabled={!movedProducts.length}
-          >
-            Update
-          </button>
+    <>
+      {laoding ? (
+        <div className='d-flex'>
+          {' '}
+          <Spinner />
         </div>
-        <input
-          type='file'
-          className='form-control'
-          onChange={handleFileUpload}
-        />
-      </div>
-      <form>
-        <div className='row'>
-          <div className='col-10'>
+      ) : (
+        <div className='container'>
+          <div className='mb-3'>
+            <div className='d-flex justify-content-between mb-2'>
+              <h3>Upload Service File</h3>
+              <button
+                className='btn btn-primary mt-2'
+                onClick={submit}
+                disabled={!movedProducts.length}
+              >
+                Update
+              </button>
+            </div>
+            <input
+              type='file'
+              className='form-control'
+              onChange={handleFileUpload}
+            />
+          </div>
+          <form>
             <div className='row'>
-              {/* <div className='col-3'>
+              <div className='col-10'>
+                <div className='row'>
+                  {/* <div className='col-3'>
                 <div className='mb-2'>
                   <input
                     type='text'
@@ -189,116 +201,123 @@ const ServiceList = () => {
                   />
                 </div>
               </div> */}
-              <div className='col-5'>
-                <div className='mb-2'>
-                  <input
-                    type='text'
-                    value={productValue}
-                    className={`form-control`}
-                    onChange={(e) => setProductValue(e.target.value)}
-                    placeholder='service name'
-                  />
+                  <div className='col-5'>
+                    <div className='mb-2'>
+                      <input
+                        type='text'
+                        value={productValue}
+                        className={`form-control`}
+                        onChange={(e) => setProductValue(e.target.value)}
+                        placeholder='service name'
+                      />
+                    </div>
+                  </div>
+                  <div className='col-7'>
+                    <div className='mb-2'>
+                      <input
+                        type='text'
+                        value={productDescription}
+                        className={`form-control`}
+                        onChange={(e) => setProductDescription(e.target.value)}
+                        placeholder='service description'
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className='col-7'>
-                <div className='mb-2'>
-                  <input
-                    type='text'
-                    value={productDescription}
-                    className={`form-control`}
-                    onChange={(e) => setProductDescription(e.target.value)}
-                    placeholder='service description'
-                  />
-                </div>
+              <div className='col-2'>
+                <button
+                  className=' btn btn-primary '
+                  onClick={handleAddProduct}
+                  disabled={addProductLoading}
+                >
+                  {addProductLoading && <Spinner width='15px' height='15px' />}{' '}
+                  Add
+                </button>
               </div>
             </div>
-          </div>
-          <div className='col-2'>
-            <button className=' btn btn-primary ' onClick={handleAddProduct}>
-              Add
-            </button>
-          </div>
-        </div>
-      </form>
-      <div
-        className='row align-items-center justify-content-between'
-        style={{ maxHeight: '80vh', height: '100%' }}
-      >
-        <div
-          className='col-md-5 border p-3'
-          style={{ height: '60vh', overflow: 'scroll' }}
-        >
-          <h5 className='mb-3'>Uploaded Services</h5>
-
-          {uploadedProducts.length > 0 ? (
-            uploadedProducts.map((product) => (
-              <div key={product.id} className='form-check mb-2'>
-                <input
-                  type='checkbox'
-                  className='form-check-input'
-                  id={`uploaded-${product.id}`}
-                  checked={selectedProducts.includes(product)}
-                  onChange={() => toggleSelectProduct(product, 'left')}
-                />
-                <label
-                  className='form-check-label'
-                  htmlFor={`uploaded-${product.id}`}
-                >
-                  {product.productName}
-                </label>
-              </div>
-            ))
-          ) : (
-            <p className='text-muted'>No services uploaded.</p>
-          )}
-        </div>
-
-        <div className='col-md-2 d-flex flex-column align-items-center'>
-          <button
-            className='btn btn-primary mb-2'
-            onClick={moveToRight}
-            disabled={!isRightSelected}
+          </form>
+          <div
+            className='row align-items-center justify-content-between'
+            style={{ maxHeight: '80vh', height: '100%' }}
           >
-            &gt;&gt;
-          </button>
-          <button
-            className='btn btn-primary'
-            onClick={moveToLeft}
-            disabled={!isLeftSelected}
-          >
-            &lt;&lt;
-          </button>
-        </div>
+            <div
+              className='col-md-5 border p-3'
+              style={{ height: '60vh', overflow: 'scroll' }}
+            >
+              <h5 className='mb-3'>Uploaded Services</h5>
 
-        <div
-          className='col-md-5 border pt-3'
-          style={{ height: '60vh', overflow: 'scroll' }}
-        >
-          <h5 className='mb-3'>Selected Services</h5>
-          {movedProducts.length > 0 ? (
-            movedProducts.map((product) => (
-              <div key={product.id} className='form-check mb-2'>
-                <input
-                  type='checkbox'
-                  className='form-check-input'
-                  id={`moved-${product.id}`}
-                  checked={selectedProducts.includes(product)}
-                  onChange={() => toggleSelectProduct(product, 'right')}
-                />
-                <label
-                  className='form-check-label'
-                  htmlFor={`moved-${product.id}`}
-                >
-                  {product.productName}
-                </label>
-              </div>
-            ))
-          ) : (
-            <p className='text-muted'>No services selected.</p>
-          )}
+              {uploadedProducts.length > 0 ? (
+                uploadedProducts.map((product) => (
+                  <div key={product.id} className='form-check mb-2'>
+                    <input
+                      type='checkbox'
+                      className='form-check-input'
+                      id={`uploaded-${product.id}`}
+                      checked={selectedProducts.includes(product)}
+                      onChange={() => toggleSelectProduct(product, 'left')}
+                    />
+                    <label
+                      className='form-check-label'
+                      htmlFor={`uploaded-${product.id}`}
+                    >
+                      {product.productName}
+                    </label>
+                  </div>
+                ))
+              ) : (
+                <p className='text-muted'>No services uploaded.</p>
+              )}
+            </div>
+
+            <div className='col-md-2 d-flex flex-column align-items-center'>
+              <button
+                className='btn btn-primary mb-2'
+                onClick={moveToRight}
+                disabled={!isRightSelected}
+              >
+                &gt;&gt;
+              </button>
+              <button
+                className='btn btn-primary'
+                onClick={moveToLeft}
+                disabled={!isLeftSelected}
+              >
+                &lt;&lt;
+              </button>
+            </div>
+
+            <div
+              className='col-md-5 border pt-3'
+              style={{ height: '60vh', overflow: 'scroll' }}
+            >
+              <h5 className='mb-3'>Selected Services</h5>
+              {movedProducts.length > 0 ? (
+                movedProducts.map((product) => (
+                  <div key={product.id} className='form-check mb-2'>
+                    <input
+                      type='checkbox'
+                      className='form-check-input'
+                      id={`moved-${product.id}`}
+                      checked={selectedProducts.includes(product)}
+                      onChange={() => toggleSelectProduct(product, 'right')}
+                    />
+                    <label
+                      className='form-check-label'
+                      htmlFor={`moved-${product.id}`}
+                    >
+                      {product.productName}
+                    </label>
+                  </div>
+                ))
+              ) : (
+                <p className='text-muted'>No services selected.</p>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

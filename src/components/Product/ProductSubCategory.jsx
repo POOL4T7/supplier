@@ -28,6 +28,9 @@ const ProductSubCategory = () => {
 
   const [filteredMovedCategories, setFilteredMovedCategories] = useState([]);
   const [structure, setStructure] = useState([]);
+  const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
+  // const [movedCategoryLoading, setMovedCategoryLoading] = useState(true);
+  const [changeCategoryLoading, setChangeCategoryLoading] = useState(false);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedSubCategories);
@@ -62,9 +65,7 @@ const ProductSubCategory = () => {
       '/proxy/productsearchsupplier/supplierSubCategoryDetailsStatus',
       {
         supplierBusinessId: bussiness.id,
-        subCategoryIds: [...movedSubCategories, ...selectedSubCategories].map(
-          (item) => item.id
-        ),
+        subCategoryIds: [...selectedSubCategories].map((item) => item.id),
         status: true,
         categoryId: category.id,
         supplierBusinessDescription: d,
@@ -85,7 +86,7 @@ const ProductSubCategory = () => {
       {
         supplierBusinessId: bussiness.id,
         subCategoryIds: [
-          ...uploadedSubCategories,
+          // ...uploadedSubCategories,
           ...selectedSubCategories,
         ].map((item) => item.id),
         status: false,
@@ -103,7 +104,7 @@ const ProductSubCategory = () => {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
-
+    setCreateCategoryLoading(true);
     const res = await axiosInstance.post(
       '/proxy/productsearchsupplier/saveSupplierSubCategoryDetails',
       {
@@ -121,6 +122,7 @@ const ProductSubCategory = () => {
     };
     setUploadedSubCategories([...uploadedSubCategories, newCategory]);
     setSubCategoriesValue('');
+    setCreateCategoryLoading(false);
   };
 
   useEffect(() => {
@@ -164,6 +166,7 @@ const ProductSubCategory = () => {
   const changeCategory = async (e) => {
     const cate = JSON.parse(e.target.value);
     setCategory(cate);
+    setChangeCategoryLoading(true);
     if (!cate) {
       return;
     }
@@ -189,6 +192,7 @@ const ProductSubCategory = () => {
       }
     });
     setUploadedSubCategories(leftCategory);
+    setChangeCategoryLoading(false);
   };
 
   const bussinessDescription = async (e) => {
@@ -269,92 +273,106 @@ const ProductSubCategory = () => {
                     <button
                       className='btn btn-primary'
                       onClick={handleAddProduct}
-                      disabled={!subCategoriesValue}
+                      disabled={!subCategoriesValue || createCategoryLoading}
                     >
+                      {createCategoryLoading && (
+                        <Spinner width='15px' height='15px' />
+                      )}{' '}
                       Add
                     </button>
                   </div>
                 </div>
               </form>
-              <div className='row'>
-                <div className='col-md-5'>
-                  <input
-                    type='text'
-                    value={searchUploaded}
-                    className='form-control mb-3'
-                    placeholder='Search uploaded sub categories'
-                    onChange={(e) =>
-                      setSearchUploaded(e.target.value, 'uploaded')
-                    }
-                  />
-                  <div
-                    className='border p-3'
-                    style={{ height: '60vh', overflowY: 'scroll' }}
-                  >
-                    <h5>Uploaded Categories</h5>
-                    {filteredUploadedCategories?.map((product) => (
-                      <div key={product.id} className='form-check mb-2'>
-                        <input
-                          type='checkbox'
-                          className='form-check-input'
-                          checked={selectedSubCategories.includes(product)}
-                          onChange={() => toggleSelectProduct(product, 'left')}
-                        />
-                        <label className='form-check-label'>
-                          {product.subCategoryName}
-                        </label>
-                      </div>
-                    ))}
+              {changeCategoryLoading ? (
+                <div className='d-flex'>
+                  {' '}
+                  <Spinner />
+                </div>
+              ) : (
+                <div className='row'>
+                  <div className='col-md-5'>
+                    <input
+                      type='text'
+                      value={searchUploaded}
+                      className='form-control mb-3'
+                      placeholder='Search uploaded sub categories'
+                      onChange={(e) =>
+                        setSearchUploaded(e.target.value, 'uploaded')
+                      }
+                    />
+                    <div
+                      className='border p-3'
+                      style={{ height: '60vh', overflowY: 'scroll' }}
+                    >
+                      <h5>Uploaded Categories</h5>
+                      {filteredUploadedCategories?.map((product) => (
+                        <div key={product.id} className='form-check mb-2'>
+                          <input
+                            type='checkbox'
+                            className='form-check-input'
+                            checked={selectedSubCategories.includes(product)}
+                            onChange={() =>
+                              toggleSelectProduct(product, 'left')
+                            }
+                          />
+                          <label className='form-check-label'>
+                            {product.subCategoryName}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
+                    <button
+                      className='btn btn-primary mb-2'
+                      onClick={moveToRight}
+                      disabled={!isRightSelected}
+                    >
+                      &gt;&gt;
+                    </button>
+                    <button
+                      className='btn btn-primary'
+                      onClick={moveToLeft}
+                      disabled={!isLeftSelected}
+                    >
+                      &lt;&lt;
+                    </button>
+                  </div>
+
+                  <div className='col-md-5'>
+                    <input
+                      type='text'
+                      value={searchMoved}
+                      className='form-control mb-3'
+                      placeholder='Search moved sub categories'
+                      onChange={(e) => setSearchMoved(e.target.value, 'moved')}
+                    />
+                    <div
+                      className='border p-3'
+                      style={{ height: '60vh', overflowY: 'scroll' }}
+                    >
+                      <h5>Moved Categories</h5>
+
+                      {filteredMovedCategories.map((product) => (
+                        <div key={product.id} className='form-check mb-2'>
+                          <input
+                            type='checkbox'
+                            className='form-check-input'
+                            checked={selectedSubCategories.includes(product)}
+                            onChange={() =>
+                              toggleSelectProduct(product, 'right')
+                            }
+                          />
+                          <label className='form-check-label'>
+                            {product.subCategoryName}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-
-                <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
-                  <button
-                    className='btn btn-primary mb-2'
-                    onClick={moveToRight}
-                    disabled={!isRightSelected}
-                  >
-                    &gt;&gt;
-                  </button>
-                  <button
-                    className='btn btn-primary'
-                    onClick={moveToLeft}
-                    disabled={!isLeftSelected}
-                  >
-                    &lt;&lt;
-                  </button>
-                </div>
-
-                <div className='col-md-5'>
-                  <input
-                    type='text'
-                    value={searchMoved}
-                    className='form-control mb-3'
-                    placeholder='Search moved sub categories'
-                    onChange={(e) => setSearchMoved(e.target.value, 'moved')}
-                  />
-                  <div
-                    className='border p-3'
-                    style={{ height: '60vh', overflowY: 'scroll' }}
-                  >
-                    <h5>Moved Categories</h5>
-
-                    {filteredMovedCategories.map((product) => (
-                      <div key={product.id} className='form-check mb-2'>
-                        <input
-                          type='checkbox'
-                          className='form-check-input'
-                          checked={selectedSubCategories.includes(product)}
-                          onChange={() => toggleSelectProduct(product, 'right')}
-                        />
-                        <label className='form-check-label'>
-                          {product.subCategoryName}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              )}
             </>
           )}
           <div className=' mt-5 mb-5'>

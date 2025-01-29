@@ -28,6 +28,8 @@ const ServiceCategory = () => {
   const [allMovedcategory, setAllMovedCatgeory] = useState([]);
   const [bussinessLoading, setBussinessLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
+  const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
+  const [movedCategoryLoading, setMovedCategoryLoading] = useState(true);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -101,7 +103,7 @@ const ServiceCategory = () => {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
-
+    setCreateCategoryLoading(true);
     const res = await axiosInstance.post(
       '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
       {
@@ -117,8 +119,9 @@ const ServiceCategory = () => {
       id: res.data.id,
     };
 
-    setUploadedCategories([p, ...uploadedCategories]);
+    setMovedCategories([...movedCategories, p]);
     setCategoriesValue('');
+    setCreateCategoryLoading(false);
   };
 
   const handleSearch = (query, type) => {
@@ -190,7 +193,7 @@ const ServiceCategory = () => {
   }, [bussiness.id]);
 
   useEffect(() => {
-    fetchCategories();
+    if (bussiness.id) fetchCategories();
   }, []);
 
   const handleInputChange = async (inputValue) => {
@@ -247,7 +250,11 @@ const ServiceCategory = () => {
       }
     }
   };
-
+  console.log(
+    'categoryLoading || movedCategoryLoading',
+    categoryLoading,
+    movedCategoryLoading
+  );
   return (
     <div className='container'>
       <>
@@ -261,53 +268,60 @@ const ServiceCategory = () => {
             onChange={async (value) => {
               setD(value?.value);
               // console.log("here", value, allMovedcategory)
-              if (value) {
-                setCategoryLoading(true);
-                const res2 = await axiosInstance.get(
-                  `/proxy/productsearchsupplier/getCategoryDetails?type=services&businessDescription=${value.value}`
-                );
-                const res = await axiosInstance.get(
-                  `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
-                );
-                console.log('svdch', res2.data, res.data);
-                let desc = [];
-                let leftCategory = [];
-                const categories = res.data.map((item) => {
-                  if (
-                    !desc.includes(item.supplierBusinessDescription) &&
-                    item.supplierBusinessDescription
-                  )
-                    desc.push(item.supplierBusinessDescription);
+              try {
+                if (value) {
+                  setCategoryLoading(true);
+                  setMovedCategoryLoading(true);
 
-                  return {
-                    id: item.id,
-                    categoryName: item.supplierCategoryName,
-                    categoryDescription: item.supplierCategoryDescription,
-                    supplierBusinessDescription:
-                      item.supplierBusinessDescription,
-                  };
-                });
-                res2.data.map((item) => {
-                  if (res.data.findIndex((c) => c.categoryId == item.id)) {
-                    leftCategory.push({
+                  const res2 = await axiosInstance.get(
+                    `/proxy/productsearchsupplier/getCategoryDetails?type=services&businessDescription=${value.value}`
+                  );
+                  const res = await axiosInstance.get(
+                    `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
+                  );
+                  console.log('svdch', res2.data, res.data);
+                  let desc = [];
+                  let leftCategory = [];
+                  const categories = res.data.map((item) => {
+                    if (
+                      !desc.includes(item.supplierBusinessDescription) &&
+                      item.supplierBusinessDescription
+                    )
+                      desc.push(item.supplierBusinessDescription);
+
+                    return {
                       id: item.id,
-                      categoryName: item.categoryName,
-                      categoryDescription: item.categoryDescription,
-                      supplierBusinessDescription: value.value,
-                    });
-                  }
-                });
-                setUploadedCategories(leftCategory);
-                setMovedCategories(
-                  categories?.filter(
-                    (item) => item.supplierBusinessDescription === value.value
-                  )
-                );
-                setCategoryLoading(false);
-              } else {
-                setUploadedCategories([]);
-                setMovedCategories([]);
+                      categoryName: item.supplierCategoryName,
+                      categoryDescription: item.supplierCategoryDescription,
+                      supplierBusinessDescription:
+                        item.supplierBusinessDescription,
+                    };
+                  });
+                  res2.data.map((item) => {
+                    if (res.data.findIndex((c) => c.categoryId == item.id)) {
+                      leftCategory.push({
+                        id: item.id,
+                        categoryName: item.categoryName,
+                        categoryDescription: item.categoryDescription,
+                        supplierBusinessDescription: value.value,
+                      });
+                    }
+                  });
+                  setUploadedCategories(leftCategory);
+                  setMovedCategories(
+                    categories?.filter(
+                      (item) => item.supplierBusinessDescription === value.value
+                    )
+                  );
+                } else {
+                  setUploadedCategories([]);
+                  setMovedCategories([]);
+                }
+              } catch (e) {
+                console.log(e);
               }
+              setCategoryLoading(false);
+              setMovedCategoryLoading(false);
             }}
             onInputChange={(inputValue) => {
               if (inputValue.length > 2) debouncedInputChange(inputValue);
@@ -355,92 +369,99 @@ const ServiceCategory = () => {
             <button
               className='btn btn-primary'
               onClick={handleAddProduct}
-              disabled={!categoriesValue}
+              disabled={!categoriesValue || createCategoryLoading}
             >
+              {createCategoryLoading && <Spinner width='15px' height='15px' />}{' '}
               Add
             </button>
           </div>
         </div>
       </>
-      <div className='row'>
-        <div className='col-md-5'>
-          <input
-            type='text'
-            value={uploadedSearch}
-            className='form-control mb-3'
-            placeholder='Search uploaded categories'
-            onChange={(e) => handleSearch(e.target.value, 'uploaded')}
-          />
-          <div
-            className='border p-3'
-            style={{ height: '60vh', overflowY: 'scroll' }}
-          >
-            <h5>Uploaded Categories</h5>
-            <div className='d-flex'>
-              {categoryLoading && <Spinner width='50px' height='50px' />}
+      {categoryLoading ? (
+        <div className='d-flex '>
+          <Spinner />
+        </div>
+      ) : (
+        <div className='row'>
+          <div className='col-md-5'>
+            <input
+              type='text'
+              value={uploadedSearch}
+              className='form-control mb-3'
+              placeholder='Search uploaded categories'
+              onChange={(e) => handleSearch(e.target.value, 'uploaded')}
+            />
+            <div
+              className='border p-3'
+              style={{ height: '60vh', overflowY: 'scroll' }}
+            >
+              <h5>Uploaded Categories</h5>
+              <div className='d-flex'>
+                {categoryLoading && <Spinner width='50px' height='50px' />}
+              </div>
+              {filteredUploadedCategories.map((product) => (
+                <div key={product.id} className='form-check mb-2'>
+                  <input
+                    type='checkbox'
+                    className='form-check-input'
+                    checked={selectedCategories.includes(product)}
+                    onChange={() => toggleSelectProduct(product, 'left')}
+                  />
+                  <label className='form-check-label'>
+                    {product.categoryName}
+                  </label>
+                </div>
+              ))}
             </div>
-            {filteredUploadedCategories.map((product) => (
-              <div key={product.id} className='form-check mb-2'>
-                <input
-                  type='checkbox'
-                  className='form-check-input'
-                  checked={selectedCategories.includes(product)}
-                  onChange={() => toggleSelectProduct(product, 'left')}
-                />
-                <label className='form-check-label'>
-                  {product.categoryName}
-                </label>
-              </div>
-            ))}
+          </div>
+
+          <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
+            <button
+              className='btn btn-primary mb-2'
+              onClick={moveToRight}
+              disabled={!isRightSelected}
+            >
+              &gt;&gt;
+            </button>
+            <button
+              className='btn btn-primary'
+              onClick={moveToLeft}
+              disabled={!isLeftSelected}
+            >
+              &lt;&lt;
+            </button>
+          </div>
+
+          <div className='col-md-5'>
+            <input
+              type='text'
+              value={movedSearch}
+              className='form-control mb-3'
+              placeholder='Search moved categories'
+              onChange={(e) => handleSearch(e.target.value, 'moved')}
+            />
+            <div
+              className='border p-3'
+              style={{ height: '60vh', overflowY: 'scroll' }}
+            >
+              <h5>Moved Categories</h5>
+              {filteredMovedCategories.map((product) => (
+                <div key={product.id} className='form-check mb-2'>
+                  <input
+                    type='checkbox'
+                    className='form-check-input'
+                    checked={selectedCategories.includes(product)}
+                    onChange={() => toggleSelectProduct(product, 'right')}
+                  />
+                  <label className='form-check-label'>
+                    {product.categoryName}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
-        <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
-          <button
-            className='btn btn-primary mb-2'
-            onClick={moveToRight}
-            disabled={!isRightSelected}
-          >
-            &gt;&gt;
-          </button>
-          <button
-            className='btn btn-primary'
-            onClick={moveToLeft}
-            disabled={!isLeftSelected}
-          >
-            &lt;&lt;
-          </button>
-        </div>
-
-        <div className='col-md-5'>
-          <input
-            type='text'
-            value={movedSearch}
-            className='form-control mb-3'
-            placeholder='Search moved categories'
-            onChange={(e) => handleSearch(e.target.value, 'moved')}
-          />
-          <div
-            className='border p-3'
-            style={{ height: '60vh', overflowY: 'scroll' }}
-          >
-            <h5>Moved Categories</h5>
-            {filteredMovedCategories.map((product) => (
-              <div key={product.id} className='form-check mb-2'>
-                <input
-                  type='checkbox'
-                  className='form-check-input'
-                  checked={selectedCategories.includes(product)}
-                  onChange={() => toggleSelectProduct(product, 'right')}
-                />
-                <label className='form-check-label'>
-                  {product.categoryName}
-                </label>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      )}
       <div className=' mt-5 mb-5'>
         <h4>Your Categories by bussiness description</h4>
         <div className='accordion' id='categoryAccordion'>

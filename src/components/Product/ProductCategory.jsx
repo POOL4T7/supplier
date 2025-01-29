@@ -28,7 +28,8 @@ const ProductCategory = () => {
   const [allMovedcategory, setAllMovedCatgeory] = useState([]);
   const [bussinessLoading, setBussinessLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
-  // const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
+  const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
+  const [movedCategoryLoading, setMovedCategoryLoading] = useState(true);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -63,9 +64,7 @@ const ProductCategory = () => {
       '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
       {
         supplierBusinessId: bussiness.id,
-        categoryIds: [...filteredMovedCategories, ...selectedCategories].map(
-          (item) => item.id
-        ),
+        categoryIds: [...selectedCategories].map((item) => item.id),
         status: true,
         supplierBusinessDescription: d,
       }
@@ -86,9 +85,7 @@ const ProductCategory = () => {
       '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
       {
         supplierBusinessId: bussiness.id,
-        categoryIds: [...uploadedCategories, ...selectedCategories].map(
-          (item) => item.id
-        ),
+        categoryIds: [...selectedCategories].map((item) => item.id),
         status: false,
       }
     );
@@ -102,7 +99,7 @@ const ProductCategory = () => {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
-    // setCreateCategoryLoading(true);
+    setCreateCategoryLoading(true);
 
     const res = await axiosInstance.post(
       '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
@@ -119,9 +116,10 @@ const ProductCategory = () => {
       id: res.data.id,
     };
 
-    setUploadedCategories([p, ...uploadedCategories]);
+    // setUploadedCategories([p, ...uploadedCategories]);
+    setMovedCategories([p, ...movedCategories]);
     setCategoriesValue('');
-    // setCreateCategoryLoading(false);
+    setCreateCategoryLoading(false);
   };
 
   const handleSearch = (query, type) => {
@@ -266,6 +264,7 @@ const ProductCategory = () => {
               // console.log('here', value, allMovedcategory);
               if (value) {
                 setCategoryLoading(true);
+                setMovedCategoryLoading(true);
                 const res2 = await axiosInstance.get(
                   `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
                 );
@@ -307,6 +306,7 @@ const ProductCategory = () => {
                   )
                 );
                 setCategoryLoading(false);
+                setMovedCategoryLoading(false);
               } else {
                 setUploadedCategories([]);
                 setMovedCategories([]);
@@ -358,92 +358,103 @@ const ProductCategory = () => {
             <button
               className='btn btn-primary'
               onClick={handleAddProduct}
-              disabled={!categoriesValue}
+              disabled={!categoriesValue || createCategoryLoading}
             >
+              {createCategoryLoading && <Spinner width='15px' height='15px' />}{' '}
               Add
             </button>
           </div>
         </div>
       </>
-      <div className='row'>
-        <div className='col-md-5'>
-          <input
-            type='text'
-            value={uploadedSearch}
-            className='form-control mb-3'
-            placeholder='Search uploaded categories'
-            onChange={(e) => handleSearch(e.target.value, 'uploaded')}
-          />
-          <div
-            className='border p-3'
-            style={{ height: '60vh', overflowY: 'scroll' }}
-          >
-            <h5>Uploaded Categories</h5>
-            <div className='d-flex'>
-              {categoryLoading && <Spinner width='50px' height='50px' />}
+      {categoryLoading || movedCategoryLoading ? (
+        <div className='d-flex '>
+          <Spinner />
+        </div>
+      ) : (
+        <div className='row'>
+          <div className='col-md-5'>
+            <input
+              type='text'
+              value={uploadedSearch}
+              className='form-control mb-3'
+              placeholder='Search uploaded categories'
+              onChange={(e) => handleSearch(e.target.value, 'uploaded')}
+            />
+            <div
+              className='border p-3'
+              style={{ height: '60vh', overflowY: 'scroll' }}
+            >
+              <h5>Uploaded Categories</h5>
+              <div className='d-flex'>
+                {categoryLoading && <Spinner width='50px' height='50px' />}
+              </div>
+              {filteredUploadedCategories.map((product) => (
+                <div key={product.id} className='form-check mb-2'>
+                  <input
+                    type='checkbox'
+                    className='form-check-input'
+                    checked={selectedCategories.includes(product)}
+                    onChange={() => toggleSelectProduct(product, 'left')}
+                  />
+                  <label className='form-check-label'>
+                    {product.categoryName}
+                  </label>
+                </div>
+              ))}
             </div>
-            {filteredUploadedCategories.map((product) => (
-              <div key={product.id} className='form-check mb-2'>
-                <input
-                  type='checkbox'
-                  className='form-check-input'
-                  checked={selectedCategories.includes(product)}
-                  onChange={() => toggleSelectProduct(product, 'left')}
-                />
-                <label className='form-check-label'>
-                  {product.categoryName}
-                </label>
+          </div>
+
+          <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
+            <button
+              className='btn btn-primary mb-2'
+              onClick={moveToRight}
+              disabled={!isRightSelected}
+            >
+              &gt;&gt;
+            </button>
+            <button
+              className='btn btn-primary'
+              onClick={moveToLeft}
+              disabled={!isLeftSelected}
+            >
+              &lt;&lt;
+            </button>
+          </div>
+
+          <div className='col-md-5'>
+            <input
+              type='text'
+              value={movedSearch}
+              className='form-control mb-3'
+              placeholder='Search moved categories'
+              onChange={(e) => handleSearch(e.target.value, 'moved')}
+            />
+            <div
+              className='border p-3'
+              style={{ height: '60vh', overflowY: 'scroll' }}
+            >
+              <h5>Moved Categories</h5>
+              <div className='d-flex'>
+                {movedCategoryLoading && <Spinner width='50px' height='50px' />}
               </div>
-            ))}
+              {filteredMovedCategories.map((product) => (
+                <div key={product.id} className='form-check mb-2'>
+                  <input
+                    type='checkbox'
+                    className='form-check-input'
+                    checked={selectedCategories.includes(product)}
+                    onChange={() => toggleSelectProduct(product, 'right')}
+                  />
+                  <label className='form-check-label'>
+                    {product.categoryName}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      )}
 
-        <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
-          <button
-            className='btn btn-primary mb-2'
-            onClick={moveToRight}
-            disabled={!isRightSelected}
-          >
-            &gt;&gt;
-          </button>
-          <button
-            className='btn btn-primary'
-            onClick={moveToLeft}
-            disabled={!isLeftSelected}
-          >
-            &lt;&lt;
-          </button>
-        </div>
-
-        <div className='col-md-5'>
-          <input
-            type='text'
-            value={movedSearch}
-            className='form-control mb-3'
-            placeholder='Search moved categories'
-            onChange={(e) => handleSearch(e.target.value, 'moved')}
-          />
-          <div
-            className='border p-3'
-            style={{ height: '60vh', overflowY: 'scroll' }}
-          >
-            <h5>Moved Categories</h5>
-            {filteredMovedCategories.map((product) => (
-              <div key={product.id} className='form-check mb-2'>
-                <input
-                  type='checkbox'
-                  className='form-check-input'
-                  checked={selectedCategories.includes(product)}
-                  onChange={() => toggleSelectProduct(product, 'right')}
-                />
-                <label className='form-check-label'>
-                  {product.categoryName}
-                </label>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
       <div className=' mt-5 mb-5'>
         <h4>Your Categories by bussiness description</h4>
         <div className='accordion' id='categoryAccordion'>

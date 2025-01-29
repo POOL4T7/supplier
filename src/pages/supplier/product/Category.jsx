@@ -2,8 +2,10 @@ import ProductCategory from '../../../components/Product/ProductCategory';
 
 const Category = () => {
   return (
-    <div className='mt-5'>
-      <ProductCategory />
+    <div className='d-flex justify-content-center'>
+      <div className='mt-5' style={{ maxWidth: '900px', width: '100%' }}>
+        <ProductCategory />
+      </div>
     </div>
   );
 };
