@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import CreatableSelect from 'react-select/creatable';
 import Spinner from '../common/Spinner';
+import { toast } from 'react-toastify';
 
 const ServiceCategory = () => {
   const selectRef = useRef(null);
@@ -25,7 +26,7 @@ const ServiceCategory = () => {
   const [bussiness] = useAtom(bussinessProfile);
   const [allDesc, setAllDesc] = useState([]);
   const [d, setD] = useState('');
-  const [allMovedcategory, setAllMovedCatgeory] = useState([]);
+  // const [allMovedcategory, setAllMovedCatgeory] = useState([]);
   const [bussinessLoading, setBussinessLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
@@ -103,6 +104,10 @@ const ServiceCategory = () => {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
+    if (!d) {
+      toast.error('Bussiness description is required for adding category');
+      return;
+    }
     setCreateCategoryLoading(true);
     const res = await axiosInstance.post(
       '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
@@ -146,41 +151,41 @@ const ServiceCategory = () => {
   // Fetch categories
   const fetchCategories = useCallback(async () => {
     try {
-      const res = await axiosInstance.get(
-        `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
-      );
-      let desc = [];
-      const categories = res.data.map((item) => {
-        if (
-          !desc.includes(item.supplierBusinessDescription) &&
-          item.supplierBusinessDescription
-        )
-          desc.push(item.supplierBusinessDescription);
-        return {
-          id: item.id,
-          categoryName: item.supplierCategoryName,
-          categoryDescription: item.supplierCategoryDescription,
-          supplierBusinessDescription: item.supplierBusinessDescription,
-        };
-      });
-      // setAllMovedCatgeory(categories);
-      const temp = desc.splice(-4);
-      setAllDesc(temp);
-      if (selectRef.current && temp.length) {
+      const desc = bussiness.businessDescription;
+      // const res = await axiosInstance.get(
+      //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
+      // );
+      // const categories = res.data.map((item) => {
+      //   if (
+      //     !desc.includes(item.supplierBusinessDescription) &&
+      //     item.supplierBusinessDescription
+      //   )
+      //     desc.push(item.supplierBusinessDescription);
+      //   return {
+      //     id: item.id,
+      //     categoryName: item.supplierCategoryName,
+      //     categoryDescription: item.supplierCategoryDescription,
+      //     supplierBusinessDescription: item.supplierBusinessDescription,
+      //   };
+      // });
+      // // setAllMovedCatgeory(categories);
+      // const temp = desc.splice(-4);
+      setAllDesc(desc);
+      if (selectRef.current && desc.length) {
         selectRef.current.setValue({
-          value: temp[0],
-          label: temp[0],
+          value: desc[0],
+          label: desc[0],
         });
       }
-      const groupedData = categories.reduce((acc, item) => {
-        const key = item.supplierBusinessDescription || 'Unknown';
-        if (!acc[key]) {
-          acc[key] = [];
-        }
-        acc[key].push(item);
-        return acc;
-      }, {});
-      setAllMovedCatgeory(groupedData);
+      // const groupedData = categories.reduce((acc, item) => {
+      //   const key = item.supplierBusinessDescription || 'Unknown';
+      //   if (!acc[key]) {
+      //     acc[key] = [];
+      //   }
+      //   acc[key].push(item);
+      //   return acc;
+      // }, {});
+      // setAllMovedCatgeory(groupedData);
       // console.log("categories", categories);
       // setMovedCategories(
       //   categories?.filter(
@@ -190,11 +195,11 @@ const ServiceCategory = () => {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  }, [bussiness.id]);
+  }, [bussiness.businessDescription]);
 
   useEffect(() => {
     if (bussiness.id) fetchCategories();
-  }, []);
+  }, [bussiness.id, fetchCategories]);
 
   const handleInputChange = async (inputValue) => {
     if (!inputValue.trim()) {
@@ -250,11 +255,11 @@ const ServiceCategory = () => {
       }
     }
   };
-  console.log(
-    'categoryLoading || movedCategoryLoading',
-    categoryLoading,
-    movedCategoryLoading
-  );
+  // console.log(
+  //   'categoryLoading || movedCategoryLoading',
+  //   categoryLoading,
+  //   movedCategoryLoading
+  // );
   return (
     <div className='container'>
       <>
@@ -277,42 +282,51 @@ const ServiceCategory = () => {
                     `/proxy/productsearchsupplier/getCategoryDetails?type=services&businessDescription=${value.value}`
                   );
                   const res = await axiosInstance.get(
-                    `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
+                    `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}&businessDescription=${value.value}`
                   );
-                  console.log('svdch', res2.data, res.data);
-                  let desc = [];
-                  let leftCategory = [];
-                  const categories = res.data.map((item) => {
-                    if (
-                      !desc.includes(item.supplierBusinessDescription) &&
-                      item.supplierBusinessDescription
-                    )
-                      desc.push(item.supplierBusinessDescription);
+                  // console.log('svdch', res2.data, res.data);
 
-                    return {
-                      id: item.id,
-                      categoryName: item.supplierCategoryName,
-                      categoryDescription: item.supplierCategoryDescription,
-                      supplierBusinessDescription:
-                        item.supplierBusinessDescription,
-                    };
-                  });
-                  res2.data.map((item) => {
-                    if (res.data.findIndex((c) => c.categoryId == item.id)) {
-                      leftCategory.push({
+                  // let leftCategory = [];
+                  // const categories = res.data.map((item) => {
+                  //   return {
+                  //     id: item.id,
+                  //     categoryName: item.supplierCategoryName,
+                  //     categoryDescription: item.supplierCategoryDescription,
+                  //     supplierBusinessDescription:
+                  //       item.supplierBusinessDescription,
+                  //   };
+                  // });
+                  // res2.data.map((item) => {
+                  //   return {
+                  //     id: item.id,
+                  //     categoryName: item.categoryName,
+                  //     categoryDescription: item.categoryDescription,
+                  //     supplierBusinessDescription: value.value,
+                  //   };
+                  // });
+                  setUploadedCategories(
+                    res2.data.map((item) => {
+                      return {
                         id: item.id,
                         categoryName: item.categoryName,
                         categoryDescription: item.categoryDescription,
                         supplierBusinessDescription: value.value,
-                      });
-                    }
-                  });
-                  setUploadedCategories(leftCategory);
-                  setMovedCategories(
-                    categories?.filter(
-                      (item) => item.supplierBusinessDescription === value.value
-                    )
+                      };
+                    })
                   );
+                  setMovedCategories(
+                    res.data.map((item) => {
+                      return {
+                        id: item.id,
+                        categoryName: item.supplierCategoryName,
+                        categoryDescription: item.supplierCategoryDescription,
+                        supplierBusinessDescription:
+                          item.supplierBusinessDescription,
+                      };
+                    })
+                  );
+                  setCategoryLoading(false);
+                  setMovedCategoryLoading(false);
                 } else {
                   setUploadedCategories([]);
                   setMovedCategories([]);
@@ -445,6 +459,9 @@ const ServiceCategory = () => {
               style={{ height: '60vh', overflowY: 'scroll' }}
             >
               <h5>Moved Categories</h5>
+              <div className='d-flex'>
+                {movedCategoryLoading && <Spinner width='50px' height='50px' />}
+              </div>
               {filteredMovedCategories.map((product) => (
                 <div key={product.id} className='form-check mb-2'>
                   <input
@@ -464,7 +481,7 @@ const ServiceCategory = () => {
       )}
       <div className=' mt-5 mb-5'>
         <h4>Your Categories by bussiness description</h4>
-        <div className='accordion' id='categoryAccordion'>
+        {/* <div className='accordion' id='categoryAccordion'>
           {Object.entries(allMovedcategory).map((item, idx) => (
             <div className='accordion-item' key={item[0]}>
               <h2 className='accordion-header' id='headingOne'>
@@ -501,7 +518,7 @@ const ServiceCategory = () => {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

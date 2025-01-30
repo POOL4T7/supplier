@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import { bussinessProfile, userDetailsAtom } from '../../storges/user';
 import CreatableSelect from 'react-select/creatable';
 import Spinner from '../common/Spinner';
+import { toast } from 'react-toastify';
 
 const ProductCategory = () => {
   const selectRef = useRef(null);
@@ -25,7 +26,7 @@ const ProductCategory = () => {
   const [bussiness] = useAtom(bussinessProfile);
   const [allDesc, setAllDesc] = useState([]);
   const [d, setD] = useState('');
-  const [allMovedcategory, setAllMovedCatgeory] = useState([]);
+  // const [allMovedcategory, setAllMovedCatgeory] = useState([]);
   const [bussinessLoading, setBussinessLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
@@ -99,6 +100,11 @@ const ProductCategory = () => {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
+    if (!d) {
+      toast.error('Bussiness description is required for adding category');
+
+      return;
+    }
     setCreateCategoryLoading(true);
 
     const res = await axiosInstance.post(
@@ -117,7 +123,7 @@ const ProductCategory = () => {
     };
 
     // setUploadedCategories([p, ...uploadedCategories]);
-    setMovedCategories([p, ...movedCategories]);
+    setMovedCategories([...movedCategories, p]);
     setCategoriesValue('');
     setCreateCategoryLoading(false);
   };
@@ -144,40 +150,39 @@ const ProductCategory = () => {
   // Fetch categories
   const fetchCategories = useCallback(async () => {
     try {
-      const res = await axiosInstance.get(
-        `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
-      );
-      let desc = [];
-      const categories = res.data.map((item) => {
-        if (
-          !desc.includes(item.supplierBusinessDescription) &&
-          item.supplierBusinessDescription
-        )
-          desc.push(item.supplierBusinessDescription);
-        return {
-          id: item.id,
-          categoryName: item.supplierCategoryName,
-          categoryDescription: item.supplierCategoryDescription,
-          supplierBusinessDescription: item.supplierBusinessDescription,
-        };
-      });
-      const groupedData = categories.reduce((acc, item) => {
-        const key = item.supplierBusinessDescription || 'Unknown';
-        if (!acc[key]) {
-          acc[key] = [];
-        }
-        acc[key].push(item);
-        return acc;
-      }, {});
-      setAllMovedCatgeory(groupedData);
-      const temp = desc.splice(-4);
-      setAllDesc(temp);
-      if (selectRef.current && temp.length) {
+      const desc = bussiness.businessDescription;
+      setAllDesc(desc);
+      if (selectRef.current && desc?.length) {
         selectRef.current.setValue({
-          value: temp[0],
-          label: temp[0],
+          value: desc[0],
+          label: desc[0],
         });
+        // const res = await axiosInstance.get(
+        //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
+        // );
+
+        // const categories = res.data.map((item) => {
+        //   return {
+        //     id: item.id,
+        //     categoryName: item.supplierCategoryName,
+        //     categoryDescription: item.supplierCategoryDescription,
+        //     supplierBusinessDescription: item.supplierBusinessDescription,
+        //   };
+        // });
+        // setMovedCategories(categories);
+
+        // const groupedData = categories.reduce((acc, item) => {
+        //   const key = item.supplierBusinessDescription || 'Unknown';
+        //   if (!acc[key]) {
+        //     acc[key] = [];
+        //   }
+        //   acc[key].push(item);
+        //   return acc;
+        // }, {});
+        // console.log('groupedData', groupedData);
+        // setAllMovedCatgeory(groupedData);
       }
+
       // console.log("categories", categories);
       // setMovedCategories(
       //   categories?.filter(
@@ -187,7 +192,7 @@ const ProductCategory = () => {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  }, [bussiness.id]);
+  }, [bussiness.businessDescription]);
 
   useEffect(() => {
     if (bussiness.id) fetchCategories();
@@ -269,41 +274,39 @@ const ProductCategory = () => {
                   `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
                 );
                 const res = await axiosInstance.get(
-                  `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
+                  `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}&businessDescription=${value.value}`
                 );
-                console.log('svdch', res2.data, res.data);
-                let desc = [];
-                let leftCategory = [];
-                const categories = res.data.map((item) => {
-                  if (
-                    !desc.includes(item.supplierBusinessDescription) &&
-                    item.supplierBusinessDescription
-                  )
-                    desc.push(item.supplierBusinessDescription);
 
-                  return {
-                    id: item.id,
-                    categoryName: item.supplierCategoryName,
-                    categoryDescription: item.supplierCategoryDescription,
-                    supplierBusinessDescription:
-                      item.supplierBusinessDescription,
-                  };
-                });
-                res2.data.map((item) => {
-                  if (res.data.findIndex((c) => c.categoryId == item.id)) {
-                    leftCategory.push({
+                // const categories = res.data.map((item) => {
+                //   return {
+                //     id: item.id,
+                //     categoryName: item.supplierCategoryName,
+                //     categoryDescription: item.supplierCategoryDescription,
+                //     supplierBusinessDescription:
+                //       item.supplierBusinessDescription,
+                //   };
+                // });
+
+                setUploadedCategories(
+                  res2.data.map((item) => {
+                    return {
                       id: item.id,
                       categoryName: item.categoryName,
                       categoryDescription: item.categoryDescription,
                       supplierBusinessDescription: value.value,
-                    });
-                  }
-                });
-                setUploadedCategories(leftCategory);
+                    };
+                  })
+                );
                 setMovedCategories(
-                  categories?.filter(
-                    (item) => item.supplierBusinessDescription === value.value
-                  )
+                  res.data.map((item) => {
+                    return {
+                      id: item.id,
+                      categoryName: item.supplierCategoryName,
+                      categoryDescription: item.supplierCategoryDescription,
+                      supplierBusinessDescription:
+                        item.supplierBusinessDescription,
+                    };
+                  })
                 );
                 setCategoryLoading(false);
                 setMovedCategoryLoading(false);
@@ -458,7 +461,7 @@ const ProductCategory = () => {
       <div className=' mt-5 mb-5'>
         <h4>Your Categories by bussiness description</h4>
         <div className='accordion' id='categoryAccordion'>
-          {Object.entries(allMovedcategory).map((item, idx) => (
+          {/* {Object.entries(allMovedcategory).map((item, idx) => (
             <div className='accordion-item' key={item[0]}>
               <h2 className='accordion-header' id='headingOne'>
                 <button
@@ -493,7 +496,7 @@ const ProductCategory = () => {
                 </div>
               </div>
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
     </div>

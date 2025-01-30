@@ -308,7 +308,12 @@ export default function BussinessProfile() {
         { ...data, supplierId: supplier.id, supplierBusinessId: bussiness.id }
       );
 
-      setBussiness({ ...bussiness, sector: data.sector });
+      setBussiness({
+        ...bussiness,
+        ...res.data.supplierBusinessProfile,
+      });
+      console.log(bussiness, res.data.supplierBusinessProfile);
+      // reset({ ...res.data.supplierBusinessProfile });
 
       toast.success(
         res.data?.data?.message || 'Supplier bussiness profile updated'

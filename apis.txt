@@ -7,3 +7,12 @@ wobok10188@ahaks.com
 121212
 
 show loader on every time
+
+
+
+structure is not updating in real time. for category and sub catgeory.
+
+
+1. new data is not updated in bussiness profile. (fixed ) 
+2. bussiness description is mandatory for adding category. and get them from bussiness profile. (fixed)
+3. add bussiness description in get supplier category API.  (fixed)

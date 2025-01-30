@@ -15,7 +15,7 @@ const ProductSubCategory = () => {
   const [category, setCategory] = useState(null);
   const [bussiness] = useAtom(bussinessProfile);
 
-  const [allCategoryList, setAllCategoryList] = useState([]);
+  // const [allCategoryList, setAllCategoryList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [searchUploaded, setSearchUploaded] = useState('');
   const [searchMoved, setSearchMoved] = useState('');
@@ -31,6 +31,8 @@ const ProductSubCategory = () => {
   const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
   // const [movedCategoryLoading, setMovedCategoryLoading] = useState(true);
   const [changeCategoryLoading, setChangeCategoryLoading] = useState(false);
+  const [changeDescriptionLoading, setChangeDescriptionLoading] =
+    useState(false);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedSubCategories);
@@ -71,6 +73,10 @@ const ProductSubCategory = () => {
         supplierBusinessDescription: d,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=products`
+    );
+    setStructure(res2.data);
 
     setMovedSubCategories((prev) => [...prev, ...selectedSubCategories]);
     setUploadedSubCategories((prev) =>
@@ -93,6 +99,10 @@ const ProductSubCategory = () => {
         categoryId: category.id,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=products`
+    );
+    setStructure(res2.data);
 
     setUploadedSubCategories((prev) => [...prev, ...selectedSubCategories]);
     setMovedSubCategories((prev) =>
@@ -115,12 +125,16 @@ const ProductSubCategory = () => {
         supplierBusinessDescription: d,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=products`
+    );
+    setStructure(res2.data);
 
     const newCategory = {
       subCategoryName: res.data.supplierSubCategoryName,
       id: res.data.id,
     };
-    setUploadedSubCategories([...uploadedSubCategories, newCategory]);
+    setMovedSubCategories([...movedSubCategories, newCategory]);
     setSubCategoriesValue('');
     setCreateCategoryLoading(false);
   };
@@ -129,31 +143,31 @@ const ProductSubCategory = () => {
     const fetchData = async () => {
       try {
         setLaoding(true);
-        const res = await axiosInstance.get(
-          `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
-        );
+        // const res = await axiosInstance.get(
+        //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
+        // );
         const res2 = await axiosInstance.get(
           `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=products`
         );
         setStructure(res2.data);
-        setAllCategoryList(
-          res.data
-            // .filter((item) => item.active)
-            .map((item) => ({
-              id: item.categoryId,
-              categoryName: item.supplierCategoryName,
-              supplierCategoryDescription: item.supplierCategoryDescription,
-              supplierBusinessDescription: item.supplierBusinessDescription,
-            }))
-        );
-        // Assuming res.data is an array of objects
-        const uniqueDescriptions = Array.from(
-          new Set(res.data.map((item) => item.supplierBusinessDescription))
-        );
+        // setAllCategoryList(
+        //   res.data
+        //     // .filter((item) => item.active)
+        //     .map((item) => ({
+        //       id: item.categoryId,
+        //       categoryName: item.supplierCategoryName,
+        //       supplierCategoryDescription: item.supplierCategoryDescription,
+        //       supplierBusinessDescription: item.supplierBusinessDescription,
+        //     }))
+        // );
+        // // Assuming res.data is an array of objects
+        // const uniqueDescriptions = Array.from(
+        //   new Set(res.data.map((item) => item.supplierBusinessDescription))
+        // );
 
         // return uniqueDescriptions;
 
-        setDescriptionList(uniqueDescriptions);
+        setDescriptionList(bussiness.businessDescription);
         setLaoding(false);
       } catch (e) {
         console.log(e);
@@ -161,7 +175,7 @@ const ProductSubCategory = () => {
     };
 
     if (bussiness.id) fetchData();
-  }, [bussiness.id]);
+  }, [bussiness.businessDescription, bussiness.id]);
 
   const changeCategory = async (e) => {
     const cate = JSON.parse(e.target.value);
@@ -185,24 +199,39 @@ const ProductSubCategory = () => {
         subCategoryDescription: item.supplierCategoryDescription,
       }))
     );
-    let leftCategory = [];
-    res.data.map((item) => {
-      if (res2.data.findIndex((c) => c.subCategoryId == item.id)) {
-        leftCategory.push(item);
-      }
-    });
-    setUploadedSubCategories(leftCategory);
+    // let leftCategory = [];
+    // res.data.map((item) => {
+    //   if (res2.data.findIndex((c) => c.subCategoryId == item.id)) {
+    //     leftCategory.push(item);
+    //   }
+    // });
+    setUploadedSubCategories(res.data);
     setChangeCategoryLoading(false);
   };
 
   const bussinessDescription = async (e) => {
-    const cateList = allCategoryList.filter(
-      (item) => item.supplierBusinessDescription === e.target.value
+    setChangeDescriptionLoading(true);
+
+    const res = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}&businessDescription=${e.target.value}`
     );
-    console.log(allCategoryList, cateList, e.target.value);
-    setCategoryList(cateList);
+    // const cateList = allCategoryList.filter(
+    //   (item) => item.supplierBusinessDescription === e.target.value
+    // );
+    // console.log(allCategoryList, cateList, e.target.value);
+    setCategoryList(
+      res.data.map((item) => {
+        return {
+          id: item.categoryId,
+          categoryName: item.supplierCategoryName,
+          supplierCategoryDescription: item.supplierCategoryDescription,
+          supplierBusinessDescription: item.supplierBusinessDescription,
+        };
+      })
+    );
     setD(e.target.value);
     setCategory(null);
+    setChangeDescriptionLoading(false);
   };
 
   return (
@@ -228,6 +257,7 @@ const ProductSubCategory = () => {
                     onChange={bussinessDescription}
                   >
                     <option value=''>Select bussiness description</option>
+
                     {descriptionList.map((item) => (
                       <option key={item} value={item}>
                         {item}
@@ -243,7 +273,11 @@ const ProductSubCategory = () => {
                     id='categoryName'
                     onChange={changeCategory}
                   >
-                    <option value='null'>Select Category</option>
+                    {changeDescriptionLoading ? (
+                      <option>Loading...</option>
+                    ) : (
+                      <option value='null'>Select Category</option>
+                    )}
                     {categoryList.map((item) => (
                       <option key={item.id} value={JSON.stringify(item)}>
                         {item.categoryName}
