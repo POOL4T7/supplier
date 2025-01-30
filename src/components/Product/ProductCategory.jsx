@@ -31,6 +31,8 @@ const ProductCategory = () => {
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
   const [movedCategoryLoading, setMovedCategoryLoading] = useState(false);
+  const [structure, setStructure] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
@@ -150,38 +152,48 @@ const ProductCategory = () => {
   // Fetch categories
   const fetchCategories = useCallback(async () => {
     try {
-      const desc = bussiness.businessDescription;
+      setLoading(true);
+      const res = await axiosInstance.get(
+        `/proxy/productsearchsupplier/getBusinessDescriptionByType?type=products&supplierBusinessId=${bussiness.id}`
+      );
+      const desc = res.data;
       setAllDesc(desc);
       if (selectRef.current && desc?.length) {
         selectRef.current.setValue({
           value: desc[0],
           label: desc[0],
         });
-        // const res = await axiosInstance.get(
-        //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
-        // );
-
-        // const categories = res.data.map((item) => {
-        //   return {
-        //     id: item.id,
-        //     categoryName: item.supplierCategoryName,
-        //     categoryDescription: item.supplierCategoryDescription,
-        //     supplierBusinessDescription: item.supplierBusinessDescription,
-        //   };
-        // });
-        // setMovedCategories(categories);
-
-        // const groupedData = categories.reduce((acc, item) => {
-        //   const key = item.supplierBusinessDescription || 'Unknown';
-        //   if (!acc[key]) {
-        //     acc[key] = [];
-        //   }
-        //   acc[key].push(item);
-        //   return acc;
-        // }, {});
-        // console.log('groupedData', groupedData);
-        // setAllMovedCatgeory(groupedData);
       }
+      const res2 = await axiosInstance.get(
+        `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=products&supplierBusinessId=${bussiness.id}`
+      );
+      setStructure(res2.data);
+      setLoading(false);
+      // setCategoriesValue(res2.data);
+      // const res = await axiosInstance.get(
+      //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
+      // );
+
+      // const categories = res.data.map((item) => {
+      //   return {
+      //     id: item.id,
+      //     categoryName: item.supplierCategoryName,
+      //     categoryDescription: item.supplierCategoryDescription,
+      //     supplierBusinessDescription: item.supplierBusinessDescription,
+      //   };
+      // });
+      // setMovedCategories(categories);
+
+      // const groupedData = categories.reduce((acc, item) => {
+      //   const key = item.supplierBusinessDescription || 'Unknown';
+      //   if (!acc[key]) {
+      //     acc[key] = [];
+      //   }
+      //   acc[key].push(item);
+      //   return acc;
+      // }, {});
+      // console.log('groupedData', groupedData);
+      // setAllMovedCatgeory(groupedData);
 
       // console.log("categories", categories);
       // setMovedCategories(
@@ -192,7 +204,7 @@ const ProductCategory = () => {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  }, [bussiness.businessDescription]);
+  }, [bussiness.id]);
 
   useEffect(() => {
     if (bussiness.id) fetchCategories();
@@ -253,6 +265,14 @@ const ProductCategory = () => {
       }
     }
   };
+
+  if (loading) {
+    return (
+      <div className='d-flex'>
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className='container'>
@@ -461,8 +481,11 @@ const ProductCategory = () => {
       <div className=' mt-5 mb-5'>
         <h4>Your Categories by bussiness description</h4>
         <div className='accordion' id='categoryAccordion'>
-          {/* {Object.entries(allMovedcategory).map((item, idx) => (
-            <div className='accordion-item' key={item[0]}>
+          {structure.map((item, idx) => (
+            <div
+              className='accordion-item'
+              key={item.supplierBusinessDescription}
+            >
               <h2 className='accordion-header' id='headingOne'>
                 <button
                   className='accordion-button'
@@ -472,7 +495,7 @@ const ProductCategory = () => {
                   aria-expanded='true'
                   aria-controls={'collapseOne' + idx}
                 >
-                  {item[0]}
+                  {item.supplierBusinessDescription}
                 </button>
               </h2>
               <div
@@ -483,20 +506,20 @@ const ProductCategory = () => {
               >
                 <div className='accordion-body'>
                   <ul className=' d-flex flex-wrap gap-2'>
-                    {item[1].map((x) => (
+                    {item?.supplierCategoryName?.map((x) => (
                       <span
-                        key={x.id}
+                        key={x}
                         className='badge rounded-pill bg-primary px-3 py-2 text-white'
                         // style={{ cursor: 'pointer' }}
                       >
-                        {x.categoryName}
+                        {x}
                       </span>
                     ))}
                   </ul>
                 </div>
               </div>
             </div>
-          ))} */}
+          ))}
         </div>
       </div>
     </div>

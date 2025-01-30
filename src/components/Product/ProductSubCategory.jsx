@@ -24,7 +24,7 @@ const ProductSubCategory = () => {
   const [filteredUploadedCategories, setFilteredUploadedCategories] = useState(
     []
   );
-  const [laoding, setLaoding] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [filteredMovedCategories, setFilteredMovedCategories] = useState([]);
   const [structure, setStructure] = useState([]);
@@ -142,13 +142,14 @@ const ProductSubCategory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLaoding(true);
-        // const res = await axiosInstance.get(
-        //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
-        // );
+        setLoading(true);
+        const res = await axiosInstance.get(
+          `/proxy/productsearchsupplier/getBusinessDescriptionByType?type=products&supplierBusinessId=${bussiness.id}`
+        );
         const res2 = await axiosInstance.get(
           `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=products`
         );
+        setDescriptionList(res.data);
         setStructure(res2.data);
         // setAllCategoryList(
         //   res.data
@@ -167,8 +168,7 @@ const ProductSubCategory = () => {
 
         // return uniqueDescriptions;
 
-        setDescriptionList(bussiness.businessDescription);
-        setLaoding(false);
+        setLoading(false);
       } catch (e) {
         console.log(e);
       }
@@ -236,7 +236,7 @@ const ProductSubCategory = () => {
 
   return (
     <>
-      {laoding ? (
+      {loading ? (
         <div className='d-flex'>
           <Spinner />
         </div>

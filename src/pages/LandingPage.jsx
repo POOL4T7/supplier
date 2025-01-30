@@ -287,6 +287,9 @@ const LandingPage = () => {
           {/* Tabs Navigation */}
           <div className='search-tab'>
             <ul className='nav nav-tabs' id='formTabs' role='tablist'>
+              <li className='nav-item'>
+                <p>Search By</p>
+              </li>
               <li className='nav-item' role='presentation'>
                 <button
                   className='nav-link active'
@@ -319,7 +322,7 @@ const LandingPage = () => {
                     setProductList([]);
                   }}
                 >
-                  Premises
+                  Business / Shop
                 </button>
               </li>
             </ul>
@@ -709,7 +712,7 @@ const LandingPage = () => {
                   {/* Products */}
                   <div className='mt-3'>
                     <h6 className='text-secondary'>Products:</h6>
-                    <div className='d-flex flex-wrap gap-2 mt-2'>
+                    {/* <div className='d-flex flex-wrap gap-2 mt-2'>
                       {item.names.map((productName) => (
                         <span
                           key={productName}
@@ -718,7 +721,7 @@ const LandingPage = () => {
                           {productName}
                         </span>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                   {/* Website and Email */}
                   <div className='mt-3'>

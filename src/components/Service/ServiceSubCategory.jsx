@@ -15,7 +15,7 @@ const ServiceSubCategory = () => {
   const [category, setCategory] = useState(null);
   const [bussiness] = useAtom(bussinessProfile);
 
-  const [allCategoryList, setAllCategoryList] = useState([]);
+  // const [allCategoryList, setAllCategoryList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [searchUploaded, setSearchUploaded] = useState('');
   const [searchMoved, setSearchMoved] = useState('');
@@ -28,6 +28,8 @@ const ServiceSubCategory = () => {
   const [filteredMovedCategories, setFilteredMovedCategories] = useState([]);
   const [structure, setStructure] = useState([]);
   const [laoding, setLaoding] = useState(false);
+  const [changeDescriptionLoading, setChangeDescriptionLoading] =
+    useState(false);
 
   useEffect(() => {
     setFilteredUploadedCategories(uploadedSubCategories);
@@ -139,39 +141,42 @@ const ServiceSubCategory = () => {
     const fetchData = async () => {
       try {
         setLaoding(true);
-        const res = await axiosInstance.get(
-          `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
+        // const res = await axiosInstance.get(
+        //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
+        // );
+        const res3 = await axiosInstance.get(
+          `/proxy/productsearchsupplier/getBusinessDescriptionByType?type=services&supplierBusinessId=${bussiness.id}`
         );
         const res2 = await axiosInstance.get(
           `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=services`
         );
         setStructure(res2.data);
-        setAllCategoryList(
-          res.data
-            // .filter((item) => item.active)
-            .map((item) => ({
-              id: item.categoryId,
-              categoryName: item.supplierCategoryName,
-              supplierCategoryDescription: item.supplierCategoryDescription,
-              supplierBusinessDescription: item.supplierBusinessDescription,
-            }))
-        );
+        // setAllCategoryList(
+        //   res.data
+        //     // .filter((item) => item.active)
+        //     .map((item) => ({
+        //       id: item.categoryId,
+        //       categoryName: item.supplierCategoryName,
+        //       supplierCategoryDescription: item.supplierCategoryDescription,
+        //       supplierBusinessDescription: item.supplierBusinessDescription,
+        //     }))
+        // );
         // Assuming res.data is an array of objects
-        const uniqueDescriptions = Array.from(
-          new Set(res.data.map((item) => item.supplierBusinessDescription))
-        );
+        // const uniqueDescriptions = Array.from(
+        //   new Set(res.data.map((item) => item.supplierBusinessDescription))
+        // );
 
         // return uniqueDescriptions;
 
-        setDescriptionList(uniqueDescriptions);
+        setDescriptionList(res3.data);
         setLaoding(false);
       } catch (e) {
         console.log(e);
       }
     };
 
-    fetchData();
-  }, []);
+    if (bussiness.id) fetchData();
+  }, [bussiness.id]);
 
   const changeCategory = async (e) => {
     const cate = JSON.parse(e.target.value);
@@ -204,13 +209,26 @@ const ServiceSubCategory = () => {
   };
 
   const bussinessDescription = async (e) => {
-    const cateList = allCategoryList.filter(
-      (item) => item.supplierBusinessDescription === e.target.value
+    setChangeDescriptionLoading(true);
+
+    const res = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}&businessDescription=${e.target.value}`
     );
-    // console.log(allCategoryList,cateList, e.target.value);
-    setCategoryList(cateList);
+
+    setCategoryList(
+      res.data.map((item) => {
+        return {
+          id: item.categoryId,
+          categoryName: item.supplierCategoryName,
+          supplierCategoryDescription: item.supplierCategoryDescription,
+          supplierBusinessDescription: item.supplierBusinessDescription,
+        };
+      })
+    );
+
     setD(e.target.value);
     setCategory(null);
+    setChangeDescriptionLoading(false);
   };
 
   return (
@@ -247,7 +265,11 @@ const ServiceSubCategory = () => {
                 id='categoryName'
                 onChange={changeCategory}
               >
-                <option value='null'>Select Category</option>
+                {changeDescriptionLoading ? (
+                  <option>Loading...</option>
+                ) : (
+                  <option value='null'>Select Category</option>
+                )}
                 {categoryList.map((item) => (
                   <option key={item.id} value={JSON.stringify(item)}>
                     {item.categoryName}

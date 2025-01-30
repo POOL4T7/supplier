@@ -30,8 +30,9 @@ const ServiceCategory = () => {
   const [bussinessLoading, setBussinessLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
   const [createCategoryLoading, setCreateCategoryLoading] = useState(false);
-  const [movedCategoryLoading, setMovedCategoryLoading] = useState(true);
-
+  const [movedCategoryLoading, setMovedCategoryLoading] = useState(false);
+  const [structure, setStructure] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     setFilteredUploadedCategories(uploadedCategories);
   }, [uploadedCategories]);
@@ -151,7 +152,24 @@ const ServiceCategory = () => {
   // Fetch categories
   const fetchCategories = useCallback(async () => {
     try {
-      const desc = bussiness.businessDescription;
+      setLoading(true);
+      const res = await axiosInstance.get(
+        `/proxy/productsearchsupplier/getBusinessDescriptionByType?type=services&supplierBusinessId=${bussiness.id}`
+      );
+      const desc = res.data;
+      setAllDesc(desc);
+      if (selectRef.current && desc.length) {
+        selectRef.current.setValue({
+          value: desc[0],
+          label: desc[0],
+        });
+      }
+      const res2 = await axiosInstance.get(
+        `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=services&supplierBusinessId=${bussiness.id}`
+      );
+      setStructure(res2.data);
+      setLoading(false);
+      // const desc = bussiness.businessDescription;
       // const res = await axiosInstance.get(
       //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}`
       // );
@@ -170,13 +188,6 @@ const ServiceCategory = () => {
       // });
       // // setAllMovedCatgeory(categories);
       // const temp = desc.splice(-4);
-      setAllDesc(desc);
-      if (selectRef.current && desc.length) {
-        selectRef.current.setValue({
-          value: desc[0],
-          label: desc[0],
-        });
-      }
       // const groupedData = categories.reduce((acc, item) => {
       //   const key = item.supplierBusinessDescription || 'Unknown';
       //   if (!acc[key]) {
@@ -195,7 +206,7 @@ const ServiceCategory = () => {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  }, [bussiness.businessDescription]);
+  }, [bussiness.id]);
 
   useEffect(() => {
     if (bussiness.id) fetchCategories();
@@ -211,7 +222,7 @@ const ServiceCategory = () => {
       const res = await axiosInstance.get(
         `/proxy/productsearchsupplier/getAllBusinessDescription?description=${inputValue}&type=services`
       );
-      console.log(res);
+      // console.log(res);
       const data = Array.isArray(res.data) ? res.data : [];
       setDescription(
         data.map((desc) => ({
@@ -255,7 +266,14 @@ const ServiceCategory = () => {
       }
     }
   };
-  // console.log(
+
+  if (loading) {
+    return (
+      <div className='d-flex'>
+        <Spinner />
+      </div>
+    );
+  } // console.log(
   //   'categoryLoading || movedCategoryLoading',
   //   categoryLoading,
   //   movedCategoryLoading
@@ -481,9 +499,12 @@ const ServiceCategory = () => {
       )}
       <div className=' mt-5 mb-5'>
         <h4>Your Categories by bussiness description</h4>
-        {/* <div className='accordion' id='categoryAccordion'>
-          {Object.entries(allMovedcategory).map((item, idx) => (
-            <div className='accordion-item' key={item[0]}>
+        <div className='accordion' id='categoryAccordion'>
+          {structure.map((item, idx) => (
+            <div
+              className='accordion-item'
+              key={item.supplierBusinessDescription}
+            >
               <h2 className='accordion-header' id='headingOne'>
                 <button
                   className='accordion-button'
@@ -493,7 +514,7 @@ const ServiceCategory = () => {
                   aria-expanded='true'
                   aria-controls={'collapseOne' + idx}
                 >
-                  {item[0]}
+                  {item.supplierBusinessDescription}
                 </button>
               </h2>
               <div
@@ -504,13 +525,13 @@ const ServiceCategory = () => {
               >
                 <div className='accordion-body'>
                   <ul className=' d-flex flex-wrap gap-2'>
-                    {item[1].map((x) => (
+                    {item?.supplierCategoryName?.map((x) => (
                       <span
-                        key={x.id}
+                        key={x}
                         className='badge rounded-pill bg-primary px-3 py-2 text-white'
                         // style={{ cursor: 'pointer' }}
                       >
-                        {x.categoryName}
+                        {x}
                       </span>
                     ))}
                   </ul>
@@ -518,7 +539,7 @@ const ServiceCategory = () => {
               </div>
             </div>
           ))}
-        </div> */}
+        </div>
       </div>
     </div>
   );
