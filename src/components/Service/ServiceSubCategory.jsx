@@ -70,6 +70,10 @@ const ServiceSubCategory = () => {
         supplierBusinessDescription: d,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=services`
+    );
+    setStructure(res2.data);
 
     setMovedSubCategories((prev) => [...prev, ...selectedSubCategories]);
     setUploadedSubCategories((prev) =>
@@ -92,6 +96,10 @@ const ServiceSubCategory = () => {
         categoryId: category.id,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=services`
+    );
+    setStructure(res2.data);
 
     setUploadedSubCategories((prev) => [...prev, ...selectedSubCategories]);
     setMovedSubCategories((prev) =>
@@ -114,6 +122,10 @@ const ServiceSubCategory = () => {
         supplierBusinessDescription: d,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getAllDetailsByBusinessDescription?supplierBusinessId=${bussiness.id}&productOrService=services`
+    );
+    setStructure(res2.data);
 
     const newCategory = {
       subCategoryName: res.data.supplierSubCategoryName,
