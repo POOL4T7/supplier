@@ -129,7 +129,7 @@ const ServiceCategory = () => {
       }
     );
     const p = {
-      categoryName: res.data.supplierCategoryName,
+      categoryName: res.data.categoryName,
       id: res.data.id,
     };
     const res2 = await axiosInstance.get(

@@ -131,7 +131,7 @@ const ProductSubCategory = () => {
     setStructure(res2.data);
 
     const newCategory = {
-      subCategoryName: res.data.supplierSubCategoryName,
+      subCategoryName: res.data.subCategoryName,
       id: res.data.id,
     };
     setUploadedSubCategories([...uploadedSubCategories, newCategory]);
