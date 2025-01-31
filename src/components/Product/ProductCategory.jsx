@@ -72,6 +72,10 @@ const ProductCategory = () => {
         supplierBusinessDescription: d,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=products&supplierBusinessId=${bussiness.id}`
+    );
+    setStructure(res2.data);
     setMovedCategories((prev) => [...prev, ...selectedCategories]);
     setUploadedCategories((prev) =>
       prev.filter((p) => !selectedCategories.includes(p))
@@ -92,6 +96,10 @@ const ProductCategory = () => {
         status: false,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=products&supplierBusinessId=${bussiness.id}`
+    );
+    setStructure(res2.data);
     setUploadedCategories((prev) => [...prev, ...selectedCategories]);
     setMovedCategories((prev) =>
       prev.filter((p) => !selectedCategories.includes(p))
@@ -123,6 +131,11 @@ const ProductCategory = () => {
       categoryName: res.data.supplierCategoryName,
       id: res.data.id,
     };
+
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=products&supplierBusinessId=${bussiness.id}`
+    );
+    setStructure(res2.data);
 
     // setUploadedCategories([p, ...uploadedCategories]);
     setMovedCategories([...movedCategories, p]);
@@ -256,6 +269,10 @@ const ProductCategory = () => {
             type: 'products',
           }
         );
+        const res2 = await axiosInstance.get(
+          `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=products&supplierBusinessId=${bussiness.id}`
+        );
+        setStructure(res2.data);
         setDescription([...description, { label: value, value }]);
         setD(value);
         setBussinessLoading(false);

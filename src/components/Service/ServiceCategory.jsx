@@ -73,6 +73,10 @@ const ServiceCategory = () => {
         supplierBusinessDescription: d,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=services&supplierBusinessId=${bussiness.id}`
+    );
+    setStructure(res2.data);
     setMovedCategories((prev) => [...prev, ...selectedCategories]);
     setUploadedCategories((prev) =>
       prev.filter((p) => !selectedCategories.includes(p))
@@ -95,6 +99,10 @@ const ServiceCategory = () => {
         status: false,
       }
     );
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=services&supplierBusinessId=${bussiness.id}`
+    );
+    setStructure(res2.data);
     setUploadedCategories((prev) => [...prev, ...selectedCategories]);
     setMovedCategories((prev) =>
       prev.filter((p) => !selectedCategories.includes(p))
@@ -124,6 +132,10 @@ const ServiceCategory = () => {
       categoryName: res.data.supplierCategoryName,
       id: res.data.id,
     };
+    const res2 = await axiosInstance.get(
+      `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=services&supplierBusinessId=${bussiness.id}`
+    );
+    setStructure(res2.data);
 
     setMovedCategories([...movedCategories, p]);
     setCategoriesValue('');
@@ -260,6 +272,10 @@ const ServiceCategory = () => {
         );
         setDescription([...description, { label: value, value }]);
         setD(value);
+        const res2 = await axiosInstance.get(
+          `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=services&supplierBusinessId=${bussiness.id}`
+        );
+        setStructure(res2.data);
         console.log('Business description added successfully');
       } catch (error) {
         console.error('Error adding business description:', error);
