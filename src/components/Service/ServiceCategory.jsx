@@ -119,7 +119,7 @@ const ServiceCategory = () => {
     }
     setCreateCategoryLoading(true);
     const res = await axiosInstance.post(
-      '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
+      '/proxy/productsearchsupplier/saveCategoryDetails',
       {
         categoryName: categoriesValue,
         productsServices: 'services',
@@ -137,7 +137,7 @@ const ServiceCategory = () => {
     );
     setStructure(res2.data);
 
-    setMovedCategories([...movedCategories, p]);
+    setUploadedCategories([...uploadedCategories, p]);
     setCategoriesValue('');
     setCreateCategoryLoading(false);
   };

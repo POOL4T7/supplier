@@ -116,7 +116,7 @@ const ProductSubCategory = () => {
     e.preventDefault();
     setCreateCategoryLoading(true);
     const res = await axiosInstance.post(
-      '/proxy/productsearchsupplier/saveSupplierSubCategoryDetails',
+      '/proxy/productsearchsupplier/saveSubCategoryDetails',
       {
         subCategoryName: subCategoriesValue,
         productsServices: 'products',
@@ -134,7 +134,7 @@ const ProductSubCategory = () => {
       subCategoryName: res.data.supplierSubCategoryName,
       id: res.data.id,
     };
-    setMovedSubCategories([...movedSubCategories, newCategory]);
+    setUploadedSubCategories([...uploadedSubCategories, newCategory]);
     setSubCategoriesValue('');
     setCreateCategoryLoading(false);
   };

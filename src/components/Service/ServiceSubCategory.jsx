@@ -115,7 +115,7 @@ const ServiceSubCategory = () => {
     e.preventDefault();
 
     const res = await axiosInstance.post(
-      '/proxy/productsearchsupplier/saveSupplierSubCategoryDetails',
+      '/proxy/productsearchsupplier/saveSubCategoryDetails',
       {
         subCategoryName: subCategoriesValue,
         productsServices: 'services',

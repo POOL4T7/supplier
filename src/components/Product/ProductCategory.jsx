@@ -118,7 +118,7 @@ const ProductCategory = () => {
     setCreateCategoryLoading(true);
 
     const res = await axiosInstance.post(
-      '/proxy/productsearchsupplier/saveSupplierCategoryDetails',
+      '/proxy/productsearchsupplier/saveCategoryDetails',
       {
         categoryName: categoriesValue,
         productsServices: 'products',
@@ -128,7 +128,7 @@ const ProductCategory = () => {
       }
     );
     const p = {
-      categoryName: res.data.supplierCategoryName,
+      categoryName: res.data.categoryName,
       id: res.data.id,
     };
 
@@ -138,7 +138,7 @@ const ProductCategory = () => {
     setStructure(res2.data);
 
     // setUploadedCategories([p, ...uploadedCategories]);
-    setMovedCategories([...movedCategories, p]);
+    setUploadedCategories([...uploadedCategories, p]);
     setCategoriesValue('');
     setCreateCategoryLoading(false);
   };
@@ -171,6 +171,7 @@ const ProductCategory = () => {
       );
       const desc = res.data;
       setAllDesc(desc);
+      console.log(desc, selectRef.current);
       if (selectRef.current && desc?.length) {
         selectRef.current.setValue({
           value: desc[0],
@@ -182,42 +183,10 @@ const ProductCategory = () => {
       );
       setStructure(res2.data);
       setLoading(false);
-      // setCategoriesValue(res2.data);
-      // const res = await axiosInstance.get(
-      //   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}`
-      // );
-
-      // const categories = res.data.map((item) => {
-      //   return {
-      //     id: item.id,
-      //     categoryName: item.supplierCategoryName,
-      //     categoryDescription: item.supplierCategoryDescription,
-      //     supplierBusinessDescription: item.supplierBusinessDescription,
-      //   };
-      // });
-      // setMovedCategories(categories);
-
-      // const groupedData = categories.reduce((acc, item) => {
-      //   const key = item.supplierBusinessDescription || 'Unknown';
-      //   if (!acc[key]) {
-      //     acc[key] = [];
-      //   }
-      //   acc[key].push(item);
-      //   return acc;
-      // }, {});
-      // console.log('groupedData', groupedData);
-      // setAllMovedCatgeory(groupedData);
-
-      // console.log("categories", categories);
-      // setMovedCategories(
-      //   categories?.filter(
-      //     (item) => item.supplierBusinessDescription === temp[0]
-      //   )
-      // );
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  }, [bussiness.id]);
+  }, [bussiness.id,]);
 
   useEffect(() => {
     if (bussiness.id) fetchCategories();
@@ -290,13 +259,15 @@ const ProductCategory = () => {
       </div>
     );
   }
-
+  // console.log('selectRef', selectRef.current);
   return (
     <div className='container'>
       <>
         <div className='mb-2'>
           <CreatableSelect
-            ref={selectRef}
+            ref={(el) => {
+              if (el) selectRef.current = el;
+            }}
             isClearable
             options={description}
             classNamePrefix='react-select'
