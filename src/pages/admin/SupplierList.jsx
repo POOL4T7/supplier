@@ -53,6 +53,7 @@ const SupplierList = () => {
             <th scope='col'>Business Description</th>
             <th scope='col'>Business Address</th>
             <th scope='col'>Premises</th>
+            <th scope='col'>Address OTP</th>
           </tr>
         </thead>
         <tbody>
@@ -66,6 +67,7 @@ const SupplierList = () => {
                 {/* {item.supplierBusinessDetails?.businessDescription.join(', ')} */}
               </td>
               <td>{item.supplierBusinessDetails?.addressLine1}</td>
+              <td>{item.supplierBusinessDetails?.premisesType}</td>
               <td>{item.supplierBusinessDetails?.premisesType}</td>
             </tr>
           ))}

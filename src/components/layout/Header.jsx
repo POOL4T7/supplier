@@ -8,7 +8,7 @@ const Header = () => {
     <nav className='navbar navbar-expand-lg bg-dark' data-bs-theme='dark'>
       <div className='container-fluid'>
         <Link className='navbar-brand' to='/'>
-          Search
+          <img src='/images/logo.webp' alt='logo' width='45' height='45' />
         </Link>
         <button
           className='navbar-toggler'
@@ -42,6 +42,7 @@ const Header = () => {
                       role='button'
                       aria-haspopup='true'
                       aria-expanded='false'
+                      style={{ color: 'white' }}
                     >
                       {userDetails.supplierName}
                     </a>

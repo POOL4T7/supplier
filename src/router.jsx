@@ -22,6 +22,7 @@ import ForgotPassword from './pages/auth/ForgotPassword';
 import ChangePassword from './pages/auth/ChangePassword';
 import UserLayout from './components/layout/UserLayout';
 import UserProfile from './pages/user/Profile';
+import SupplierDetails from './pages/supplier/SupplierDetails';
 
 const router = () => {
   return createBrowserRouter([
@@ -56,6 +57,10 @@ const router = () => {
         {
           path: '/change-password',
           element: <ChangePassword />,
+        },
+        {
+          path: '/supplier-details',
+          element: <SupplierDetails />,
         },
       ],
     },

@@ -5,10 +5,11 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import Spinner from '../components/common/Spinner';
-import LocationIcon from '../components/common/LocationIcon';
+// import LocationIcon from '../components/common/LocationIcon';
 import { Autocomplete, TextField } from '@mui/material';
 // import CircularProgress from '@mui/material/CircularProgress';
-
+import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 const formSchema = yup.object().shape({
   country: yup.string().required('country is required'),
   address: yup.string().required('location is required'),
@@ -288,7 +289,7 @@ const LandingPage = () => {
           <div className='search-tab'>
             <ul className='nav nav-tabs' id='formTabs' role='tablist'>
               <li className='nav-item'>
-                <p>Search By</p>
+                <p style={{ marginTop: '10px' }}>Search By</p>
               </li>
               <li className='nav-item' role='presentation'>
                 <button
@@ -683,25 +684,26 @@ const LandingPage = () => {
       </div>
       {/* search row end  */}
       {/* Product List Section */}
-      <div className='container my-4'>
+      <SupplierCard productList={productList} />
+      {/* <div className='container my-4'>
         <div className='row g-4'>
           {productList?.map((item) => (
             <div
-              className='col-lg-4 col-md-6'
+              className='col-lg-12 col-md-6'
               key={item.supplierBusinessDetails.id}
             >
               <div className='card shadow-sm border-0 h-100'>
                 <div className='card-body'>
-                  {/* Business Name */}
+                  
                   <h4 className='card-title text-primary mb-2'>
                     {item.supplierBusinessDetails.businessName}
                   </h4>
-                  {/* Business Category */}
+                  
                   <p className='card-text text-muted mb-2'>
                     {item.supplierBusinessDetails.businessCategory} -{' '}
                     {item.supplierBusinessDetails.businessSubCategory}
                   </p>
-                  {/* Address */}
+                 
                   <p className='card-text text-muted'>
                     <LocationIcon />
                     {item.supplierBusinessDetails.addressLine1},{' '}
@@ -709,21 +711,12 @@ const LandingPage = () => {
                     {item.supplierBusinessDetails.city},{' '}
                     {item.supplierBusinessDetails.country}
                   </p>
-                  {/* Products */}
+                 
                   <div className='mt-3'>
                     <h6 className='text-secondary'>Products:</h6>
-                    {/* <div className='d-flex flex-wrap gap-2 mt-2'>
-                      {item.names.map((productName) => (
-                        <span
-                          key={productName}
-                          className='badge rounded-pill bg-primary px-3 py-2 text-white'
-                        >
-                          {productName}
-                        </span>
-                      ))}
-                    </div> */}
+                   
                   </div>
-                  {/* Website and Email */}
+                  
                   <div className='mt-3'>
                     <a
                       href={item.supplierBusinessDetails.website}
@@ -745,7 +738,7 @@ const LandingPage = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* No Product Found */}
       {productList?.length === 0 && (
@@ -759,3 +752,118 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+const SupplierCard = ({ productList }) => {
+  let navigate = useNavigate();
+  return (
+    <div className='container my-5 mb-5'>
+      <div className='row'>
+        {productList.map((item) => (
+          <div
+            key={item.id}
+            className='col-md-10'
+            onClick={() =>
+              navigate(
+                `/supplier-details?id=${item.supplierBusinessDetails.id}`
+              )
+            }
+          >
+            <div
+              className='card business-card p-3 d-flex flex-row align-items-start mb-5'
+              style={{
+                height: '400px',
+                overflow: 'hidden', // Hide overflow content
+              }}
+            >
+              <div className='me-3'>
+                {item.supplierBusinessDetails.businessImagePath ? (
+                  <div
+                    className='d-flex align-items-center justify-content-center bg-light text-dark'
+                    style={{
+                      width: '300px',
+                      height: '300px',
+                      border: '1px solid #ddd',
+                      borderRadius: '5px',
+                    }}
+                  >
+                    <img
+                      src={item.supplierBusinessDetails.businessImagePath}
+                      alt='Business Image'
+                      width='300px'
+                      height='300px'
+                      style={{
+                        objectFit: 'cover', // Ensures the image fits well
+                        borderRadius: '5px',
+                        border: '1px solid #ddd',
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className='d-flex align-items-center justify-content-center bg-light text-dark'
+                    style={{
+                      width: '250px',
+                      height: '250px',
+                      border: '1px solid #ddd',
+                      borderRadius: '5px',
+                    }}
+                  >
+                    No Image Found
+                  </div>
+                )}
+              </div>
+
+              <div className='content-wrapper'>
+                <h3 className='fw-bold'>
+                  {item.supplierBusinessDetails.businessName}
+                </h3>
+                <p
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap', // Adjust for single-line truncation
+                  }}
+                >
+                  {item.supplierBusinessDetails.aboutUs}
+                </p>
+
+                <div className='mb-5'>
+                  {Object.keys(item.matchedSearchTermNames).map(
+                    (key) =>
+                      item?.matchedSearchTermNames[key]?.length > 0 && (
+                        <div key={key} className='mb-1 d-flex flex-wrap '>
+                          {/* <h4>{key.replace(/([A-Z])/g, ' $1')}</h4> */}
+
+                          {/* {item.matchedSearchTermNames[key]
+                        .slice(0, 4)
+                        .map((item, index) => (
+                          <span
+                            key={index}
+                            className='badge rounded-pill bg-dark px-3 py-2 text-white'
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {item}
+                          </span>
+                        ))} */}
+                          <p>
+                            <strong>{key.replace(/([A-Z])/g, ' $1')}:-</strong>{' '}
+                            {item.matchedSearchTermNames[key].length > 0 &&
+                              item.matchedSearchTermNames[key]
+                                .slice(0, 4)
+                                .join(', ')}
+                          </p>
+                        </div>
+                      )
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+SupplierCard.propTypes = {
+  productList: PropTypes.array,
+};

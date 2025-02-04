@@ -82,7 +82,7 @@ const Sidebar = () => {
                   </Link>
                 </nav>
               </div>
-              <button
+              <Link
                 className={`nav-link collapsed ${
                   bussiness.sector === 'services' ||
                   bussiness.sector === 'products and services'
@@ -108,7 +108,7 @@ const Sidebar = () => {
                 <div className='sb-sidenav-collapse-arrow'>
                   <ChevronDown />
                 </div>
-              </button>
+              </Link>
               <div
                 className='collapse'
                 id='supplierLayout'

@@ -19,7 +19,7 @@ const Header = () => {
     <>
       <nav className='sb-topnav navbar navbar-expand navbar-dark bg-dark'>
         <Link className='navbar-brand ps-3' to='/'>
-          Supplier
+        <img src='images/logo.webp' alt='hello' width='45' height='45' />
         </Link>
 
         {/* <button
