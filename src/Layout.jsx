@@ -84,7 +84,9 @@ const Layout = () => {
   return (
     <>
       <Header />
-      <Outlet />
+      <div className='mt-5'>
+        <Outlet />
+      </div>
       {/* <Footer /> */}
     </>
   );

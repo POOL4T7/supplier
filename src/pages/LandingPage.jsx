@@ -70,6 +70,7 @@ const LandingPage = () => {
 
   const onSubmitForm1 = async (data) => {
     try {
+      setProductList([]);
       setLoading(true);
       let loc = {};
       try {
@@ -102,6 +103,7 @@ const LandingPage = () => {
 
   const onSubmitForm2 = async (data) => {
     try {
+      setProductList([]);
       setLoading(true);
       let loc = {};
       try {
@@ -746,12 +748,19 @@ const LandingPage = () => {
           <h4>No Product found?</h4>
         </div>
       )}
-      {loading && <Spinner />}
+      {loading && (
+        <>
+          <div className='d-flex'>
+            <Spinner />
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
 export default LandingPage;
+
 const SupplierCard = ({ productList }) => {
   let navigate = useNavigate();
   return (
@@ -760,18 +769,24 @@ const SupplierCard = ({ productList }) => {
         {productList.map((item) => (
           <div
             key={item.id}
-            className='col-md-10'
+            className='col-md-6 cursor-pointer'
             onClick={() =>
               navigate(
                 `/supplier-details?id=${item.supplierBusinessDetails.id}`
               )
             }
+            style={{
+              height: '100%',
+              maxHeight: '300px',
+              cursor: 'pointer',
+            }}
           >
             <div
-              className='card business-card p-3 d-flex flex-row align-items-start mb-5'
+              className='card business-card p-2 d-flex flex-row align-items-start mb-5'
               style={{
-                height: '400px',
+                height: '100%',
                 overflow: 'hidden', // Hide overflow content
+                maxHeight: '300px',
               }}
             >
               <div className='me-3'>
