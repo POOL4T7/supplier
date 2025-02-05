@@ -186,7 +186,7 @@ const ServiceSubCategory = () => {
     }
 
     const res = await axiosInstance.get(
-      `/proxy/productsearchsupplier/getSubCategoryDetails?categoryId=${cate.id}&type=services`
+      `/proxy/productsearchsupplier/getSubCategoryDetails?categoryId=${cate.id}&type=services&supplierBusinessId=${bussiness.id}`
     );
     const res2 = await axiosInstance.get(
       `/proxy/productsearchsupplier/getSupplierSubCategoryDetails?supplierCategoryId=${cate.id}&type=services`

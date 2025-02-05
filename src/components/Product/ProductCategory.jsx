@@ -279,7 +279,7 @@ const ProductCategory = () => {
                 setCategoryLoading(true);
                 setMovedCategoryLoading(true);
                 const res2 = await axiosInstance.get(
-                  `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}`
+                  `/proxy/productsearchsupplier/getCategoryDetails?type=products&businessDescription=${value.value}&supplierBusinessId=${bussiness.id}`
                 );
                 const res = await axiosInstance.get(
                   `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=products&supplierBusinessId=${bussiness.id}&businessDescription=${value.value}`

@@ -313,7 +313,7 @@ const ServiceCategory = () => {
                   setMovedCategoryLoading(true);
 
                   const res2 = await axiosInstance.get(
-                    `/proxy/productsearchsupplier/getCategoryDetails?type=services&businessDescription=${value.value}`
+                    `/proxy/productsearchsupplier/getCategoryDetails?type=services&businessDescription=${value.value}&supplierBusinessId=${bussiness.id}`
                   );
                   const res = await axiosInstance.get(
                     `/proxy/productsearchsupplier/getSupplierCategoryDetails?type=services&supplierBusinessId=${bussiness.id}&businessDescription=${value.value}`
