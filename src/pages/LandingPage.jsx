@@ -358,7 +358,7 @@ const LandingPage = () => {
               </div> */}
 
                   {/* Location Name Field */}
-                  <div className='col-12 col-md-5'>
+                  <div className='col-12 col-md-5 mb-3'>
                     <Controller
                       name='address'
                       control={form1.control}
@@ -415,7 +415,7 @@ const LandingPage = () => {
                     />
                   </div>
 
-                  <div className='col-12 col-md-5'>
+                  <div className='col-12 col-md-5 mb-3'>
                     <TextField
                       id='outlined-basic'
                       label='Product / Service Name'
@@ -429,8 +429,8 @@ const LandingPage = () => {
                   </div>
 
                   {/* Submit Button */}
-                  <div className='col-12 col-md-2'>
-                    <button type='submit' className='search-btn'>
+                  <div className='col-12 col-md-12'>
+                    <button type='submit' className='search-btn search-btn1'>
                       Search
                     </button>
                   </div>
