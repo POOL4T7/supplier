@@ -45,7 +45,7 @@
   --bs-danger: #d9534f;
   --bs-light: #fff;
   --bs-dark: #343a40;
-  --bs-primary-rgb: 26, 26, 26;
+  --bs-primary-rgb: 53, 94, 59;
   --bs-secondary-rgb: 255, 255, 255;
   --bs-success-rgb: 75, 191, 115;
   --bs-info-rgb: 31, 155, 207;
@@ -4130,8 +4130,8 @@ fieldset:disabled .btn {
 }
 
 .navbar-nav {
-  --bs-nav-link-padding-x: 0;
-  --bs-nav-link-padding-y: 0.5rem;
+  --bs-nav-link-padding-x: 0.5rem;
+  --bs-nav-link-padding-y: 1rem;
   --bs-nav-link-font-weight: ;
   --bs-nav-link-color: var(--bs-navbar-color);
   --bs-nav-link-hover-color: var(--bs-navbar-hover-color);
@@ -7186,7 +7186,7 @@ fieldset:disabled .btn {
 
 .text-bg-primary {
   color: #fff !important;
-  background-color: RGBA(13, 110, 253, var(--bs-bg-opacity, 1)) !important;
+  background-color: #355e3b !important;
 }
 
 .text-bg-secondary {
@@ -8682,10 +8682,7 @@ fieldset:disabled .btn {
 
 .bg-primary {
   --bs-bg-opacity: 1;
-  background-color: rgba(
-    var(--bs-primary-rgb),
-    var(--bs-bg-opacity)
-  ) !important;
+  background-color: #355e3b !important;
 }
 
 .bg-secondary {
