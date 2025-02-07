@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useAtom } from "jotai";
 import { userDetailsAtom } from "../../storges/user";
 import { useState } from "react";
-// import countryFlags from "../../assets/countryFlags"; // Import country flag mapping
 
 const Header = () => {
   const [userDetails] = useAtom(userDetailsAtom);
@@ -20,7 +19,10 @@ const Header = () => {
   ];
 
   return (
-    <nav className="navbar navbar-expand-lg bg-light fixed-top shadow-sm">
+    <nav
+      className="sb-topnav navbar navbar-expand-lg fixed-top shadow-sm"
+      // style={{ backgroundColor: "#424e2c" }}
+    >
       <div className="container-fluid">
         {/* Logo */}
         <>
@@ -57,13 +59,18 @@ const Header = () => {
                 aria-expanded="false"
               >
                 <img
-                  src={`https://flagcdn.com/w40/${countries.find((c) => c.name === selectedCountry)?.code}.png`}
+                  src={`https://flagcdn.com/w40/${
+                    countries.find((c) => c.name === selectedCountry)?.code
+                  }.png`}
                   alt={selectedCountry}
                   className="me-2"
                   style={{ width: "24px", height: "16px" }}
                 />
               </button>
-              <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="countryDropdown">
+              <ul
+                className="dropdown-menu dropdown-menu-end"
+                aria-labelledby="countryDropdown"
+              >
                 {countries.map((country, index) => (
                   <li key={index}>
                     <button
@@ -103,7 +110,9 @@ const Header = () => {
                   <div className="dropdown-menu dropdown-menu-end">
                     <Link
                       className="dropdown-item"
-                      to={`${JSON.parse(localStorage.getItem("user"))?.userType?.toLowerCase()}/profile`}
+                      to={`${JSON.parse(
+                        localStorage.getItem("user")
+                      )?.userType?.toLowerCase()}/profile`}
                     >
                       Dashboard
                     </Link>
@@ -121,7 +130,7 @@ const Header = () => {
                 </li>
               </ul>
             ) : (
-              <Link to="/signin" className="nav-link text-dark">
+              <Link to="/signin" className="nav-link text-white">
                 Login
               </Link>
             )}

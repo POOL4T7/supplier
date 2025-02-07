@@ -63,7 +63,7 @@ const Signup = () => {
     <FormContainer>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='register-form'
+        className='register-form pt-5'
         style={{ maxWidth: '500px' }}
       >
         <h2>Signup</h2>
@@ -121,7 +121,8 @@ const Signup = () => {
       </form>
       <div className='row pt-3'>
         <div className='col'>
-          Already have account?
+        <span style={{ color: "#abc184" }}> Already have account?</span>
+          
           <Link className='link-primary' to='/signin'>
             {' '}
             Login

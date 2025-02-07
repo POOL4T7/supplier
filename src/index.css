@@ -1,6 +1,6 @@
 body {
   font-family: "MBei HK Bold";
-  background-color: #dce7dd;
+  background-color: #354013;
 }
 nav {
   padding: 3px 0px !important;
@@ -19,6 +19,13 @@ h2 {
   font-size: 1.4rem;
   padding: 0.5rem 0;
 }
+
+/* a{
+  color: #46541b !important;
+}
+a:hover{
+  color: #2a2e1d !important;
+} */
 
 .upload-container {
   border: 2px dashed #ccc;

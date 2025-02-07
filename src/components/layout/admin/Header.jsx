@@ -9,7 +9,7 @@ const Header = () => {
   useSidebarToggle('sidebarToggle', 'sidebarToggle');
   return (
     <>
-      <nav className='sb-topnav navbar navbar-expand navbar-dark bg-dark'>
+      <nav className='sb-topnav navbar navbar-expand shadow-sm'>
         <>
           <img src='/images/logo.webp' alt='logo' width='45' height='45' />
         </>
