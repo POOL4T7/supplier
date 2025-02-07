@@ -10,7 +10,7 @@ const Sidebar = () => {
     <div id='layoutSidenav'>
       <div id='layoutSidenav_nav'>
         <nav
-          className='sb-sidenav accordion sb-sidenav-dark'
+          className='sb-sidenav accordion shadow'
           id='sidenavAccordion'
         >
           <div className='sb-sidenav-menu'>

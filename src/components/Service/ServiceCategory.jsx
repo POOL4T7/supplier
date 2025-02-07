@@ -175,6 +175,7 @@ const ServiceCategory = () => {
           value: desc[0],
           label: desc[0],
         });
+        // setD(desc[0])
       }
       const res2 = await axiosInstance.get(
         `/proxy/productsearchsupplier/getSupplierCategoriesForStructured?type=services&supplierBusinessId=${bussiness.id}`
@@ -304,9 +305,10 @@ const ServiceCategory = () => {
             options={description}
             classNamePrefix='react-select'
             isLoading={bussinessLoading}
+            value={{ label: d, value: d }}
             onChange={async (value) => {
               setD(value?.value);
-              // console.log("here", value, allMovedcategory)
+              console.log("here", value)
               try {
                 if (value) {
                   setCategoryLoading(true);

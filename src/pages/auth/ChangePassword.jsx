@@ -50,7 +50,7 @@ const ChangePassword = () => {
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        marginTop: '2rem',
+        marginTop: '6rem',
       }}
     >
       <div style={{ maxWidth: '500px', width: '100%' }}>

@@ -1,6 +1,7 @@
 body {
-  font-family: 'MBei HK Bold';
-  background-color: #dfe0e2;
+  font-family: "MBei HK Bold";
+  /* background-color: #354013; */
+  background-color: #e0e2da;
 }
 nav {
   padding: 3px 0px !important;
@@ -19,6 +20,13 @@ h2 {
   font-size: 1.4rem;
   padding: 0.5rem 0;
 }
+
+/* a{
+  color: #46541b !important;
+}
+a:hover{
+  color: #2a2e1d !important;
+} */
 
 .upload-container {
   border: 2px dashed #ccc;
@@ -91,4 +99,40 @@ table td {
   cursor: not-allowed;
   opacity: 0.5; /* Makes it visually clear that the button is disabled */
   pointer-events: none; /* Prevents any interaction */
+}
+
+/* Custom Scrollbar - Green Theme */
+::-webkit-scrollbar {
+  width: 2px; /* Set width to 2px */
+  height: 2px; /* For horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e; /* Dark background for track */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #355e3b; /* Green thumb */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #097969; /* Darker green when hovered */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin; /* Set to thin scrollbar */
+  scrollbar-color: #355e3b #1e1e1e; /* Green thumb, dark track */
+}
+
+/* Ensure content area has overflow */
+.scrollable-content {
+  overflow-y: scroll; /* Enable vertical scroll */
+  max-height: 300px; /* Adjust as needed to trigger the scrollbar */
+}
+
+div::-webkit-scrollbar {
+  width: 2px;
 }
