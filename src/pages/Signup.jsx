@@ -113,7 +113,7 @@ const Signup = () => {
         </div>
         <button
           type='submit'
-          className='btn btn-primary'
+          className='btn btn-primary new_button'
           disabled={isSubmitting}
         >
           {isSubmitting && <Spinner width='15px' height='15px' />} Signup

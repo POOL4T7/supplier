@@ -21,6 +21,15 @@ h2 {
   padding: 0.5rem 0;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #1d4824;
+}
+
 /* a{
   color: #46541b !important;
 }
@@ -101,7 +110,10 @@ table td {
   pointer-events: none; /* Prevents any interaction */
 }
 
-/* Custom Scrollbar - Green Theme */
+::-webkit-scrollbar-thumb:hover {
+  background: #097969; /* Darker green when hovered */
+}
+
 ::-webkit-scrollbar {
   width: 2px; /* Set width to 2px */
   height: 2px; /* For horizontal scrollbar */
@@ -117,15 +129,6 @@ table td {
   border-radius: 5px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #097969; /* Darker green when hovered */
-}
-
-/* For Firefox */
-* {
-  scrollbar-width: thin; /* Set to thin scrollbar */
-  scrollbar-color: #355e3b #1e1e1e; /* Green thumb, dark track */
-}
 
 /* Ensure content area has overflow */
 .scrollable-content {
@@ -135,4 +138,8 @@ table td {
 
 div::-webkit-scrollbar {
   width: 2px;
+}
+
+.new_button {
+  padding: 5px 20px;
 }
