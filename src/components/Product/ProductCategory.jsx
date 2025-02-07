@@ -404,6 +404,7 @@ const ProductCategory = () => {
                 />
                 <div
                   className="border p-3"
+                  id="uploaded-category"
                   style={{ height: "60vh", overflowY: "scroll" }}
                 >
                   <h5>Uploaded Categories</h5>

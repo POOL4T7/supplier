@@ -474,7 +474,7 @@ th {
 
 label {
   display: inline-block;
-  color: #abc184;
+  color: #253704
 }
 
 button {
@@ -11512,9 +11512,9 @@ body {
 
 .sb-topnav {
   padding-left: 0;
-  height: 65px;
+  height: 70px;
   z-index: 1039;
-  background-color: #2f3d12;
+  background-color: #4e533d;
 }
 .sb-topnav .navbar-brand {
   width: 225px;

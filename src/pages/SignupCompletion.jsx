@@ -52,7 +52,7 @@ const SignupCompletion = () => {
     <FormContainer>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="complete-register-form"
+        className="complete-register-form pt-5"
         style={{ maxWidth: "500px" }}
       >
         <h2>Complete your registration</h2>
