@@ -264,7 +264,7 @@ const LandingPage = () => {
   );
   console.log(form2.formState.errors);
   return (
-    <div className="search-main">
+    <div className="search-main pt-5">
       {/* search row start  */}
       <div className="search-row" style={{ backgroundImage: "url('bg.jpg')" }}>
         <div className="search-sec">

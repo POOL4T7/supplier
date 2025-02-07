@@ -47,7 +47,11 @@ const SearchResult = () => {
             </div>
           )}
           {productList.map((item, idx) => (
-            <div className="card p-3 shadow-sm border-0 col-12 mb-3" key={idx}>
+            <div
+              className="card p-3 shadow-sm border-0 col-12 mb-3"
+              key={idx}
+              style={{ backgroundColor: "#d3d7c8" }}
+            >
               <div className="row">
                 <div className="col-3">
                   <img
