@@ -53,7 +53,7 @@ const SignupCompletion = () => {
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="complete-register-form pt-5"
-        style={{ maxWidth: "500px" }}
+        style={{ maxWidth: "500px",  marginTop: '6rem', }}
       >
         <h2>Complete your registration</h2>
 

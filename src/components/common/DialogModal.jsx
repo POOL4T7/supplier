@@ -84,6 +84,15 @@ export default function DialogModal({ open, setOpen }) {
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
         maxWidth={'sm'}
+        // sx={{
+        //   backgroundColor: '#e0e2da',
+        // }}
+        // style={{ color: '#e0e2da' }}
+        PaperProps={{
+          style: {
+            backgroundColor: '#e0e2da',
+          },
+        }}
       >
         <DialogTitle id='alert-dialog-title'>
           Confirm Account Deletion

@@ -1,38 +1,38 @@
-import { Link } from "react-router-dom";
-import { useAtom } from "jotai";
-import { userDetailsAtom } from "../../../storges/user";
-import { MenuIcon, User } from "lucide-react";
-import useSidebarToggle from "../../../hooks/useSidebarToggle";
-import { useState } from "react";
-import DialogModal from "../../common/DialogModal";
+import { Link } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import { userDetailsAtom } from '../../../storges/user';
+import { MenuIcon, User } from 'lucide-react';
+import useSidebarToggle from '../../../hooks/useSidebarToggle';
+// import { useState } from 'react';
+// import DialogModal from '../../common/DialogModal';
 
 const Header = () => {
   const [userDetails] = useAtom(userDetailsAtom);
-  const [open, setOpen] = useState(false);
-  useSidebarToggle("sidebarToggle", "sidebarToggle");
+  // const [open, setOpen] = useState(false);
+  useSidebarToggle('sidebarToggle', 'sidebarToggle');
 
-  const handleClickOpen = () => {
-    setOpen(!open);
-  };
+  // const handleClickOpen = () => {
+  //   setOpen(!open);
+  // };
   return (
     <>
       <nav
-        className="sb-topnav navbar navbar-expand  shadow-sm"
+        className='sb-topnav navbar navbar-expand  shadow-sm'
         // style={{ backgroundColor: "#424e2c" }}
       >
         <>
-        <img src="/images/logo.webp" alt="logo" width="65" height="60" />
+          <img src='/images/logo.webp' alt='logo' width='65' height='60' />
         </>
 
         <button
-          className="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"
-          id="sidebarToggle"
-          href="#!"
+          className='btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0'
+          id='sidebarToggle'
+          href='#!'
         >
           <MenuIcon />
         </button>
 
-        <div className="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+        <div className='d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0'>
           {/* <div className='input-group'>
             <input
               className='form-control'
@@ -50,32 +50,32 @@ const Header = () => {
           </div> */}
         </div>
 
-        <ul className="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <ul className='navbar-nav ms-auto ms-md-0 me-3 me-lg-4'>
           {userDetails ? (
-            <li className="nav-item dropdown">
+            <li className='nav-item dropdown'>
               <a
-                className="nav-link dropdown-toggle"
-                id="navbarDropdown"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
+                className='nav-link dropdown-toggle'
+                id='navbarDropdown'
+                href='#'
+                role='button'
+                data-bs-toggle='dropdown'
+                aria-expanded='false'
               >
                 <User />
               </a>
               <ul
-                className="dropdown-menu dropdown-menu-end"
-                aria-labelledby="navbarDropdown"
+                className='dropdown-menu dropdown-menu-end'
+                aria-labelledby='navbarDropdown'
               >
                 <li>
-                  <Link className="dropdown-item" to="/supplier/profile">
+                  <Link className='dropdown-item' to='/supplier/profile'>
                     Profile
                   </Link>
                 </li>
                 {/* <li>
                   <hr className='dropdown-divider' />
                 </li> */}
-                <li>
+                {/* <li>
                   <div
                     className="dropdown-item"
                     style={{
@@ -87,17 +87,17 @@ const Header = () => {
                   >
                     Delete
                   </div>
-                </li>
+                </li> */}
 
                 <li>
-                  <hr className="dropdown-divider" />
+                  <hr className='dropdown-divider' />
                 </li>
                 <li>
                   <button
-                    className="dropdown-item"
+                    className='dropdown-item'
                     onClick={() => {
-                      localStorage.removeItem("user");
-                      window.location.href = "/";
+                      localStorage.removeItem('user');
+                      window.location.href = '/';
                     }}
                   >
                     Logout
@@ -106,14 +106,14 @@ const Header = () => {
               </ul>
             </li>
           ) : (
-            <Link to={"/signin"} className="nav-link text-primary mr-2">
+            <Link to={'/signin'} className='nav-link text-primary mr-2'>
               login
             </Link>
           )}
         </ul>
       </nav>
 
-      {open && <DialogModal open={open} setOpen={handleClickOpen} />}
+      {/* {open && <DialogModal open={open} setOpen={handleClickOpen} />} */}
     </>
   );
 };

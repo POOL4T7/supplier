@@ -1,10 +1,27 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import axiosInstance from "../../axios";
-import { useAtom } from "jotai";
-import { bussinessProfile, userDetailsAtom } from "../../storges/user";
-import CreatableSelect from "react-select/creatable";
-import Spinner from "../common/Spinner";
-import { toast } from "react-toastify";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import axiosInstance from '../../axios';
+import { useAtom } from 'jotai';
+import { bussinessProfile, userDetailsAtom } from '../../storges/user';
+import CreatableSelect from 'react-select/creatable';
+import Spinner from '../common/Spinner';
+import { toast } from 'react-toastify';
+const customStyles = {
+  control: (base) => ({
+    ...base,
+    backgroundColor: 'transparent', // Background color
+    borderColor: '#1f2317', // Border color
+    color: '#e0e2da', // Text color
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected ? '#e0e2da' : isFocused ? '#e0e2da' : 'white',
+    color: isSelected ? 'green' : '#355e3b',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: '#182402',
+  }),
+};
 
 const ProductCategory = () => {
   const selectRef = useRef(null);
@@ -17,15 +34,15 @@ const ProductCategory = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isLeftSelected, setIsLeftSelected] = useState(false);
   const [isRightSelected, setIsRightSelected] = useState(false);
-  const [categoriesValue, setCategoriesValue] = useState("");
+  const [categoriesValue, setCategoriesValue] = useState('');
   const [description, setDescription] = useState([]);
-  const [uploadedSearch, setUploadedSearch] = useState("");
-  const [movedSearch, setMovedSearch] = useState("");
+  const [uploadedSearch, setUploadedSearch] = useState('');
+  const [movedSearch, setMovedSearch] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [supplier] = useAtom(userDetailsAtom);
   const [bussiness] = useAtom(bussinessProfile);
   const [allDesc, setAllDesc] = useState([]);
-  const [d, setD] = useState("");
+  const [d, setD] = useState('');
   // const [allMovedcategory, setAllMovedCatgeory] = useState([]);
   const [bussinessLoading, setBussinessLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
@@ -43,7 +60,7 @@ const ProductCategory = () => {
   }, [movedCategories]);
 
   const toggleSelectProduct = (product, type) => {
-    if (type === "left") {
+    if (type === 'left') {
       setIsLeftSelected(false);
       setIsRightSelected(true);
     } else {
@@ -64,7 +81,7 @@ const ProductCategory = () => {
 
   const moveToRight = async () => {
     await axiosInstance.post(
-      "/proxy/productsearchsupplier/supplierCategoryDetailsStatus",
+      '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
       {
         supplierBusinessId: bussiness.id,
         categoryIds: [...selectedCategories].map((item) => item.id),
@@ -89,7 +106,7 @@ const ProductCategory = () => {
 
   const moveToLeft = async () => {
     await axiosInstance.post(
-      "/proxy/productsearchsupplier/supplierCategoryDetailsStatus",
+      '/proxy/productsearchsupplier/supplierCategoryDetailsStatus',
       {
         supplierBusinessId: bussiness.id,
         categoryIds: [...selectedCategories].map((item) => item.id),
@@ -111,17 +128,17 @@ const ProductCategory = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!d) {
-      toast.error("Bussiness description is required for adding category");
+      toast.error('Bussiness description is required for adding category');
 
       return;
     }
     setCreateCategoryLoading(true);
 
     const res = await axiosInstance.post(
-      "/proxy/productsearchsupplier/saveCategoryDetails",
+      '/proxy/productsearchsupplier/saveCategoryDetails',
       {
         categoryName: categoriesValue,
-        productsServices: "products",
+        productsServices: 'products',
         supplierBusinessId: bussiness.id,
         categoryDescription: d,
         supplierBusinessDescription: d,
@@ -139,12 +156,12 @@ const ProductCategory = () => {
 
     // setUploadedCategories([p, ...uploadedCategories]);
     setUploadedCategories([...uploadedCategories, p]);
-    setCategoriesValue("");
+    setCategoriesValue('');
     setCreateCategoryLoading(false);
   };
 
   const handleSearch = (query, type) => {
-    if (type === "uploaded") {
+    if (type === 'uploaded') {
       setUploadedSearch(query);
       setFilteredUploadedCategories(
         uploadedCategories.filter((category) =>
@@ -184,7 +201,7 @@ const ProductCategory = () => {
       setStructure(res2.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error('Error fetching categories:', error);
     }
   }, [bussiness.id]);
 
@@ -211,7 +228,7 @@ const ProductCategory = () => {
       );
       setBussinessLoading(false);
     } catch (error) {
-      console.error("Error fetching business descriptions:", error);
+      console.error('Error fetching business descriptions:', error);
     }
   };
 
@@ -231,11 +248,11 @@ const ProductCategory = () => {
       try {
         setBussinessLoading(true);
         await axiosInstance.post(
-          "/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription",
+          '/proxy/productsearchsupplier/api/supplier/file/addSupplierBusinessDescription',
           {
             supplierBusinessId: bussiness.id,
             supplierBusinessDescription: value,
-            type: "products",
+            type: 'products',
           }
         );
         const res2 = await axiosInstance.get(
@@ -251,16 +268,16 @@ const ProductCategory = () => {
             label: value,
           });
         }
-        console.log("Business description added successfully");
+        console.log('Business description added successfully');
       } catch (error) {
-        console.error("Error adding business description:", error);
+        console.error('Error adding business description:', error);
       }
     }
   };
 
   if (loading) {
     return (
-      <div className="d-flex">
+      <div className='d-flex'>
         <Spinner />
       </div>
     );
@@ -268,17 +285,18 @@ const ProductCategory = () => {
   // console.log('selectRef', selectRef.current);
   return (
     <>
-      <div className="row">
-        <div className="col-7">
+      <div className='row'>
+        <div className='col-7'>
           <>
-            <div className="mb-2">
+            <div className='mb-2'>
               <CreatableSelect
                 ref={(el) => {
                   if (el) selectRef.current = el;
                 }}
+                styles={customStyles}
                 isClearable
                 options={description}
-                classNamePrefix="react-select"
+                classNamePrefix='react-select'
                 isLoading={bussinessLoading}
                 value={{ label: d, value: d }}
                 onChange={async (value) => {
@@ -337,19 +355,19 @@ const ProductCategory = () => {
                   return inputValue;
                 }}
                 onCreateOption={handleCreate}
-                placeholder="bussiness description"
+                placeholder='bussiness description'
                 // onMenuClose={()=>{
                 //   alert("hey")
                 // }}
               />
             </div>
             {allDesc.length > 0 && (
-              <div className="mb-4 d-flex flex-wrap gap-2">
+              <div className='mb-4 d-flex flex-wrap gap-2'>
                 {allDesc.map((item, index) => (
                   <span
                     key={index}
-                    className="badge rounded-pill bg-primary px-3 py-2 text-white"
-                    style={{ cursor: "pointer" }}
+                    className='badge rounded-pill bg-primary px-3 py-2 text-white'
+                    style={{ cursor: 'pointer' }}
                     onClick={() => {
                       if (selectRef.current) {
                         selectRef.current.setValue({
@@ -364,62 +382,62 @@ const ProductCategory = () => {
                 ))}
               </div>
             )}
-            <div className="row mb-2">
-              <div className="col-10">
+            <div className='row mb-2'>
+              <div className='col-10'>
                 <input
-                  type="text"
+                  type='text'
                   value={categoriesValue}
-                  className="form-control"
-                  placeholder="Enter category name"
+                  className='form-control'
+                  placeholder='Enter category name'
                   onChange={(e) => setCategoriesValue(e.target.value)}
                 />
               </div>
-              <div className="col-2">
+              <div className='col-2'>
                 <button
-                  className="btn btn-primary"
+                  className='btn btn-primary'
                   onClick={handleAddProduct}
                   disabled={!categoriesValue || createCategoryLoading}
                 >
                   {createCategoryLoading && (
-                    <Spinner width="15px" height="15px" />
-                  )}{" "}
+                    <Spinner width='15px' height='15px' />
+                  )}{' '}
                   Add
                 </button>
               </div>
             </div>
           </>
           {categoryLoading ? (
-            <div className="d-flex ">
+            <div className='d-flex '>
               <Spinner />
             </div>
           ) : (
-            <div className="row">
-              <div className="col-md-5">
+            <div className='row'>
+              <div className='col-md-5'>
                 <input
-                  type="text"
+                  type='text'
                   value={uploadedSearch}
-                  className="form-control mb-3"
-                  placeholder="Search uploaded categories"
-                  onChange={(e) => handleSearch(e.target.value, "uploaded")}
+                  className='form-control mb-3'
+                  placeholder='Search uploaded categories'
+                  onChange={(e) => handleSearch(e.target.value, 'uploaded')}
                 />
                 <div
-                  className="border p-3"
-                  id="uploaded-category"
-                  style={{ height: "60vh", overflowY: "scroll" }}
+                  className='border p-3'
+                  id='uploaded-category'
+                  style={{ height: '60vh', overflowY: 'scroll' }}
                 >
                   <h5>Uploaded Categories</h5>
-                  <div className="d-flex">
-                    {categoryLoading && <Spinner width="50px" height="50px" />}
+                  <div className='d-flex'>
+                    {categoryLoading && <Spinner width='50px' height='50px' />}
                   </div>
                   {filteredUploadedCategories.map((product) => (
-                    <div key={product.id} className="form-check mb-2">
+                    <div key={product.id} className='form-check mb-2'>
                       <input
-                        type="checkbox"
-                        className="form-check-input"
+                        type='checkbox'
+                        className='form-check-input'
                         checked={selectedCategories.includes(product)}
-                        onChange={() => toggleSelectProduct(product, "left")}
+                        onChange={() => toggleSelectProduct(product, 'left')}
                       />
-                      <label className="form-check-label">
+                      <label className='form-check-label'>
                         {product.categoryName}
                       </label>
                     </div>
@@ -427,16 +445,16 @@ const ProductCategory = () => {
                 </div>
               </div>
 
-              <div className="col-md-2 d-flex flex-column justify-content-center align-items-center">
+              <div className='col-md-2 d-flex flex-column justify-content-center align-items-center'>
                 <button
-                  className="btn btn-primary mb-2"
+                  className='btn btn-primary mb-2'
                   onClick={moveToRight}
                   disabled={!isRightSelected}
                 >
                   &gt;&gt;
                 </button>
                 <button
-                  className="btn btn-primary"
+                  className='btn btn-primary'
                   onClick={moveToLeft}
                   disabled={!isLeftSelected}
                 >
@@ -444,33 +462,33 @@ const ProductCategory = () => {
                 </button>
               </div>
 
-              <div className="col-md-5">
+              <div className='col-md-5'>
                 <input
-                  type="text"
+                  type='text'
                   value={movedSearch}
-                  className="form-control mb-3"
-                  placeholder="Search moved categories"
-                  onChange={(e) => handleSearch(e.target.value, "moved")}
+                  className='form-control mb-3'
+                  placeholder='Search moved categories'
+                  onChange={(e) => handleSearch(e.target.value, 'moved')}
                 />
                 <div
-                  className="border p-3"
-                  style={{ height: "60vh", overflowY: "scroll" }}
+                  className='border p-3'
+                  style={{ height: '60vh', overflowY: 'scroll' }}
                 >
                   <h5>Moved Categories</h5>
-                  <div className="d-flex">
+                  <div className='d-flex'>
                     {movedCategoryLoading && (
-                      <Spinner width="50px" height="50px" />
+                      <Spinner width='50px' height='50px' />
                     )}
                   </div>
                   {filteredMovedCategories.map((product) => (
-                    <div key={product.id} className="form-check mb-2">
+                    <div key={product.id} className='form-check mb-2'>
                       <input
-                        type="checkbox"
-                        className="form-check-input"
+                        type='checkbox'
+                        className='form-check-input'
                         checked={selectedCategories.includes(product)}
-                        onChange={() => toggleSelectProduct(product, "right")}
+                        onChange={() => toggleSelectProduct(product, 'right')}
                       />
-                      <label className="form-check-label">
+                      <label className='form-check-label'>
                         {product.categoryName}
                       </label>
                     </div>
@@ -480,39 +498,39 @@ const ProductCategory = () => {
             </div>
           )}
         </div>
-        <div className="col-5">
-          <div className=" mb-5">
+        <div className='col-5'>
+          <div className=' mb-5'>
             <h4>Your Categories by bussiness description</h4>
-            <div className="accordion" id="categoryAccordion">
+            <div className='accordion' id='categoryAccordion'>
               {structure.map((item, idx) => (
                 <div
-                  className="accordion-item"
+                  className='accordion-item'
                   key={item.supplierBusinessDescription}
                 >
-                  <h2 className="accordion-header" id="headingOne">
+                  <h2 className='accordion-header' id='headingOne'>
                     <button
-                      className="accordion-button"
-                      type="button"
-                      data-bs-toggle="collapse"
+                      className='accordion-button'
+                      type='button'
+                      data-bs-toggle='collapse'
                       data-bs-target={`#collapseOne${idx}`}
-                      aria-expanded="true"
-                      aria-controls={"collapseOne" + idx}
+                      aria-expanded='true'
+                      aria-controls={'collapseOne' + idx}
                     >
                       {item.supplierBusinessDescription}
                     </button>
                   </h2>
                   <div
-                    id={"collapseOne" + idx}
-                    className="accordion-collapse collapse"
-                    aria-labelledby="headingOne"
-                    data-bs-parent="#categoryAccordion"
+                    id={'collapseOne' + idx}
+                    className='accordion-collapse collapse'
+                    aria-labelledby='headingOne'
+                    data-bs-parent='#categoryAccordion'
                   >
-                    <div className="accordion-body">
-                      <ul className=" d-flex flex-wrap gap-2">
+                    <div className='accordion-body'>
+                      <ul className=' d-flex flex-wrap gap-2'>
                         {item?.supplierCategoryName?.map((x) => (
                           <span
                             key={x}
-                            className="badge rounded-pill bg-primary px-3 py-2 text-white"
+                            className='badge rounded-pill bg-primary px-3 py-2 text-white'
                             // style={{ cursor: 'pointer' }}
                           >
                             {x}

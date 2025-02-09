@@ -1,18 +1,29 @@
 import { useAtom } from 'jotai';
-import { ChartNoAxesGantt, ChevronDown, UserRoundPen } from 'lucide-react';
+import {
+  ChartNoAxesGantt,
+  ChevronDown,
+  PackageOpen,
+  Trash,
+  UserCog,
+  UserRoundPen,
+} from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { bussinessProfile } from '../../../storges/user';
+import { useState } from 'react';
+import DialogModal from '../../common/DialogModal';
 
 const Sidebar = () => {
   const location = useLocation();
   const [bussiness] = useAtom(bussinessProfile);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(!open);
+  };
   return (
     <div id='layoutSidenav'>
       <div id='layoutSidenav_nav'>
-        <nav
-          className='sb-sidenav accordion shadow'
-          id='sidenavAccordion'
-        >
+        <nav className='sb-sidenav accordion shadow' id='sidenavAccordion'>
           <div className='sb-sidenav-menu'>
             <div className='nav'>
               <div className='sb-sidenav-menu-heading'>Screens</div>
@@ -22,12 +33,87 @@ const Sidebar = () => {
                 </div>
                 Supplier Profile
               </Link>
-              <Link className='nav-link' to='/supplier/bussiness-profile'>
+              {/* <Link className='nav-link' to='/supplier/bussiness-profile'>
                 <div className='sb-nav-link-icon'>
                   <UserRoundPen />
                 </div>
                 Bussiness Profile
+              </Link> */}
+              <Link
+                className='nav-link collapsed'
+                href='#'
+                data-bs-toggle='collapse'
+                data-bs-target='#bussinessLayout'
+                aria-expanded='false'
+                aria-controls='bussinessLayout'
+              >
+                <div className='sb-nav-link-icon'>
+                  <ChartNoAxesGantt />
+                </div>
+                Bussiness Profile
+                <div className='sb-sidenav-collapse-arrow'>
+                  <ChevronDown />
+                </div>
               </Link>
+              <div
+                className='collapse'
+                id='bussinessLayout'
+                aria-labelledby='headingZero'
+                data-bs-parent='#sidenavAccordion'
+              >
+                <nav className='sb-sidenav-menu-nested nav'>
+                  <Link
+                    className={`nav-link ${
+                      location.pathname === '/supplier/bussiness/profile'
+                        ? 'nav-active'
+                        : ''
+                    }`}
+                    to='/supplier/bussiness/profile'
+                  >
+                    About business
+                  </Link>
+                  <Link
+                    className={`nav-link ${
+                      location.pathname === '/supplier/bussiness/address'
+                        ? 'nav-active'
+                        : ''
+                    }`}
+                    to='/supplier/bussiness/address'
+                  >
+                    Business address
+                  </Link>
+                  <Link
+                    className={`nav-link ${
+                      location.pathname === '/supplier/bussiness/contact'
+                        ? 'nav-active'
+                        : ''
+                    }`}
+                    to='/supplier/bussiness/contact'
+                  >
+                    Contact details
+                  </Link>
+                  <Link
+                    className={`nav-link ${
+                      location.pathname === '/supplier/bussiness/tax-details'
+                        ? 'nav-active'
+                        : ''
+                    }`}
+                    to='/supplier/bussiness/tax-details'
+                  >
+                    Legal/tax details
+                  </Link>
+                  <Link
+                    className={`nav-link ${
+                      location.pathname === '/supplier/bussiness/verify'
+                        ? 'nav-active'
+                        : ''
+                    }`}
+                    to='/supplier/bussiness/verify'
+                  >
+                    Verify the business
+                  </Link>
+                </nav>
+              </div>
               {/* <div className='sb-sidenav-menu-heading'>Product</div> */}
               <Link
                 className='nav-link collapsed'
@@ -38,7 +124,7 @@ const Sidebar = () => {
                 aria-controls='collapseLayouts'
               >
                 <div className='sb-nav-link-icon'>
-                  <ChartNoAxesGantt />
+                  <PackageOpen />
                 </div>
                 Product
                 <div className='sb-sidenav-collapse-arrow'>
@@ -55,7 +141,7 @@ const Sidebar = () => {
                   <Link
                     className={`nav-link ${
                       location.pathname === '/supplier/product-category'
-                        ? 'active'
+                        ? 'nav-active'
                         : ''
                     }`}
                     to='/supplier/product-category'
@@ -65,7 +151,7 @@ const Sidebar = () => {
                   <Link
                     className={`nav-link ${
                       location.pathname === '/supplier/product-subcategory'
-                        ? 'active'
+                        ? 'nav-active'
                         : ''
                     }`}
                     to='/supplier/product-subcategory'
@@ -74,7 +160,9 @@ const Sidebar = () => {
                   </Link>
                   <Link
                     className={`nav-link ${
-                      location.pathname === '/supplier/products' ? 'active' : ''
+                      location.pathname === '/supplier/products'
+                        ? 'nav-active'
+                        : ''
                     }`}
                     to='/supplier/products'
                   >
@@ -102,7 +190,7 @@ const Sidebar = () => {
                 }
               >
                 <div className='sb-nav-link-icon'>
-                  <ChartNoAxesGantt />
+                  <UserCog />
                 </div>
                 Services
                 <div className='sb-sidenav-collapse-arrow'>
@@ -119,7 +207,7 @@ const Sidebar = () => {
                   <Link
                     className={`nav-link ${
                       location.pathname === '/supplier/service-category'
-                        ? 'active'
+                        ? 'nav-active'
                         : ''
                     }`}
                     to='/supplier/service-category'
@@ -129,7 +217,7 @@ const Sidebar = () => {
                   <Link
                     className={`nav-link ${
                       location.pathname === '/supplier/service-subcategory'
-                        ? 'active'
+                        ? 'nav-active'
                         : ''
                     }`}
                     to='/supplier/service-subcategory'
@@ -138,7 +226,9 @@ const Sidebar = () => {
                   </Link>
                   <Link
                     className={`nav-link ${
-                      location.pathname === '/supplier/services' ? 'active' : ''
+                      location.pathname === '/supplier/services'
+                        ? 'nav-active'
+                        : ''
                     }`}
                     to='/supplier/services'
                   >
@@ -146,6 +236,18 @@ const Sidebar = () => {
                   </Link>
                 </nav>
               </div>
+              <Link className='nav-link' to='/supplier/account-activation'>
+                <div className='sb-nav-link-icon'>
+                  <UserRoundPen />
+                </div>
+                Activate/ deactivate
+              </Link>
+              <Link className='nav-link' to='#' onClick={handleClickOpen}>
+                <div className='sb-nav-link-icon'>
+                  <Trash color='red' />
+                </div>
+                Delete
+              </Link>
 
               {/* <a
                 className='nav-link collapsed'
@@ -277,6 +379,7 @@ const Sidebar = () => {
             </div>
           </footer> */}
       </div>
+      {open && <DialogModal open={open} setOpen={handleClickOpen} />}
     </div>
   );
 };

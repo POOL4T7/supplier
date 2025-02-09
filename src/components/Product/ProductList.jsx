@@ -163,14 +163,18 @@ const ProductList = () => {
   }, [bussiness.id]);
 
   return (
-    <>
+    <div className='d-flex justify-content-center'>
       {laoding ? (
         <div className='d-flex'>
           {' '}
           <Spinner />
         </div>
       ) : (
-        <div className='container'>
+        <div
+          style={{
+            maxWidth: '600px',
+          }}
+        >
           <div className='mb-3'>
             <div className='d-flex justify-content-between mb-2'>
               <h3>Upload Product File</h3>
@@ -240,8 +244,8 @@ const ProductList = () => {
             </div>
           </form>
           <div
-            className='row align-items-center justify-content-between'
-            style={{ maxHeight: '80vh', height: '100%' }}
+            className='row align-items-center justify-content-between mt-3'
+            style={{ maxHeight: '60vh', height: '100%' }}
           >
             <div
               className='col-md-5 border p-3'
@@ -319,7 +323,7 @@ const ProductList = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

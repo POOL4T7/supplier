@@ -52,7 +52,7 @@ const step1Schema = yup.object().shape({
     .matches(/^\d{6}$/, 'zipcode must be 6 digits'),
   city: yup.string().required('City is required'),
   country: yup.string().required('Country is required'),
-  status: yup.boolean(),
+  // status: yup.boolean(),
 });
 
 const SupplierDetails = () => {
@@ -82,7 +82,7 @@ const SupplierDetails = () => {
         email: data.email,
         country: data.country,
         supplierId: userDetails.id,
-        status: data.status,
+        // status: data.status,
       };
       const res = await axiosInstance.post(
         `/proxy/productsearchsupplier/api/supplier/profile/addSupplierInfo`,
@@ -137,7 +137,7 @@ const SupplierDetails = () => {
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          style={{ maxWidth: '700px', width: '100%' }}
+          style={{ maxWidth: '500px', width: '100%' }}
         >
           <div className='mb-2'>
             <label className='form-label'>Supplier Name</label>
@@ -284,7 +284,7 @@ const SupplierDetails = () => {
           </div>
 
           <div className='row'>
-            <div className='col-6'>
+            <div className='col-12'>
               <div className='mb-2'>
                 <label className='form-label'>Country</label>
                 <select
@@ -304,7 +304,7 @@ const SupplierDetails = () => {
                 </div>
               </div>
             </div>
-            <div className='col-6'>
+            {/* <div className='col-6'>
               <div className='mb-2'>
                 <label className='form-label'>Profile Status</label>
                 <select
@@ -318,7 +318,7 @@ const SupplierDetails = () => {
                 </select>
                 <div className='invalid-feedback'>{errors.status?.message}</div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <button

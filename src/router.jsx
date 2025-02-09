@@ -11,7 +11,7 @@ import SupplierLayout from './components/layout/SupplierLayout';
 import ProductCategory from './pages/supplier/product/Category';
 import ProductSubCategory from './pages/supplier/product/SubCategory';
 import ProductListPage from './pages/supplier/product/ProductListPage';
-import BussinessProfile from './pages/supplier/BussinessProfile';
+// import BussinessProfile from './pages/supplier/BussinessProfile';
 import SupplierSubCategory from './pages/supplier/services/SubCategory';
 import SupplierCategory from './pages/supplier/services/Category';
 import ServiceListPage from './pages/supplier/services/ServiceListPage';
@@ -24,6 +24,14 @@ import UserLayout from './components/layout/UserLayout';
 import UserProfile from './pages/user/Profile';
 import SupplierDetails from './pages/supplier/SupplierDetails';
 import SearchResult from './pages/SearchResult';
+
+import BussinessProfile from './pages/supplier/bussiness/Profile';
+import BussinessAddress from './pages/supplier/bussiness/Address';
+import BussinessContact from './pages/supplier/bussiness/Contact';
+import BussinessTaxProfile from './pages/supplier/bussiness/Tax';
+import BussinessVerify from './pages/supplier/bussiness/Verify';
+
+import ActivateAccount from './pages/supplier/ActivateAccount';
 
 const router = () => {
   return createBrowserRouter([
@@ -104,8 +112,29 @@ const router = () => {
           element: <ProductListPage />,
         },
         {
-          path: 'bussiness-profile',
-          element: <BussinessProfile />,
+          path: 'bussiness',
+          children: [
+            {
+              path: 'profile',
+              element: <BussinessProfile />,
+            },
+            {
+              path: 'address',
+              element: <BussinessAddress />,
+            },
+            {
+              path: 'contact',
+              element: <BussinessContact />,
+            },
+            {
+              path: 'tax-details',
+              element: <BussinessTaxProfile />,
+            },
+            {
+              path: 'verify',
+              element: <BussinessVerify />,
+            },
+          ],
         },
         {
           path: 'service-category',
@@ -122,6 +151,10 @@ const router = () => {
         {
           path: 'reset-password',
           element: <ResetPassword />,
+        },
+        {
+          path: 'account-activation',
+          element: <ActivateAccount />,
         },
       ],
     },

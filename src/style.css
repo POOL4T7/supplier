@@ -118,7 +118,7 @@
   --bs-highlight-bg: #fcefdc;
   --bs-border-width: 1px;
   --bs-border-style: solid;
-  --bs-border-color: #eceeef;
+  --bs-border-color: #b9bcb1;
   --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
   --bs-border-radius: 0.375rem;
   --bs-border-radius-sm: 0.25rem;
@@ -474,7 +474,7 @@ th {
 
 label {
   display: inline-block;
-  color: #253704
+  color: #182402;
 }
 
 button {
@@ -2192,7 +2192,7 @@ progress {
 .form-control:focus,
 .datatable-input:focus {
   color: #212529;
-  background-color: #788c80;
+  background-color: #cfe2d7;
   border-color: #1f2317;
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
@@ -3813,6 +3813,7 @@ fieldset:disabled .btn {
 
 .dropdown-menu.show {
   display: block;
+  background-color: #dde0d4;
 }
 
 .dropdown-header {
@@ -4686,7 +4687,7 @@ fieldset:disabled .btn {
 
 .accordion {
   --bs-accordion-color: #212529;
-  --bs-accordion-bg: #fff;
+  --bs-accordion-bg: #d1d4c8;
   --bs-accordion-transition: color 0.15s ease-in-out,
     background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
     box-shadow 0.15s ease-in-out, border-radius 0.15s ease;
@@ -11434,6 +11435,7 @@ body {
 
 .sb-sidenav-toggled #layoutSidenav #layoutSidenav_nav {
   transform: translateX(0);
+  background-color: #e0e2da;
 }
 .sb-sidenav-toggled #layoutSidenav #layoutSidenav_content:before {
   content: '';
@@ -11512,9 +11514,9 @@ body {
 
 .sb-topnav {
   padding-left: 0;
-  height: 70px;
+  height: auto;
   z-index: 1039;
-  background-color: #4e533d;
+  background-color: #3b4223;
 }
 .sb-topnav .navbar-brand {
   width: 225px;
@@ -11569,7 +11571,7 @@ body {
   transform: rotate(-90deg);
 }
 .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-nested {
-  margin-left: 1.5rem;
+  margin-left: 2.5rem;
   flex-direction: column;
 }
 .sb-sidenav .sb-sidenav-footer {

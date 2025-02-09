@@ -6,6 +6,24 @@ import CreatableSelect from 'react-select/creatable';
 import Spinner from '../common/Spinner';
 import { toast } from 'react-toastify';
 
+const customStyles = {
+  control: (base) => ({
+    ...base,
+    backgroundColor: 'transparent', // Background color
+    borderColor: '#1f2317', // Border color
+    color: '#e0e2da', // Text color
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected ? '#e0e2da' : isFocused ? '#e0e2da' : 'white',
+    color: isSelected ? 'green' : '#355e3b',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: '#182402',
+  }),
+};
+
 const ServiceCategory = () => {
   const selectRef = useRef(null);
   const [uploadedCategories, setUploadedCategories] = useState([]);
@@ -302,13 +320,14 @@ const ServiceCategory = () => {
           <CreatableSelect
             ref={selectRef}
             isClearable
+            styles={customStyles}
             options={description}
             classNamePrefix='react-select'
             isLoading={bussinessLoading}
             value={{ label: d, value: d }}
             onChange={async (value) => {
               setD(value?.value);
-              console.log("here", value)
+              console.log('here', value);
               try {
                 if (value) {
                   setCategoryLoading(true);
