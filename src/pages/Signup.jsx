@@ -61,72 +61,80 @@ const Signup = () => {
 
   return (
     <FormContainer>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className='register-form pt-5'
-        style={{ maxWidth: '500px', marginTop: '6rem' }}
+      <div
+        style={{
+          maxWidth: '400px',
+          width: '100%',
+          marginTop: '6rem',
+        }}
       >
-        <h2>Signup</h2>
-        <div className='mb-3'>
-          <label htmlFor='role' className='form-label'>
-            Role
-          </label>
-          <select
-            className={`form-select ${errors.userType ? 'is-invalid' : ''}`}
-            id='role'
-            {...register('userType')}
-          >
-            <option value=''>Select a role</option>
-            {allRoles?.map((item) => (
-              <option key={item.roleId} value={item.roleName}>
-                {item.roleName}
-              </option>
-            ))}
-          </select>
-          {errors.userType && (
-            <div className='invalid-feedback'>{errors.userType.message}</div>
-          )}
-        </div>
-
-        <div className='mb-3'>
-          <label>Email</label>
-          <input
-            type='email'
-            {...register('email')}
-            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-          />
-          {errors.email && (
-            <div className='invalid-feedback'>{errors.email.message}</div>
-          )}
-        </div>
-
-        <div className='mb-3'>
-          <label>Full Name</label>
-          <input
-            type='text'
-            {...register('fullName')}
-            className={`form-control ${errors.fullName ? 'is-invalid' : ''}`}
-          />
-          {errors.fullName && (
-            <div className='invalid-feedback'>{errors.fullName.message}</div>
-          )}
-        </div>
-        <button
-          type='submit'
-          className='btn btn-primary new_button'
-          disabled={isSubmitting}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className='register-form'
+          // style={{ maxWidth: '400px', width: '100%', marginTop: '6rem' }}
         >
-          {isSubmitting && <Spinner width='15px' height='15px' />} Signup
-        </button>
-      </form>
-      <div className='row pt-3'>
-        <div className='col'>
-          <span style={{ color: '#abc184' }}> Already have account?</span>
+          <h2>Signup</h2>
+          <div className='mb-3'>
+            <label htmlFor='role' className='form-label'>
+              Role
+            </label>
+            <select
+              className={`form-select ${errors.userType ? 'is-invalid' : ''}`}
+              id='role'
+              {...register('userType')}
+            >
+              <option value=''>Select a role</option>
+              {allRoles?.map((item) => (
+                <option key={item.roleId} value={item.roleName}>
+                  {item.roleName}
+                </option>
+              ))}
+            </select>
+            {errors.userType && (
+              <div className='invalid-feedback'>{errors.userType.message}</div>
+            )}
+          </div>
 
-          <Link className='link-primary' to='/signin'>
-            {' '}
-            Login
-          </Link>
+          <div className='mb-3'>
+            <label>Email</label>
+            <input
+              type='email'
+              {...register('email')}
+              className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+            />
+            {errors.email && (
+              <div className='invalid-feedback'>{errors.email.message}</div>
+            )}
+          </div>
+
+          <div className='mb-3'>
+            <label>Full Name</label>
+            <input
+              type='text'
+              {...register('fullName')}
+              className={`form-control ${errors.fullName ? 'is-invalid' : ''}`}
+            />
+            {errors.fullName && (
+              <div className='invalid-feedback'>{errors.fullName.message}</div>
+            )}
+          </div>
+          <button
+            type='submit'
+            className='btn btn-primary new_button'
+            disabled={isSubmitting}
+          >
+            {isSubmitting && <Spinner width='15px' height='15px' />} Signup
+          </button>
+        </form>
+        <div className='row pt-3'>
+          <div className='col'>
+            <span style={{ color: '#abc184' }}> Already have account?</span>
+
+            <Link className='link-primary' to='/signin'>
+              {' '}
+              Login
+            </Link>
+          </div>
         </div>
       </div>
     </FormContainer>

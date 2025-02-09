@@ -31,7 +31,7 @@ const Verify = () => {
   };
   return (
     <FormContainer>
-      <div style={{ maxWidth: '500px', marginTop: '2rem' }}>
+      <div style={{ maxWidth: '500px', width: '100%', marginTop: '2rem' }}>
         <h1>Verify the business address</h1>
         <div className='mt-3' style={{ maxWidth: '400px' }}>
           <div className=' mb-2'>

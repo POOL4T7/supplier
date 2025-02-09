@@ -82,7 +82,7 @@ const Profile = () => {
 
   return (
     <FormContainer>
-      <div style={{ maxWidth: '500px', marginTop: '2rem' }}>
+      <div style={{ maxWidth: '500px', width: '100%', marginTop: '2rem' }}>
         <h1>About Business</h1>
         <form>
           <div className='mb-2'>
