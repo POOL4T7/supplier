@@ -85,24 +85,28 @@ const Tax = () => {
       const fetchByteArray = async (type) => {
         try {
           const response = await axiosInstance.get(
-            `/proxy/productsearchsupplier/api/supplier/file/getCertificateOrBusinessImage?supplierBusinessId=${bussiness.id}&type=${type}`,
+            // `/proxy/productsearchsupplier/api/supplier/file/getCertificateOrBusinessImage?supplierBusinessId=${
+            //   bussiness.id
+            // }&type=${type.toLowerCase()}`,
+            `/proxy/productsearchsupplier/api/supplier/file/getCertificateOrBusinessImageOrLogo?supplierBusinessId=${bussiness.id}&type=${type}`,
             {
               responseType: 'arraybuffer', // Important for binary data
             }
           );
 
           let docType = 'application/pdf'; // Default to PDF
-
           if (type === 'Certificate' && bussiness.certificateImagePath) {
+            console.log(type, bussiness.certificateImagePath);
             const extension = bussiness.certificateImagePath
               .split('.')
               .pop()
               .toLowerCase(); // Extract file extension
-            if (['jpeg', 'jpg', 'png'].includes(extension)) {
+            console.log('extension', extension);
+            if (['jpeg', 'jpg', 'png', 'webp'].includes(extension)) {
               docType = `image/${extension}`;
             }
           }
-
+          // alert(type , bussiness.certificateImagePath )
           if (type === 'BusinessImage') {
             // Assuming BusinessImage is always PNG for now
             docType = 'image/png';
@@ -132,6 +136,7 @@ const Tax = () => {
 
       if (bussiness.certificateImagePath) fetchByteArray('Certificate');
       if (bussiness.businessImagePath) fetchByteArray('BusinessImage');
+      if (bussiness.businessLogoPath) fetchByteArray('BusinessLogo');
     }
   }, [reset, bussiness]);
 
@@ -247,7 +252,6 @@ const Tax = () => {
           },
         }
       );
-
       const contentType = file.type || 'image/png';
       const blob = new Blob([file], {
         type: contentType,
@@ -268,7 +272,7 @@ const Tax = () => {
 
   return (
     <FormContainer>
-      <div style={{ maxWidth: '500px',width: '100%', marginTop: '2rem' }}>
+      <div style={{ maxWidth: '500px', width: '100%', marginTop: '2rem' }}>
         <h1>Business Nature & Tax details</h1>
         <form>
           <div className='mb-2'>
@@ -350,18 +354,20 @@ const Tax = () => {
                 No Certificate Uploaded
               </span>
             )}
-            {['jpeg', 'png'].includes(certificateBase64.extension) ? (
+            {['jpeg', 'jpg', 'png', 'webp'].includes(
+              certificateBase64.extension
+            ) ? (
               <img
                 src={certificateBase64.file}
                 alt='Preview'
-                style={{ width: '300px' }}
+                // style={{ width: '300px' }}
               />
             ) : (
               <iframe
                 src={certificateBase64.file}
                 title='PDF Preview'
-                width='300px'
-                height='100%'
+                width='200px'
+                height='200px'
                 style={{ border: 'none' }}
               />
             )}
