@@ -40,7 +40,7 @@ const SearchResult = () => {
     <div className="container" style={{ marginTop: "6rem" }}>
       <div className="row">
         {/* Left Column - Search Results */}
-        <div className="col-8">
+        <div className="col-12 col-md-8">
           {productList?.length === 0 && (
             <div className="d-flex justify-content-center">
               <h4>No Product found?</h4>
@@ -53,38 +53,40 @@ const SearchResult = () => {
               style={{ backgroundColor: "#d3d7c8" }}
             >
               <div className="row">
-                <div className="col-3">
-                  <img
-                    src="/images/logo.webp"
-                    alt="Company Logo"
-                    className="me-3"
-                    style={{ width: "100px", height: "100px" }}
-                  />
+                <div className="col-12 col-md-3">
+                  <div className="row">
+                    <div className="col-6 col-md-12">
+                      <img
+                        src="/images/logo.webp"
+                        alt="Company Logo"
+                        className="me-3"
+                        style={{ width: "100px", height: "100px" }}
+                      />
+                    </div>
+                    <div className="col-6 col-md-12">
+                      <p className="small mb-1">
+                        <Truck size={15} /> {"  "}
+                        <span className="fw-bold">
+                          {item.supplierBusinessDetails.country || "Germany"}
+                        </span>
+                      </p>
 
-                  <p className="small mb-1">
-                    <Truck size={15} /> {"  "}
-                    <span className="fw-bold">
-                      {item.supplierBusinessDetails.country || "Germany"}
-                    </span>
-                  </p>
-                  {/* <p className="small mb-1">
-                    <Ungroup /> <strong>Sector Type:</strong>{" "}
-                    {item.supplierBusinessDetails.sector || "NA"}
-                  </p> */}
-
-                  <p className="small mb-1">
-                    <Mail size={15} /> {"  "}
-                    {item.supplierBusinessDetails.email || "abdfv@gmail.com"}
-                  </p>
-                  <div className="ms-auto">
-                    <MapPinHouse size={15} />{" "}
-                    <span className="small">
-                      {item.supplierBusinessDetails.city}{" "}
-                      {item.supplierBusinessDetails.country} usa, gernamuy
-                    </span>
+                      <p className="small mb-1">
+                        <Mail size={15} /> {"  "}
+                        {item.supplierBusinessDetails.email ||
+                          "abdfv@gmail.com"}
+                      </p>
+                      <div className="ms-auto">
+                        <MapPinHouse size={15} />{" "}
+                        <span className="small">
+                          {item.supplierBusinessDetails.city}{" "}
+                          {item.supplierBusinessDetails.country} usa, gernamuy
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="col-9">
+                <div className="col-12 col-md-9">
                   <h4 className="fw-bold text-primary d-flex">
                     {item.supplierBusinessDetails.businessName}
                   </h4>
@@ -108,7 +110,7 @@ const SearchResult = () => {
                               .map((item, index) => (
                                 <span
                                   key={index}
-                                  className="badge rounded-pill bg-primary px-3 py-2 text-white mx-1"
+                                  className="badge rounded-pill bg-primary px-2 py-1 text-white m-1"
                                   style={{ cursor: "pointer" }}
                                 >
                                   {item}
@@ -133,8 +135,11 @@ const SearchResult = () => {
         </div>
 
         {/* Right Column - Filters (Fixed) */}
-        <div className="col-4">
-          <div className="position-sticky top-0 bg-white p-3 shadow-sm border rounded">
+        <div className="col-12 col-md-4">
+          <div
+            className="d-none d-md-block position-sticky top-0 p-3 shadow-sm border rounded"
+            style={{ backgroundColor: "#d2d8c8" }}
+          >
             <h5 className="fw-bold">Filters</h5>
             {/* Add filter options here */}
             <p>Coming soon..</p>
