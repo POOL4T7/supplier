@@ -11857,14 +11857,14 @@ body {
   border-bottom: 2px solid green;
 }
 .serach-form {
-  background: #fff;
+  background: #c9d6cb;
   padding: 20px 15px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #b9d6cb;
   margin-top: 15px;
   border-radius: 10px;
 }
 .search-btn {
-  background-color: #343a40;
+  background-color: #355e3b;
   border: none;
   color: #fff;
   height: 40px;
@@ -11872,6 +11872,7 @@ body {
   border-radius: 5px;
 }
 .serach-form input {
+  /* background-color: #b9d6cb; */
 }
 .search-btn1 {
   width: 160px !important;

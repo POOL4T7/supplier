@@ -99,12 +99,15 @@ const Header = () => {
               <ul className='navbar-nav'>
                 <li className='nav-item dropdown'>
                   <a
-                    className='nav-link dropdown-toggle text-dark'
+                    className='nav-link dropdown-toggle '
                     data-bs-toggle='dropdown'
                     href='#'
                     role='button'
                     aria-haspopup='true'
                     aria-expanded='false'
+                    style={{
+                      color: "green",
+                    }}
                   >
                     {userDetails.supplierName}
                   </a>
