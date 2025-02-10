@@ -87,9 +87,9 @@ const SearchResult = () => {
                   </div>
                 </div>
                 <div className="col-12 col-md-9">
-                  <h4 className="fw-bold text-primary d-flex">
+                  <h3 className="fw-bold text-primary d-flex">
                     {item.supplierBusinessDetails.businessName}
-                  </h4>
+                  </h3>
                   <p className="mt-3 small">
                     {/* {item.supplierBusinessDetails.aboutUs ||
                       "About is not available"} */}
